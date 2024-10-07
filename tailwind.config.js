@@ -8,6 +8,7 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
+        './node_modules/@inertiaui/modal-vue/src/**/*.{js,vue}', // To style Inertia Modal
     ],
 
     theme: {
@@ -18,5 +19,8 @@ export default {
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        forms,
+        require('daisyui'),
+    ],
 };
