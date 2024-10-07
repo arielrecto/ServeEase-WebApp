@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
+use App\Enums\UserRoles;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,5 +22,29 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+
+        $roles = UserRoles::cases();
+
+        collect($roles)->map(function($role){
+            Role::create([
+                'name' => $role->value
+            ]);
+        });
+
+
+
+        $adminRole = Role::where('name', UserRoles::ADMIN->value)->first();
+
+
+
+        $admin = User::create([
+            'name' => 'admin',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('admin123')
+        ]);
+
+
+        $admin->assignRole($adminRole);
     }
 }

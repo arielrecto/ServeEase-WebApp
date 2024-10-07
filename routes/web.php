@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,9 +34,26 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
+
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
+    Route::prefix('admin')->as('admin.')->group(function () {
+        Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    });
+
+    Route::prefix('customer')->as('customer.')->group(function () {
+        Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
+    });
+    Route::prefix('service-provider')->as('service-provider.')->group(function () {
+        Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
+    });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

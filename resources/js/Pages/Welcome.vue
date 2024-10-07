@@ -24,7 +24,7 @@ defineProps({
 
 <template>
     <Head title="Welcome" />
-    <h1>{{ canLogin}}</h1>
+
     <div
         class="relative sm:flex sm:justify-center
         sm:items-center min-h-screen bg-dots-darker bg-center
