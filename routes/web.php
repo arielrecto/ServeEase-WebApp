@@ -5,6 +5,7 @@ use App\Http\Controllers\Customer\DashboardController as CustomerDashboardContro
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
+use App\Http\Controllers\ServiceProvider\ServiceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,6 +54,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('service-provider')->as('service-provider.')->group(function () {
         Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
+        Route::resource('services', ServiceController::class);
     });
 });
 

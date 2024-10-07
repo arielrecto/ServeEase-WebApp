@@ -3,8 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Enums\ServicesType;
 use App\Models\User;
 use App\Enums\UserRoles;
+use App\Models\ServiceType as ModelsServiceType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -46,5 +49,16 @@ class DatabaseSeeder extends Seeder
 
 
         $admin->assignRole($adminRole);
+
+
+
+        $serviceTypes = ServicesType::cases();
+
+
+        collect($serviceTypes)->map(function($serviceType) {
+            ModelsServiceType::create([
+                'name' => $serviceType->value
+            ]);
+        });
     }
 }
