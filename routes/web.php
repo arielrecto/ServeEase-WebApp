@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     });
 
-    Route::prefix('customer')->as('customer.')->group(function () {
+    Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
         Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
     });
     Route::prefix('service-provider')->as('service-provider.')->group(function () {

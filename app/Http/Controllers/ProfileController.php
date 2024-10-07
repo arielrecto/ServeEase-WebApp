@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Profile;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -59,5 +60,61 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+
+    public function updateProfile(Request $request){
+        $profile = $request->user()->profile;
+
+
+        if($profile){
+            $profile = Profile::create([
+                'last_name' => $request->last_name,
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'gender' => $request->gender,
+                'address' => $request->address,
+                'user_id' => $request->user()->id
+            ]);
+
+
+
+            if ($request->hasFile('avatar')) {
+
+                $imageName = 'avatar-' . uniqid() . '.' . $request->avatar->extension();
+                $dir = $request->avatar->storeAs('/profile', $imageName, 'public');
+
+                $profile->update([
+                    'avatar' => asset('/storage/' . $dir),
+                ]);
+            }
+
+
+            return back()->with(['message_success' => 'profile Information Added!']);
+        }
+
+
+        $profile->update([
+            'last_name' => $request->last_name,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'gender' => $request->gender,
+            'address' => $request->address,
+        ]);
+
+
+        if ($request->hasFile('avatar')) {
+
+            $imageName = 'avatar-' . uniqid() . '.' . $request->avatar->extension();
+            $dir = $request->avatar->storeAs('/profile', $imageName, 'public');
+
+            $profile->update([
+                'avatar' => asset('/storage/' . $dir),
+            ]);
+        }
+
+
+
+        return back()->with(['message_success' => 'Profile Information Updated!']);
     }
 }
