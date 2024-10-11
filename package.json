@@ -8,6 +8,7 @@
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
         "@tailwindcss/forms": "^0.5.3",
+        "@tailwindcss/typography": "^0.5.15",
         "@vitejs/plugin-vue": "^5.0.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.1.2",
@@ -19,6 +20,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "@inertiaui/modal-vue": "^0.3.0"
+        "@inertiaui/modal-vue": "^0.3.0",
+        "moment": "^2.30.1"
     }
 }
