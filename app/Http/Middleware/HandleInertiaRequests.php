@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,10 +30,15 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $hasProfileSetup = $request->user()->profile ?? false;
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'hasProfileSetup' => $hasProfileSetup,
+                'roleName' => $request?->user()?->getRoleNames()?->toArray()[0],
+                'isServiceProvider' => $request?->user()?->hasProviderProfile(),
             ],
             'flash' => [
                 'message_success' => $request->session()->get('message_success'),

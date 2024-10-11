@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Profile;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use App\Enums\Sex;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Profile;
+use App\Enums\ServicesType;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
@@ -19,9 +21,20 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $sexChoices = Sex::cases();
+        $profile = $request->user()?->profile;
+        $providerProfile = $profile?->providerProfile;
+        $serviceTypes = ServicesType::cases();
+
+        // dd($providerProfile);
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'sexChoices' => $sexChoices,
+            'serviceTypes' => $serviceTypes,
+            'profile' => $profile,
+            'providerProfile' => $providerProfile,
         ]);
     }
 
@@ -62,12 +75,19 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
+    public function updateProviderProfile(Request $request)
+    {
+        // TODO: Implement update feature for user's provider profile
 
-    public function updateProfile(Request $request){
+        dd($request->all());
+    }
+
+
+    public function updateProfile(Request $request)
+    {
         $profile = $request->user()->profile;
 
-
-        if($profile){
+        if (!$profile) {
             $profile = Profile::create([
                 'last_name' => $request->last_name,
                 'first_name' => $request->first_name,

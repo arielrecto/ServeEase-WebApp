@@ -43,7 +43,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // Utilities
+    public function hasProviderProfile()
+    {
+        $profile = $this->profile;
 
+        if (!$profile) {
+            return false;
+        }
+
+        return Profile::whereId($profile->id)->has('providerProfile')->exists();
+
+    }
+
+    // Relations
     public function profile()
     {
         return $this->hasOne(Profile::class);
