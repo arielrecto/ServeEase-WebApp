@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\ProviderProfile;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Models\ProviderProfile;
 use NunoMaduro\Collision\Provider;
+use App\Http\Controllers\Controller;
 
 class ServiceProviderController extends Controller
 {
@@ -14,8 +15,11 @@ class ServiceProviderController extends Controller
      */
     public function index()
     {
-        $providers = ProviderProfile::whereNotNull('verified_at')
-        ->with(['profile.user'])->latest()->paginate(10);
+        $providers = ProviderProfile::whereVerifiedAt(null)->with(['profile.user'])->latest()->paginate(10);
+
+        // dd($providers);
+
+        return Inertia::render('Users/Admin/ServiceProvider/Index', compact(['providers']));
     }
 
     /**
@@ -39,8 +43,10 @@ class ServiceProviderController extends Controller
      */
     public function show(string $id)
     {
-        $provider = ProviderProfile::where('id', $id)
-        ->with('profile.user.services')->first();
+        $providerProfile = ProviderProfile::where('id', $id)
+            ->with(['profile', 'profile.user.services'])->first();
+
+        return Inertia::render('Users/Admin/ServiceProvider/Show', compact(['providerProfile']));
     }
 
     /**
@@ -59,6 +65,13 @@ class ServiceProviderController extends Controller
         //
     }
 
+    public function delete(string $id)
+    {
+        $providerProfile = ProviderProfile::find($id);
+
+        return Inertia::render('Users/Admin/ServiceProvider/Delete', compact(['providerProfile']));
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -67,8 +80,16 @@ class ServiceProviderController extends Controller
 
     }
 
+    public function approve(string $id)
+    {
+        $providerProfile = ProviderProfile::find($id);
 
-    public function approved(string $id){
+        return Inertia::render('Users/Admin/ServiceProvider/Approve', compact(['providerProfile']));
+    }
+
+
+    public function approved(string $id)
+    {
         $provider = ProviderProfile::find($id);
 
 
@@ -76,5 +97,7 @@ class ServiceProviderController extends Controller
             'verified_at' => now(),
             'status' => 'approved'
         ]);
+
+        return to_route('admin.service-provider.index')->with('message_success', 'You have approved the application.');
     }
 }

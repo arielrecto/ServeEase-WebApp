@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Http\Controllers\Controller;
-use App\Models\ProviderProfile;
+use App\Enums\ServicesType;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Models\ProviderProfile;
+use App\Http\Controllers\Controller;
 
 class ServiceProviderController extends Controller
 {
-    public function create(){
+    public function create()
+    {
+        $serviceTypes = ServicesType::cases();
 
+        return Inertia::render('Users/Customer/ServiceProvider/Create', compact(['serviceTypes']));
     }
 
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
+        // dd($request->all());
 
 
         $request->validate([
@@ -36,6 +43,9 @@ class ServiceProviderController extends Controller
             'certificate' => asset('/storage/' . $dir),
             'profile_id' => $request->user()->profile->id
         ]);
+
+
+        return to_route('customer.service-provider.create')->with('message_success', 'Application submitted successfully.');
 
     }
 }
