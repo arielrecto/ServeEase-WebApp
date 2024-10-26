@@ -17,6 +17,10 @@ const roleName = usePage().props.auth.roleName;
             :active="route().current('admin.service-types.index')">
                 Services
             </NavLink>
+            <NavLink :href="route('admin.barangays.index')"
+            :active="route().current('admin.barangays.index')">
+                Barangays
+            </NavLink>
             <NavLink :href="route('admin.service-provider.index')"
             :active="route().current('admin.service-provider.index')">
                 Applications

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ServiceTypeController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
@@ -59,6 +60,9 @@ Route::middleware('auth')->group(function () {
         });
         Route::resource('service-types', ServiceTypeController::class)->except('update');
         Route::post('/service-types/{id}', [ServiceTypeController::class, 'update'])->name('service-types.update');
+
+        Route::resource('barangays', BarangayController::class)->except(['show']);
+        Route::get('/barangays/delete/{id}', [BarangayController::class, 'delete'])->name('barangays.delete');
     });
 
     Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
