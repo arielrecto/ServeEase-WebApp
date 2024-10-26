@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
 
         $roles = UserRoles::cases();
 
-        collect($roles)->map(function($role){
+        collect($roles)->map(function ($role) {
             Role::create([
                 'name' => $role->value
             ]);
@@ -52,13 +52,13 @@ class DatabaseSeeder extends Seeder
 
 
 
-        $serviceTypes = ServicesType::cases();
+        // $serviceTypes = ServicesType::cases();
 
 
-        collect($serviceTypes)->map(function($serviceType) {
-            ModelsServiceType::create([
-                'name' => $serviceType->value
-            ]);
-        });
+        // collect($serviceTypes)->map(function($serviceType) {
+        //     ModelsServiceType::create([
+        //         'name' => $serviceType->value
+        //     ]);
+        // });
     }
 }

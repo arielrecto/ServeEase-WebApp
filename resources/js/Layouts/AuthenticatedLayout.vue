@@ -7,6 +7,7 @@ import NavLink from '@/Components/NavLink.vue';
 import NavLinkContainer from '@/Components/NavLinkContainer.vue';
 import FlashMessage from '@/Components/FlashMessage.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import Footer from '@/Components/Footer.vue';
 import { ModalRoot } from '@inertiaui/modal-vue';
 import { Link, usePage } from '@inertiajs/vue3';
 
@@ -144,7 +145,7 @@ const profile = usePage().props.auth.user.profile;
 
             <!-- Page Heading -->
             <header class="bg-white shadow" v-if="$slots.header">
-                <div class="flex items-center px-4 py-6 mx-auto gap-x-4 max-w-7xl sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center px-4 py-6 mx-auto gap-x-4 max-w-7xl sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>
@@ -155,6 +156,8 @@ const profile = usePage().props.auth.user.profile;
             </main>
         </div>
     </div>
+
+    <Footer />
 
     <ModalRoot />
 </template>

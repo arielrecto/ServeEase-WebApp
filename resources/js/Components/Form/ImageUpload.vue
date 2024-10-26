@@ -1,6 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 
+defineProps({
+    required: {
+        type: Boolean,
+        default: false
+    }
+});
+
 const imageSrc = ref(null);
 
 const emit = defineEmits(['success']);
@@ -51,7 +58,7 @@ const handleUpload = (e) => {
                 </p>
             </div>
             <input id="dropzone-file" @change="handleUpload" name="image" type="file" accept="image/*"
-                class="hidden" />
+                class="hidden" :required="required"/>
         </label>
     </div>
 </template>

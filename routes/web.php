@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ServiceTypeController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
 use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
@@ -56,6 +57,8 @@ Route::middleware('auth')->group(function () {
             Route::put('/approved/{id}', [AdminSPController::class, 'approved'])->name('approved');
             Route::get('/delete/{id}', [AdminSPController::class, 'delete'])->name('delete');
         });
+        Route::resource('service-types', ServiceTypeController::class)->except('update');
+        Route::post('/service-types/{id}', [ServiceTypeController::class, 'update'])->name('service-types.update');
     });
 
     Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {

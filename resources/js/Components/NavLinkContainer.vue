@@ -13,12 +13,16 @@ const roleName = usePage().props.auth.roleName;
             :active="route().current('admin.dashboard')">
                 Dashboard
             </NavLink>
+            <NavLink :href="route('admin.service-types.index')"
+            :active="route().current('admin.service-types.index')">
+                Services
+            </NavLink>
             <NavLink :href="route('admin.service-provider.index')"
             :active="route().current('admin.service-provider.index')">
                 Applications
             </NavLink>
         </template>
-        
+
         <template v-else>
             <NavLink :href="route('customer.dashboard')"
                 :active="route().current('customer.dashboard')">

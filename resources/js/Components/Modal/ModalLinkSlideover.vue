@@ -27,7 +27,7 @@ const modalRef = ref(null);
 </script>
 
 <template>
-    <ModalLink :href="href" :close-button="closeButton" :position="position" :max-width="maxWidth" slideover panel-classes="inertia-modal" :class="class">
+    <ModalLink :href="href" :close-button="closeButton" :position="position" :max-width="maxWidth" slideover panel-classes="inertia-modal h-screen" :class="class">
         <slot />
     </ModalLink>
 </template>
