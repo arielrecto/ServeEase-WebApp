@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SearchController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
+use App\Http\Controllers\GuestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +33,16 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
+        'services' => App\Models\ServiceType::orderBy('name')->take(6)->get(),
+        'totalServices' => App\Models\ServiceType::all()->count(),
     ]);
+});
+
+Route::middleware('guest')->controller(GuestController::class)->as('guest.')->group(function () {
+    Route::get('/about', 'about')->name('about');
+    Route::get('/search', 'search')->name('search');
+    Route::get('/services', 'services')->name('services');
+    Route::get('/services/{id}', 'show')->name('show');
 });
 
 Route::get('/dashboard', function () {
@@ -74,6 +85,10 @@ Route::middleware('auth')->group(function () {
     Route::prefix('service-provider')->as('service-provider.')->group(function () {
         Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
         Route::resource('services', ServiceController::class);
+    });
+
+    Route::controller(SearchController::class)->prefix('search')->as('search.')->group(function () {
+        Route::get('', 'redirectAuthUser')->name('index')->middleware(['profile-required']);
     });
 });
 
