@@ -1,6 +1,11 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+
+import { Link } from '@inertiajs/vue3';
+import Header from '@/Components/Guest/Header.vue';
+import Footer from '@/Components/Footer.vue';
+
+defineProps(['services', 'totalServices']);
 
 const servicesOffered = ref([
     {
@@ -46,29 +51,36 @@ const servicesOffered = ref([
     <section class="container py-8 mx-auto space-y-10">
         <h2 class="text-2xl font-bold text-center">Get one of many services available locally</h2>
 
-        <div class="grid grid-cols-3 gap-10">
-            <div v-for="(service, index) in servicesOffered" :key="index">
-                <article class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
+        <div v-if="services.length > 0">
+            <div class="grid items-center grid-cols-1 gap-10 mb-4 overflow-y-auto sm:grid-cols-3">
+                <article v-for="(service, index) in services" :key="service.id" class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
                     <img
                         alt=""
-                        :src="service.imgPath"
+                        :src="service.thumbnail"
                         class="object-cover w-full h-56"
                     />
-
                     <div class="p-4 bg-white sm:p-6">
                         <h3 class="mt-0.5 text-lg text-gray-900">{{ service.name }}</h3>
 
                         <p class="my-2 text-gray-500 line-clamp-3 text-sm/relaxed">
                             {{ service.description }}
-                        <!-- Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae dolores, possimus
-                        pariatur animi temporibus nesciunt praesentium dolore sed nulla ipsum eveniet corporis quidem,
-                        mollitia itaque minus soluta, voluptates neque explicabo tempora nisi culpa eius atque
-                        dignissimos. Molestias explicabo corporis voluptatem? -->
                         </p>
-                        <Link :href="service.href" class="flex items-center text-primary gap-x-1"><span class="hover:underline decoration-2 underline-offset-4 ">Learn More</span><i class="ri-arrow-right-line"></i></Link>
+
+                        <Link :href="route('guest.show', service.id)" class="flex items-center text-primary gap-x-1"><span class="hover:underline decoration-2 underline-offset-4 ">Learn More</span><i class="ri-arrow-right-line"></i></Link>
                     </div>
                 </article>
             </div>
+
+            <div class="mx-auto text-center">
+                <Link
+                    v-if="totalServices > 6"
+                    href="/services"
+                    class="uppercase bg-white btn text-primary"
+                >
+                    More Services
+                </Link>
+            </div>
         </div>
+        <div v-else class="flex items-center justify-center h-64 mx-auto"><p class="text-xl text-center text-gray-500">Services are coming soon!</p></div>
     </section>
 </template>

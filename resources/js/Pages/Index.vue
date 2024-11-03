@@ -5,6 +5,8 @@ import ServicesList from '@/Components/Guest/ServicesList.vue';
 import Header from '@/Components/Guest/Header.vue';
 import Footer from '@/Components/Footer.vue';
 import NavLink from '@/Components/NavLink.vue';
+import About from '@/Components/Guest/About.vue';
+import ComboBox from '@/Components/Form/ComboBox.vue';
 
 defineProps({
     canLogin: {
@@ -21,6 +23,8 @@ defineProps({
         type: String,
         required: true,
     },
+    services: Array,
+    totalServices: Number
 });
 </script>
 
@@ -31,8 +35,11 @@ defineProps({
         <Header :canLogin="canLogin" :canRegister="canRegister" />
 
         <main>
+
             <Hero />
-            <ServicesList />
+            <!-- <ComboBox /> -->
+            <About />
+            <ServicesList :services="services" :totalServices="totalServices" />
         </main>
 
         <Footer />

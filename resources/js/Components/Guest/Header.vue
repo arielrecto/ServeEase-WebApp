@@ -15,23 +15,19 @@ defineProps({
             <div class="flex justify-between h-16">
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center shrink-0">
-                        <Link :href="route('dashboard')">
+                        <Link href="/">
                         <!-- <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9" /> -->
                         <h1 class="text-lg font-black uppercase">Serv<span class="text-primary">Ease</span></h1>
                         </Link>
 
                         <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                            <NavLink :href="route('admin.service-provider.index')"
-                                :active="route().current('admin.service-provider.index')">
+                            <NavLink :href="route('guest.services')"
+                                :active="route().current('guest.services')">
                                 Services
                             </NavLink>
-                            <NavLink :href="route('admin.service-provider.index')"
-                                :active="route().current('admin.service-provider.index')">
-                                About
-                            </NavLink>
-                            <NavLink :href="route('admin.service-provider.index')"
-                                :active="route().current('admin.service-provider.index')">
-                                Contact
+                            <NavLink :href="route('guest.search')"
+                                :active="route().current('guest.search')">
+                                Search
                             </NavLink>
                         </div>
                     </div>
