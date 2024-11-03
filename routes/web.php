@@ -87,7 +87,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('services', ServiceController::class);
     });
 
-    Route::controller(SearchController::class)->prefix('search')->as('search.')->group(function () {
+    Route::controller(SearchController::class)->prefix('explore')->as('search.')->group(function () {
         Route::get('', 'redirectAuthUser')->name('index')->middleware(['profile-required']);
     });
 });
