@@ -36,9 +36,9 @@ const roleName = usePage().props.auth.roleName;
                 :active="route().current('service-provider.dashboard')">
                 Dashboard
             </NavLink>
-            <NavLink :href="route('customer.dashboard')"
-                :active="route().current('customer.dashboard')">
-                Explore
+            <NavLink :href="route('search.index')"
+                :active="route().current('search.index')">
+                Search
             </NavLink>
         </template>
     </div>
