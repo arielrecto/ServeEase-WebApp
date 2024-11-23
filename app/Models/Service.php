@@ -11,20 +11,28 @@ class Service extends Model
 
 
 
-    protected $fillable =[
+    protected $fillable = [
         'name',
         'price',
+        'thumbnail',
+        'price_type',
         'description',
+        'terms_and_conditions',
+        'is_approved',
+        'service_type_id',
+        'barangay_id',
         'user_id'
     ];
 
 
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function availService(){
+    public function availService()
+    {
         return $this->hasMany(AvailService::class);
     }
 }
