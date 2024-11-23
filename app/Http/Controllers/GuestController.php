@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ServicesType;
 use Inertia\Inertia;
 use App\Models\Barangay;
 use App\Models\ServiceType;
@@ -12,11 +13,12 @@ class GuestController extends Controller
 {
     public function search()
     {
+        $types = ServiceType::orderBy('name')->get();
         $canLogin = Route::has('login');
         $canRegister = Route::has('register');
         $brgys = Barangay::orderBy('name')->get();
         $services = ServiceType::orderBy('name')->get();
-        return Inertia::render('Guest/Search', compact(['brgys', 'services', 'canLogin', 'canRegister']));
+        return Inertia::render('Guest/Search', compact(['brgys', 'types', 'services', 'canLogin', 'canRegister']));
     }
 
     public function services()

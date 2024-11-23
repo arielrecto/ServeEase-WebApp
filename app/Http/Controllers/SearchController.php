@@ -20,16 +20,40 @@ class SearchController extends Controller
     // TODO: Add filtering logic
     public function servicesFilter(Request $request)
     {
-        $services = Service::all();
+        $rating = $request->byRating;
+        $price = $request->byPrice;
+        $more = $request->more ?? 0;
+        $transactions = $request->byTransaction;
 
-        if ($request->byRating) {
+        // TODO: Add filter by rating & no. of transactions
+        $services = Service::with(['user'])
+            ->where('service_type', $request->service)
+            ->where('barangay_id', $request->brgy)
+            ->when($price, function ($q) use ($price) {
+                if ($price === 'High') {
+                    $q->orderBy('price', 'DESC');
+                } else if ($price === 'Low') {
+                    $q->orderBy('price', 'ASC');
+                }
+            })
+            // ->when($rating, function ($q) use ($rating) {
+            //     if ($rating === 'Highest') {
 
-        }
+            //     } else if ($rating === 'Lowest') {
 
-        if ($request->byPrice) {
+            //     }
+            // })
+            // ->when($transactions, function ($q) use ($transactions) {
+            //     if ($transactions === 'High') {
 
-        }
+            //     } else if ($transactions === 'Low') {
 
-        return response()->json(['services' => $services]);
+            //     }
+            // })
+            ->offset($more)
+            ->limit(15)
+            ->get();
+
+        return response()->json(['services' => $services], 200);
     }
 }

@@ -92,4 +92,6 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+Route::get('/explore/all', [SearchController::class, 'servicesFilter'])->name('search.filter');
+
 require __DIR__ . '/auth.php';
