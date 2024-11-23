@@ -3,11 +3,12 @@
 namespace App\Enums;
 
 
-enum ServicesType : string{
-    case PLUMBER = "plumber";
-    case CARPENTER = "carpenter";
+enum ServicesType: string
+{
+    case PLUMBER = "plumbing";
+    case CARPENTER = "carpentry";
     case ELECTRICIAN = 'electrician';
     case CATERING = 'catering';
     case DRIVER = 'driver';
-    case ITPERSONAL ='IT personel';
+    case ITPERSONAL = 'IT personnel';
 }
