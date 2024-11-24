@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\SearchController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -74,6 +75,8 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('barangays', BarangayController::class)->except(['show']);
         Route::get('/barangays/delete/{id}', [BarangayController::class, 'delete'])->name('barangays.delete');
+
+        Route::resource('users', UserController::class);
     });
 
     Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
