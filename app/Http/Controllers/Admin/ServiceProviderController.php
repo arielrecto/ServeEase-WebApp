@@ -98,6 +98,8 @@ class ServiceProviderController extends Controller
             'status' => 'approved'
         ]);
 
+        // TODO: Add assign service provider role to user
+
         return to_route('admin.service-provider.index')->with('message_success', 'You have approved the application.');
     }
 }
