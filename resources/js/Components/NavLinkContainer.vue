@@ -25,6 +25,10 @@ const roleName = usePage().props.auth.roleName;
             :active="route().current('admin.service-provider.index')">
                 Applications
             </NavLink>
+            <NavLink :href="route('admin.users.index')"
+            :active="route().current('admin.users.index')">
+                Users
+            </NavLink>
         </template>
 
         <template v-else>
