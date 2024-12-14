@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Service;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function dashboard(){
-        return Inertia::render('Users/Customer/Dashboard');
+
+        $services = Service::with(['user'])->where('user_id', '!=', Auth::user()->id)->latest()->get();
+
+        return Inertia::render('Users/Customer/Dashboard', compact(['services']));
     }
 }

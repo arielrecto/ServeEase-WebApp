@@ -37,7 +37,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'hasProfileSetup' => $hasProfileSetup,
-                'roleName' => $request?->user()?->getRoleNames()?->toArray()[0],
+                'roleName' => $request?->user()?->getRoleNames()?->toArray(),
                 'isServiceProvider' => $request?->user()?->hasProviderProfile(),
             ],
             'flash' => [

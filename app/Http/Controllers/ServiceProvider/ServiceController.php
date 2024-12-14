@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\ServiceProvider;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barangay;
 use App\Models\Service;
+use App\Models\ServiceType;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
@@ -15,6 +18,8 @@ class ServiceController extends Controller
     {
         $services = Service::latest()->paginate(10);
 
+
+        return Inertia::render('Users/ServiceProvider/Services/Index', compact(['services']));
     }
 
     /**
@@ -22,7 +27,12 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        //
+
+        $serviceTypes = ServiceType::get();
+
+        $barangays = Barangay::get();
+
+        return Inertia::render('Users/ServiceProvider/Services/Create', compact(['serviceTypes', 'barangays']));
     }
 
     /**
@@ -30,6 +40,7 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required',
             'price' => 'required',
@@ -37,12 +48,21 @@ class ServiceController extends Controller
         ]);
 
 
+        $imageName = 'thumbnail-' . uniqid() . '.' . $request->thumbnail->extension();
+        $dir = $request->thumbnail->storeAs('/service_thumbnails', $imageName, 'public');
+
 
         Service::create([
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
-            'user_id' => $request->user()->id
+            'price_type' => $request->priceType,
+            'terms_and_conditions' => $request->termAndCondition,
+            'service_type' => $request->serviceType,
+            'is_approved' => false,
+            'barangay_id' => $request->barangay,
+            'user_id' => $request->user()->id,
+            'thumbnail' => asset('/storage/' . $dir)
         ]);
 
 
@@ -50,7 +70,6 @@ class ServiceController extends Controller
         return back()->with([
             'message_success' => 'Service Added'
         ]);
-
     }
 
     /**
@@ -83,9 +102,6 @@ class ServiceController extends Controller
             'description' => $request->description,
             'user_id' => $request->user()->id
         ]);
-
-
-
     }
 
     /**

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
 use Inertia\Inertia;
+use App\Enums\UserRoles;
 use Illuminate\Http\Request;
 use App\Models\ProviderProfile;
 use NunoMaduro\Collision\Provider;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 
 class ServiceProviderController extends Controller
@@ -75,10 +78,7 @@ class ServiceProviderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-
-    }
+    public function destroy(string $id) {}
 
     public function approve(string $id)
     {
@@ -92,13 +92,23 @@ class ServiceProviderController extends Controller
     {
         $provider = ProviderProfile::find($id);
 
+        $serviceProviderRole = Role::where('name', UserRoles::SERVICEPROVIDER->value)->first();
+
+
+        $user = $provider->profile->user;
+
+
 
         $provider->update([
             'verified_at' => now(),
             'status' => 'approved'
         ]);
 
+
         // TODO: Add assign service provider role to user
+
+
+        $user->assignRole($serviceProviderRole);
 
         return to_route('admin.service-provider.index')->with('message_success', 'You have approved the application.');
     }

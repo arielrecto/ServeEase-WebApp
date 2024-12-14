@@ -14,8 +14,10 @@ use App\Http\Controllers\ServiceProvider\ServiceController;
 use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
 use App\Http\Controllers\GuestController;
+use App\Models\Service;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,7 +83,11 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
         Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
-
+        Route::prefix('services')->as('services.')->group(function(){
+            Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
+            Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
+        });
+        Route::resource('services', CustomerServiceController::class)->only('show');
         Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
     });
 

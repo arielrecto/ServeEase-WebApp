@@ -16,7 +16,7 @@ class AvailService extends Model
         'status',
         'start_date',
         'end_date',
-        'remark',
+        'remarks',
         'total_price'
     ];
 
