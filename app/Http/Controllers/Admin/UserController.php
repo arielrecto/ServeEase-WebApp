@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Sex;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Enums\UserRoles;
@@ -111,8 +112,45 @@ class UserController extends Controller
         //
     }
 
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        //
+        $profile = $user->profile;
+
+        return Inertia::render('Users/Admin/Users/Edit', compact([
+            'user',
+            'profile'
+        ]));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $safe = $request->validate([
+            'first_name' => ['required', 'string', 'max:80'],
+            'middle_name' => ['sometimes', 'max:80'],
+            'last_name' => ['required', 'string', 'max:80'],
+        ]);
+
+        $user->update(['name' => "{$safe['first_name']} {$safe['last_name']}"]);
+
+        $user->profile->update($safe);
+
+        return to_route('admin.users.index')->with('message_success', 'User information updated successfully');
+    }
+
+    public function confirm(Request $request, User $user)
+    {
+        $action = $request->action;
+        return Inertia::render('Users/Admin/Users/Confirm', compact(['action', 'user']));
+    }
+
+    // TODO: Deactivate & activate
+    public function destroy(User $user)
+    {
+        dd('Feature is currently work in progress');
+    }
+
+    public function restore(User $user)
+    {
+        dd('Feature is currently work in progress');
     }
 }

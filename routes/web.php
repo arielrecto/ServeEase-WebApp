@@ -1,12 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\SearchController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\GuestController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ServiceTypeController;
@@ -16,8 +18,7 @@ use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPControl
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
-use App\Http\Controllers\GuestController;
-use App\Models\Service;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -78,12 +79,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('barangays', BarangayController::class)->except(['show']);
         Route::get('/barangays/delete/{id}', [BarangayController::class, 'delete'])->name('barangays.delete');
 
+        Route::prefix('users')->controller(UserController::class)->as('users.')->group(function () {
+            Route::get('/{user}/confirm', 'confirm')->name('confirm');
+            Route::put('/{user}/restore', 'restore')->name('restore');
+        });
         Route::resource('users', UserController::class);
     });
 
     Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
         Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
-        Route::prefix('services')->as('services.')->group(function(){
+        Route::prefix('services')->as('services.')->group(function () {
             Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
             Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
         });
@@ -101,6 +106,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+Route::get('/booking/services/{id}', [BookingController::class, 'show'])->name('booking.show');
 Route::get('/explore/all', [SearchController::class, 'servicesFilter'])->name('search.filter');
 
 require __DIR__ . '/auth.php';
