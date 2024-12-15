@@ -21,6 +21,8 @@
     },
     "dependencies": {
         "@inertiaui/modal-vue": "^0.3.0",
-        "moment": "^2.30.1"
+        "@primevue/themes": "^4.2.5",
+        "moment": "^2.30.1",
+        "primevue": "^4.2.5"
     }
 }
