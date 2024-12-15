@@ -130,6 +130,40 @@ const search = () => {
                                                     actionType="view"
                                                     href="#"
                                                 />
+
+                                                <ActionButton
+                                                    type="link"
+                                                    actionType="edit"
+                                                    :href="
+                                                        route(
+                                                            'admin.users.edit',
+                                                            user.id
+                                                        )
+                                                    "
+                                                />
+
+                                                <!-- TODO: Add activate & deactivate -->
+                                                <ActionButton
+                                                    type="modal"
+                                                    actionType="reject"
+                                                    :href="
+                                                        route(
+                                                            'admin.users.confirm',
+                                                            user.id
+                                                        ) + '?action=deactivate'
+                                                    "
+                                                />
+
+                                                <ActionButton
+                                                    type="modal"
+                                                    actionType="approve"
+                                                    :href="
+                                                        route(
+                                                            'admin.users.confirm',
+                                                            user.id
+                                                        ) + '?action=activate'
+                                                    "
+                                                />
                                             </div>
                                         </td>
                                     </tr>
