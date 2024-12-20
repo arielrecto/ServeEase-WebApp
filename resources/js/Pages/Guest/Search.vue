@@ -1,5 +1,6 @@
 <script setup>
 import { Head, useForm, Link } from "@inertiajs/vue3";
+import { ModalRoot } from "@inertiaui/modal-vue";
 import axios from "axios";
 import { ref, onMounted } from "vue";
 
@@ -14,6 +15,7 @@ import TextInput from "@/Components/TextInput.vue";
 import ComboBox from "@/Components/Form/ComboBox.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 import Loader from "@/Components/Loader.vue";
+import ModalLinkSlideover from "@/Components/Modal/ModalLinkSlideover.vue";
 
 defineProps(["brgys", "services", "canLogin", "canRegister"]);
 
@@ -257,7 +259,12 @@ onMounted(() => {
                                     :title="item.name"
                                     class="text-lg font-medium text-gray-900 line-clamp-1 text-ellipsis"
                                 >
-                                    <a href="#">{{ item.name }}</a>
+                                    <!-- <a href="#">{{ item.name }}</a> -->
+                                    <ModalLinkSlideover
+                                        :href="route('booking.show', item.id)"
+                                        maxWidth="xl"
+                                        >{{ item.name }}</ModalLinkSlideover
+                                    >
                                 </h3>
 
                                 <span class="text-sm">
@@ -333,4 +340,6 @@ onMounted(() => {
         </main>
         <Footer />
     </div>
+
+    <ModalRoot />
 </template>
