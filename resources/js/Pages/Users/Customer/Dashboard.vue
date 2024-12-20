@@ -1,82 +1,155 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Link, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue';
+import { Link, usePage } from "@inertiajs/vue3";
+import { ref, reactive, computed } from "vue";
 
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import GoTo from "@/Components/Dashboard/GoTo.vue";
 
 const page = usePage();
 
-const authUser = ref(page.props.auth.user)
+const authUser = ref(page.props.auth.user);
 
 const isNotServiceProvider = computed(() => {
-    return !authUser.value?.roles?.some(role => role.name === 'service provider');
+    return !authUser.value?.roles?.some(
+        (role) => role.name === "service provider"
+    );
 });
 
-const services = computed(() => page.props.services)
+const menuItems = [
+    { id: 1, title: "Favorites", url: "#", icon: "ri-star-line" },
+    { id: 2, title: "Service Types", url: "#", icon: "ri-service-line" },
+    { id: 3, title: "Bookings", url: "#", icon: "ri-book-marked-line" },
+    {
+        id: 4,
+        title: "Search",
+        url: route("search.index"),
+        icon: "ri-menu-search-line",
+    },
+    { id: 5, title: "Provider Profile", url: "#", icon: "ri-user-2-line" },
+    {
+        id: 6,
+        title: "Apply as Service Provider",
+        url: route("customer.service-provider.create"),
+        icon: "ri-contract-line",
+    },
+];
 
+const services = computed(() => page.props.services);
 
-console.log(services.value)
-
+console.log(services.value);
 </script>
 
 <template>
-
     <Head title="Home" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Home</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                Home
+            </h2>
         </template>
 
-
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 flex flex-col gap-5">
-                <template v-if="isNotServiceProvider">
-                    <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div class="p-6 text-gray-900">
-                            <Link :href="route('customer.service-provider.create')" class="button-primary">Service
-                            Provider
-                            Application</Link>
-                        </div>
-                    </div>
-                </template>
+            <div class="flex flex-col gap-5 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div
+                    class="flex flex-wrap items-start justify-center gap-x-8 gap-y-10"
+                >
+                    <template v-for="item in menuItems">
+                        <GoTo
+                            v-if="item.id < 5"
+                            :title="item.title"
+                            :icon="item.icon"
+                            :url="item.url"
+                        />
+                        <GoTo
+                            v-if="item.id === 5 && !isNotServiceProvider"
+                            :title="item.title"
+                            :icon="item.icon"
+                            :url="item.url"
+                        />
+                        <GoTo
+                            v-if="item.id === 6 && isNotServiceProvider"
+                            :title="item.title"
+                            :icon="item.icon"
+                            :url="item.url"
+                        />
+                    </template>
+                </div>
                 <div v-if="services.length > 0">
-                    <div class="grid items-center grid-cols-1 gap-10 mb-4 overflow-y-auto sm:grid-cols-3">
-                        <article v-for="(service, index) in services" :key="service.id"
-                            class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
-                            <img alt="" :src="service.thumbnail" class="object-cover w-full h-56" />
-                            <div class="p-4 bg-white sm:p-6">
-                                <div class="flex items-center justify-between">
-                                    <h3 class="mt-0.5 text-lg text-gray-900">{{ service.name }}</h3>
-                                    <p class="text-xs text-end">
-                                        provider : {{ service.user.name }}
-                                    </p>
+                    <section class="px-5 md:px-20">
+                        <div
+                            ref="dataContainer"
+                            class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]"
+                        >
+                            <article
+                                v-for="item in services"
+                                class="flex items-center w-full gap-x-2 group"
+                            >
+                                <div
+                                    class="h-32 overflow-hidden aspect-video rounded-xl"
+                                >
+                                    <img
+                                        alt=""
+                                        :src="
+                                            item.thumbnail ??
+                                            'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
+                                        "
+                                        class="object-cover w-full h-full"
+                                    />
                                 </div>
 
+                                <div class="w-full">
+                                    <div
+                                        class="flex items-center justify-between w-full gap-x-2"
+                                    >
+                                        <h3
+                                            :title="item.name"
+                                            class="text-lg font-medium text-gray-900 line-clamp-1 text-ellipsis"
+                                        >
+                                            <a href="#">{{ item.name }}</a>
+                                        </h3>
 
-                                <p class="my-2 text-gray-500 line-clamp-3 text-sm/relaxed">
+                                        <span class="text-sm">
+                                            <i
+                                                class="text-yellow-500 fa-solid fa-star"
+                                            ></i>
+                                            4.8
+                                        </span>
+                                    </div>
 
-                                    {{ service.description }}
-                                </p>
+                                    <div class="mt-1">
+                                        {{ item.user.name }}
+                                    </div>
 
-                                <Link :href="route('customer.services.show', service.id)"
-                                    class="flex items-center text-primary gap-x-1">
-                                <span class="hover:underline decoration-2 underline-offset-4 ">Learn More</span><i
-                                    class="ri-arrow-right-line"></i></Link>
-                            </div>
-                        </article>
-                    </div>
+                                    <div
+                                        class="flex justify-between mt-1 text-gray-500 line-clamp-3 text-sm/relaxed"
+                                    >
+                                        <p>
+                                            ₱ {{ item.price }}
+                                            <span
+                                                v-if="
+                                                    item.price_type === 'fixed'
+                                                "
+                                                >(Fixed)</span
+                                            >
+                                        </p>
+                                        <span>0 transaction(s)</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
                 </div>
-                <div v-else class="flex items-center justify-center h-64 mx-auto">
-                    <p class="text-xl text-center text-gray-500">Services are coming soon!</p>
+                <div
+                    v-else
+                    class="flex items-center justify-center h-64 mx-auto"
+                >
+                    <p class="text-xl text-center text-gray-500">
+                        Services are coming soon!
+                    </p>
                 </div>
             </div>
         </div>
-
-
-
-
-
     </AuthenticatedLayout>
 </template>
 
