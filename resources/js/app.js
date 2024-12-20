@@ -8,7 +8,25 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 
 // PrimeVue
 import PrimeVue from "primevue/config";
+import { definePreset } from "@primevue/themes";
 import Aura from "@primevue/themes/aura";
+const themePreset = definePreset(Aura, {
+    semantic: {
+        primary: {
+            50: "#003eff",
+            100: "#003eff",
+            200: "#003eff",
+            300: "#003eff",
+            400: "#003eff",
+            500: "#003eff",
+            600: "#003eff",
+            700: "#003eff",
+            800: "#003eff",
+            900: "#003eff",
+            950: "#003eff",
+        },
+    },
+});
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -23,7 +41,14 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(PrimeVue, { unstyled: true })
+            .use(PrimeVue, {
+                theme: {
+                    preset: themePreset,
+                    options: {
+                        darkModeSelector: false || "none",
+                    },
+                },
+            })
             .mount(el);
     },
     progress: {
