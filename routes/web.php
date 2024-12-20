@@ -13,10 +13,11 @@ use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ServiceTypeController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
+use App\Http\Controllers\Customer\CustomerFeedbackController;
 use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
+use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
-use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
 
 
@@ -92,6 +93,11 @@ Route::middleware('auth')->group(function () {
             Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
             Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
         });
+        Route::prefix('booking')->controller(BookingController::class)->as('booking.')->group(function () {
+            Route::get('/{availService}/detail', 'detail')->name('detail');
+        });
+        Route::resource('feedbacks', CustomerFeedbackController::class);
+        Route::resource('booking', BookingController::class);
         Route::resource('services', CustomerServiceController::class)->only('show');
         Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
     });
