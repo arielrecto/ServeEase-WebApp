@@ -2,19 +2,61 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Service;
+use App\Models\FeedBack;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filter = $request->filter;
+        $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
+            ->whereUserId(Auth::user()->id)
+            ->when($filter, function ($query) use ($filter) {
+                if ($filter === "done") {
+                    $query->whereStatus("done");
+                }
+                if ($filter === "pending") {
+                    $query->whereStatus("pending");
+                }
+            })
+            ->latest()
+            ->paginate(20)
+            ->through(function ($availService) {
+                return [
+                    'id' => $availService->id,
+                    'service_id' => $availService->service->id,
+                    'name' => $availService->service->name,
+                    'provider' => $availService->service->user->name,
+                    'status' => $availService->status,
+                    'total_price' => $availService->total_price,
+                    'created_at' => $availService->created_at
+                ];
+            });
+
+        $weekStartDate = Carbon::now()->startOfWeek()->format('Y-m-d H:i');
+        $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
+
+        $latestBookingsCount = AvailService::whereUserId(Auth::user()->id)
+            ->whereBetween('created_at', [$weekStartDate, $weekEndDate])
+            ->count();
+        $pendingBookingsCount = AvailService::whereUserId(Auth::user()->id)
+            ->whereStatus('pending')
+            ->count();
+        $finishedBookingsCount = AvailService::whereUserId(Auth::user()->id)
+            ->whereStatus('done')
+            ->count();
+        $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
+
+        return Inertia::render("Users/Customer/Booking/Index", compact(['availServices', 'latestBookingsCount', 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
     }
 
     /**

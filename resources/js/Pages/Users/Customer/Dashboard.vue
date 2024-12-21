@@ -18,7 +18,12 @@ const isNotServiceProvider = computed(() => {
 const menuItems = [
     { id: 1, title: "Favorites", url: "#", icon: "ri-star-line" },
     { id: 2, title: "Service Types", url: "#", icon: "ri-service-line" },
-    { id: 3, title: "Bookings", url: "#", icon: "ri-book-marked-line" },
+    {
+        id: 3,
+        title: "My Bookings",
+        url: route("customer.booking.index"),
+        icon: "ri-book-marked-line",
+    },
     {
         id: 4,
         title: "Search",
@@ -75,7 +80,7 @@ console.log(services.value);
                         />
                     </template>
                 </div>
-                <div v-if="services.length > 0">
+                <div v-if="services?.length > 0">
                     <section class="px-5 md:px-20">
                         <div
                             ref="dataContainer"
@@ -106,7 +111,15 @@ console.log(services.value);
                                             :title="item.name"
                                             class="text-lg font-medium text-gray-900 line-clamp-1 text-ellipsis"
                                         >
-                                            <a href="#">{{ item.name }}</a>
+                                            <Link
+                                                :href="
+                                                    route(
+                                                        'customer.services.show',
+                                                        item.id
+                                                    )
+                                                "
+                                                >{{ item.name }}</Link
+                                            >
                                         </h3>
 
                                         <span class="text-sm">
