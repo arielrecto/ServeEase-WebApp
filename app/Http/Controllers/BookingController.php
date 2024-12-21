@@ -33,6 +33,7 @@ class BookingController extends Controller
             ->through(function ($availService) {
                 return [
                     'id' => $availService->id,
+                    'hasFeedback' => $availService->feedback()->exists(),
                     'service_id' => $availService->service->id,
                     'name' => $availService->service->name,
                     'provider' => $availService->service->user->name,

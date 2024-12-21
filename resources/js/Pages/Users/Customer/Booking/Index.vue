@@ -89,7 +89,7 @@ console.log(props.availServices);
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div
-                    class="flex flex-col md:flex-row justify-center mb-5 gap-5"
+                    class="flex flex-col justify-center gap-5 mb-5 md:flex-row"
                 >
                     <div class="flex-1">
                         <Link
@@ -149,7 +149,7 @@ console.log(props.availServices);
                     </div>
                     <div class="flex-1">
                         <Link
-                            :href="'#'"
+                            :href="route('customer.feedbacks.index')"
                             class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
                         >
                             <div>
@@ -208,6 +208,11 @@ console.log(props.availServices);
                                                 class="flex items-center gap-x-4"
                                             >
                                                 <ModalLinkDialog
+                                                    v-if="
+                                                        availService.status ===
+                                                            'done' &&
+                                                        !availService.hasFeedback
+                                                    "
                                                     :href="
                                                         route(
                                                             'customer.feedbacks.create'
