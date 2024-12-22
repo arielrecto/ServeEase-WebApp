@@ -7,6 +7,7 @@ use App\Models\FeedBack;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerFeedbackController extends Controller
 {
@@ -15,7 +16,21 @@ class CustomerFeedbackController extends Controller
      */
     public function index()
     {
-        //
+        $feedbacks = FeedBack::with(['availService', 'availService.service', 'availService.service.user'])
+            ->whereUserId(Auth::user()->id)
+            ->latest()
+            ->paginate(20)
+            ->through(function ($feedback) {
+                return [
+                    'id' => $feedback->id,
+                    'rate' => $feedback->rate,
+                    'service' => $feedback->availService->service->name,
+                    'provider' => $feedback->availService->service->user->name,
+                    'created_at' => $feedback->created_at
+                ];
+            });
+
+        return Inertia::render("Users/Customer/Feedback/Index", compact('feedbacks'));
     }
 
     /**
@@ -60,24 +75,41 @@ class CustomerFeedbackController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(FeedBack $feedback)
     {
-        //
+        return Inertia::render("Users/Customer/Feedback/Edit", compact('feedback'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, FeedBack $feedback)
     {
-        //
+        $safe = $request->validate([
+            'rate' => ['required', 'integer', 'between:1,5'],
+            'content' => ['required', 'string']
+        ]);
+
+        $feedback->update([
+            'rate' => $safe['rate'],
+            'content' => $safe['content']
+        ]);
+
+        return to_route('customer.feedbacks.index')->with('message_success', 'Feedback updated successfully');
+    }
+
+    public function delete(FeedBack $feedback)
+    {
+        return Inertia::render('Users/Customer/Feedback/Delete', compact('feedback'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(FeedBack $feedback)
     {
-        //
+        $feedback->delete();
+
+        return to_route('customer.feedbacks.index')->with('message_success', 'Feedback deleted successfully');
     }
 }
