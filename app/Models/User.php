@@ -53,7 +53,17 @@ class User extends Authenticatable
         }
 
         return Profile::whereId($profile->id)->has('providerProfile')->exists();
+    }
 
+    public function hasVerifiedProviderProfile()
+    {
+        $profile = $this->profile;
+
+        if (!$profile) {
+            return false;
+        }
+
+        return Profile::whereId($profile->id)->whereNotNull('verified_at')->exists();
     }
 
     // Relations

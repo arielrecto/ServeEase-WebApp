@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
                 'hasProfileSetup' => $hasProfileSetup,
                 'roleName' => $request?->user()?->getRoleNames()?->toArray(),
                 'isServiceProvider' => $request?->user()?->hasProviderProfile(),
+                'isVerifiedProvider' => $request?->user()?->hasVerifiedProviderProfile(),
             ],
             'flash' => [
                 'message_success' => $request->session()->get('message_success'),

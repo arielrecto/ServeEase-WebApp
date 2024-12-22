@@ -86,7 +86,7 @@ class ProfileController extends Controller
 
     public function provider(Request $request)
     {
-        if (!Auth::user()->profile->providerProfile) {
+        if (!Auth::user()->profile->providerProfile()->whereNotNull('verified_at')->exists()) {
             return back();
         }
 
@@ -105,9 +105,6 @@ class ProfileController extends Controller
         $feedbackCount = FeedBack::whereHas('availService', function ($query) use ($service) {
             $query->whereServiceId($service->id);
         })->count();
-
-        // $availServices = $service->availService;
-        // $availServiceCount
 
         return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
     }

@@ -8,6 +8,7 @@ import GoTo from "@/Components/Dashboard/GoTo.vue";
 const page = usePage();
 
 const authUser = ref(page.props.auth.user);
+const isVerifiedProvider = page.props.isVerifiedProvider;
 
 const isNotServiceProvider = computed(() => {
     return !authUser.value?.roles?.some(
@@ -72,13 +73,21 @@ console.log(services.value);
                             :url="item.url"
                         />
                         <GoTo
-                            v-if="item.id === 5 && !isNotServiceProvider"
+                            v-if="
+                                item.id === 5 &&
+                                !isNotServiceProvider &&
+                                isVerifiedProvider
+                            "
                             :title="item.title"
                             :icon="item.icon"
                             :url="item.url"
                         />
                         <GoTo
-                            v-if="item.id === 6 && isNotServiceProvider"
+                            v-if="
+                                item.id === 6 &&
+                                isNotServiceProvider &&
+                                !isVerifiedProvider
+                            "
                             :title="item.title"
                             :icon="item.icon"
                             :url="item.url"
