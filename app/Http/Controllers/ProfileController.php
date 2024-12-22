@@ -6,6 +6,8 @@ use App\Enums\Sex;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Profile;
+use App\Models\Service;
+use App\Models\FeedBack;
 use App\Enums\ServicesType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +82,34 @@ class ProfileController extends Controller
         // TODO: Implement update feature for user's provider profile
 
         dd($request->all());
+    }
+
+    public function provider(Request $request)
+    {
+        if (!Auth::user()->profile->providerProfile) {
+            return back();
+        }
+
+        $user = Auth::user();
+        $profile = $user->profile;
+        $service = Service::with(['user', 'availService'])
+            ->withCount([
+                'availService as bookings_count',
+                'availService as finished_bookings_count' => function ($query) {
+                    $query->whereStatus('done');
+                }
+            ])
+            ->whereUserId($user->id)
+            ->first();
+        $providerProfile = $user->profile->providerProfile;
+        $feedbackCount = FeedBack::whereHas('availService', function ($query) use ($service) {
+            $query->whereServiceId($service->id);
+        })->count();
+
+        // $availServices = $service->availService;
+        // $availServiceCount
+
+        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
     }
 
 

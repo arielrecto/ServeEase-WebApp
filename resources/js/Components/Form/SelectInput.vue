@@ -17,9 +17,9 @@ const emits = defineEmits(["update-value"]);
     <select
         @change="emits('update-value')"
         v-model="model"
-        class="text-gray-900 border-gray-300 select focus:border-primary focus:ring-primary rounded-xl"
+        class="text-gray-900 border-gray-300 focus:border-primary focus:ring-primary rounded-xl"
     >
-        <option disabled>{{ placeholder }}</option>
+        <option disabled selected>{{ placeholder }}</option>
         <template v-if="choices">
             <option v-for="choice in choices" :value="choice">
                 {{ choice }}
