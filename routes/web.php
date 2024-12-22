@@ -56,12 +56,12 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/provider', [ProfileController::class, 'provider'])->name('profile.provider');
     Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
     Route::put('/profile/update/provider', [ProfileController::class, 'updateProviderProfile'])->name('profile.updateProviderProfile');
 
@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
         Route::resource('service-provider', AdminSPController::class);
         Route::prefix('service-provider')->as('service-provider.')->group(function () {
-            Route::get('/approve/{id}', [AdminSPController::class, 'approved'])->name('approve');
+            Route::get('/approve/{id}', [AdminSPController::class, 'approve'])->name('approve');
             Route::put('/approved/{id}', [AdminSPController::class, 'approved'])->name('approved');
             Route::get('/delete/{id}', [AdminSPController::class, 'delete'])->name('delete');
         });
@@ -96,8 +96,14 @@ Route::middleware('auth')->group(function () {
         Route::prefix('booking')->controller(BookingController::class)->as('booking.')->group(function () {
             Route::get('/{availService}/detail', 'detail')->name('detail');
         });
+        Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {
+            Route::get('/{feedback}/delete', 'delete')->name('delete');
+        });
         Route::resource('feedbacks', CustomerFeedbackController::class);
         Route::resource('booking', BookingController::class);
+        Route::prefix('services')->as('services.')->controller(CustomerServiceController::class)->group(function () {
+            Route::get('/{service}/feedback', 'getFeedbackByService')->name('feedback');
+        });
         Route::resource('services', CustomerServiceController::class)->only('show');
         Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
     });
