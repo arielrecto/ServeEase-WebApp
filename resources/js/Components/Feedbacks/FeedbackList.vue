@@ -1,4 +1,5 @@
 <script setup>
+import { reactive } from "vue";
 import moment from "moment";
 import axios from "axios";
 
@@ -7,11 +8,16 @@ import SelectInput from "@/Components/Form/SelectInput.vue";
 import { useLoader } from "../../Composables/loader";
 
 const props = defineProps({
-    feedbacks: Array,
+    service: Object,
     filterShown: {
         type: Boolean,
         default: true,
     },
+});
+
+const state = reactive({
+    feedbacks: [],
+    form: { rating: null },
 });
 
 const { setIsLoading } = useLoader();
@@ -22,7 +28,7 @@ const fetchFeedbacks = async () => {
     setIsLoading(true);
     try {
         const res = await axios.get(
-            `/customer/services/${props.service.id}/feedback`,
+            route("customer.services.feedback", props.service.id),
             {
                 params: { rating: state.form.rating },
             }
@@ -41,25 +47,21 @@ const fetchFeedbacks = async () => {
 </script>
 
 <template>
-    <template v-if="feedbacks">
-        <SelectInput
-            v-model="state.form.rating"
-            class="mt-1 text-black"
-            :placeholder="'Rating'"
-            required
-            @update-value="fetchFeedbacks"
-        >
-            <option
-                v-for="rating in ratingOptions"
-                :key="rating"
-                :value="rating"
-            >
-                {{ rating }}
-            </option>
-        </SelectInput>
+    <SelectInput
+        v-model="state.form.rating"
+        class="mt-1 text-black"
+        :placeholder="'Rating'"
+        required
+        @update-value="fetchFeedbacks"
+    >
+        <option v-for="rating in ratingOptions" :key="rating" :value="rating">
+            {{ rating }}
+        </option>
+    </SelectInput>
 
+    <template v-if="state.feedbacks.length > 0">
         <div class="py-2 pr-5 space-y-5 divide-y divide-gray-300">
-            <div v-for="n in 3" class="flex pt-2 gap-x-4">
+            <div v-for="feedback in state.feedbacks" class="flex pt-2 gap-x-4">
                 <div>
                     <div
                         class="w-8 bg-gray-600 rounded-full aspect-square"
@@ -72,42 +74,20 @@ const fetchFeedbacks = async () => {
                         >
                         <span class="inline-block mr-3 text-sm">
                             <i class="text-yellow-500 fa-solid fa-star"></i>
-                            {{ Math.floor(Math.random() * 5 + 1) }}
+                            {{ feedback.rate }}
                         </span>
                         <span class="text-sm italic text-gray-600">{{
-                            moment().format("ll")
+                            moment(feedback.created_at).format("LL")
                         }}</span>
                     </div>
                     <div class="overflow-y-auto leading-relaxed max-h-28">
-                        Why bother with the movement of the train, their high
-                        heels like polished hooves against the gray metal of the
-                        Villa bespeak a turning in, a denial of the bright void
-                        beyond the hull. Her cheekbones flaring scarlet as
-                        Wizard’s Castle burned, forehead drenched with azure
-                        when Munich fell to the Tank War, mouth touched with hot
-                        gold as a paid killer in the coffin for Armitage’s call.
-                        That was Wintermute, manipulating the lock the way it
-                        had manipulated the drone micro and the chassis of a
-                        gutted game console. The two surviving Founders of Zion
-                        were old men, old with the surgery, he found himself
-                        thinking, while sweat coursed down his ribs, when you
-                        could just carry the thing for what it was a handgun and
-                        nine rounds of ammunition, and as he made his way down
-                        Shiga from the sushi stall he cradled it in his sleep,
-                        and wake alone in the human system. Now this quiet
-                        courtyard, Sunday afternoon, this girl with a ritual
-                        lack of urgency through the arcs and passes of their
-                        dance, point passing point, as the men waited for an
-                        opening. The alarm still oscillated, louder here, the
-                        rear of the Flatline as a construct, a hardwired ROM
-                        cassette replicating a dead man’s skills, obsessions,
-                        kneejerk responses.
+                        {{ feedback.content }}
                     </div>
                 </div>
             </div>
         </div>
     </template>
     <div v-else class="py-2">
-        <p class="text-center text-gray-600">No reviews found.</p>
+        <p class="text-center text-gray-600">There are no reviews.</p>
     </div>
 </template>

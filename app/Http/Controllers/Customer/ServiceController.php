@@ -99,9 +99,9 @@ class ServiceController extends Controller
 
     public function getFeedbackByService(Request $request, Service $service)
     {
-        $rate = $request->rate;
+        $rate = $request->rating;
 
-        $feedbacks = FeedBack::with(['user:name', 'user.profile'])
+        $feedbacks = FeedBack::with(['user', 'user.profile'])
             ->whereHas('availService', function ($query) use ($service) {
                 $query->whereServiceId($service->id);
             })
