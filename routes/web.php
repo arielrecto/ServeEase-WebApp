@@ -101,9 +101,6 @@ Route::middleware('auth')->group(function () {
         });
         Route::resource('feedbacks', CustomerFeedbackController::class);
         Route::resource('booking', BookingController::class);
-        Route::prefix('services')->as('services.')->controller(CustomerServiceController::class)->group(function () {
-            Route::get('/{service}/feedback', 'getFeedbackByService')->name('feedback');
-        });
         Route::resource('services', CustomerServiceController::class)->only('show');
         Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
     });
@@ -119,6 +116,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/booking/services/{id}', [BookingController::class, 'show'])->name('booking.show');
+Route::get('/customer/{service}/feedback', [CustomerServiceController::class, 'getFeedbackByService'])->name('customer.services.feedback');
 Route::get('/explore/all', [SearchController::class, 'servicesFilter'])->name('search.filter');
 
 require __DIR__ . '/auth.php';
