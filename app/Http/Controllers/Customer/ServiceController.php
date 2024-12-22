@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use Inertia\Inertia;
 use App\Models\Service;
+use App\Models\FeedBack;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -70,7 +71,8 @@ class ServiceController extends Controller
         //
     }
 
-    public function availCreate(string $id){
+    public function availCreate(string $id)
+    {
         $service = Service::with(['user'])->where('id', $id)->first();
 
 
@@ -78,7 +80,8 @@ class ServiceController extends Controller
         return Inertia::render('Users/Customer/Services/Avail', compact(['service']));
     }
 
-    public function availStore(Request $request){
+    public function availStore(Request $request)
+    {
 
 
         AvailService::create([
@@ -87,10 +90,27 @@ class ServiceController extends Controller
             'remarks' => $request->remark,
             'total_price' => $request->total,
             'service_id' => $request->service,
-            'user_id'=> Auth::user()->id
+            'user_id' => Auth::user()->id
         ]);
 
 
         return to_route('customer.services.show', ['service' => $request->service])->with(['message_success']);
+    }
+
+    public function getFeedbackByService(Request $request, Service $service)
+    {
+        $rate = $request->rate;
+
+        $feedbacks = FeedBack::with(['user:name', 'user.profile'])
+            ->whereHas('availService', function ($query) use ($service) {
+                $query->whereServiceId($service->id);
+            })
+            ->when($rate, function ($query) use ($rate) {
+                $query->whereRate($rate);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json($feedbacks, 200);
     }
 }
