@@ -30,7 +30,12 @@ const menuItems = [
         url: route("search.index"),
         icon: "ri-menu-search-line",
     },
-    { id: 5, title: "Provider Profile", url: "#", icon: "ri-user-2-line" },
+    {
+        id: 5,
+        title: "Provider Profile",
+        url: route("profile.provider"),
+        icon: "ri-user-2-line",
+    },
     {
         id: 6,
         title: "Apply as Service Provider",
