@@ -120,7 +120,15 @@ const modalRef = ref(null);
                                                     .provider_profile.experience
                                             }}</span
                                         >
-                                        <Link class="underline text-primary"
+                                        <Link
+                                            :href="
+                                                route(
+                                                    'profile.showProviderProfile',
+                                                    service.user.profile
+                                                        .provider_profile.id
+                                                )
+                                            "
+                                            class="underline text-primary"
                                             >Go to Profile</Link
                                         >
                                     </div>

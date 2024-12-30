@@ -10,6 +10,7 @@ use App\Models\Service;
 use App\Models\FeedBack;
 use App\Enums\ServicesType;
 use Illuminate\Http\Request;
+use App\Models\ProviderProfile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -109,6 +110,26 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
     }
 
+
+    public function showProviderProfile(Request $request, ProviderProfile $providerProfile)
+    {
+        $user = $providerProfile->profile->user;
+        $profile = $providerProfile->profile;
+        $service = Service::with(['user', 'availService'])
+            ->withCount([
+                'availService as bookings_count',
+                'availService as finished_bookings_count' => function ($query) {
+                    $query->whereStatus('done');
+                }
+            ])
+            ->whereUserId($user->id)
+            ->first();
+        $feedbackCount = FeedBack::whereHas('availService', function ($query) use ($service) {
+            $query->whereServiceId($service->id);
+        })->count();
+
+        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
+    }
 
     public function updateProfile(Request $request)
     {

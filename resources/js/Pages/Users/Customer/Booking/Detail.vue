@@ -190,6 +190,16 @@ const bookingStatusBadgeStyle = computed(() => {
                                                                 }}</span
                                                             >
                                                             <Link
+                                                                :href="
+                                                                    route(
+                                                                        'profile.showProviderProfile',
+                                                                        service
+                                                                            .user
+                                                                            .profile
+                                                                            .provider_profile
+                                                                            .id
+                                                                    )
+                                                                "
                                                                 class="underline text-primary"
                                                                 >Go to
                                                                 Profile</Link
