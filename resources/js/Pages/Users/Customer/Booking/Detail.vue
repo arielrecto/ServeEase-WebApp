@@ -205,6 +205,11 @@ const bookingStatusBadgeStyle = computed(() => {
                                         >
                                             <div>
                                                 <ModalLinkDialog
+                                                    v-if="
+                                                        availService.status ===
+                                                            'done' &&
+                                                        !availService.has_feedback
+                                                    "
                                                     :href="
                                                         route(
                                                             'customer.feedbacks.create'
@@ -240,7 +245,9 @@ const bookingStatusBadgeStyle = computed(() => {
                                                     </div>
                                                     <div
                                                         class="px-5 py-1 text-sm font-bold rounded-lg"
-                                                        :class=" bookingStatusBadgeStyle"
+                                                        :class="
+                                                            bookingStatusBadgeStyle
+                                                        "
                                                     >
                                                         {{ bookingStatus }}
                                                     </div>

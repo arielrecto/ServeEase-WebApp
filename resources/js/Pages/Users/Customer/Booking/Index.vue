@@ -98,7 +98,7 @@ console.log(props.availServices);
                         >
                             <div>
                                 <span>
-                                    <i class="fa-solid fa-user"></i>
+                                    <i class="ri-book-marked-fill"></i>
                                     Bookings this week
                                 </span>
                             </div>
@@ -118,7 +118,7 @@ console.log(props.availServices);
                         >
                             <div>
                                 <span>
-                                    <i class="fa-solid fa-user"></i>
+                                    <i class="ri-error-warning-fill"></i>
                                     Pending Bookings
                                 </span>
                             </div>
@@ -138,7 +138,7 @@ console.log(props.availServices);
                         >
                             <div>
                                 <span>
-                                    <i class="fa-solid fa-user"></i>
+                                    <i class="ri-thumb-up-fill"></i>
                                     Finished Bookings
                                 </span>
                             </div>
@@ -154,7 +154,7 @@ console.log(props.availServices);
                         >
                             <div>
                                 <span>
-                                    <i class="fa-solid fa-user-tie"></i>
+                                    <i class="ri-star-fill"></i>
                                     Reviews Submitted
                                 </span>
                             </div>
@@ -211,7 +211,7 @@ console.log(props.availServices);
                                                     v-if="
                                                         availService.status ===
                                                             'done' &&
-                                                        !availService.hasFeedback
+                                                        !availService.has_feedback
                                                     "
                                                     :href="
                                                         route(

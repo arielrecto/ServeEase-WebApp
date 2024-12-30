@@ -20,22 +20,31 @@ class AvailService extends Model
         'total_price'
     ];
 
+    protected $appends = ['has_feedback'];
 
-
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function service(){
+    public function service()
+    {
         return $this->belongsTo(Service::class);
     }
 
-    public function feedback(){
+    public function feedback()
+    {
         return $this->hasOne(FeedBack::class);
     }
 
 
-    public function rescheduleService(){
+    public function rescheduleService()
+    {
         return $this->hasMany(RescheduleService::class);
+    }
+
+    public function getHasFeedbackAttribute()
+    {
+        return $this->feedback()->exists();
     }
 }
