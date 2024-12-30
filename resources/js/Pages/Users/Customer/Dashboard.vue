@@ -8,13 +8,8 @@ import GoTo from "@/Components/Dashboard/GoTo.vue";
 const page = usePage();
 
 const authUser = ref(page.props.auth.user);
-const isVerifiedProvider = page.props.isVerifiedProvider;
-
-const isNotServiceProvider = computed(() => {
-    return !authUser.value?.roles?.some(
-        (role) => role.name === "service provider"
-    );
-});
+const isVerifiedProvider = computed(() => page.props.auth.isVerifiedProvider);
+const isServiceProvider = computed(() => page.props.auth.isServiceProvider);
 
 const menuItems = [
     { id: 1, title: "Favorites", url: "#", icon: "ri-star-line" },
@@ -55,7 +50,7 @@ console.log(services.value);
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            <h2 class="text-xl font-semibold leading-tight ggtext-gray-800">
                 Home
             </h2>
         </template>
@@ -75,7 +70,7 @@ console.log(services.value);
                         <GoTo
                             v-if="
                                 item.id === 5 &&
-                                !isNotServiceProvider &&
+                                isServiceProvider &&
                                 isVerifiedProvider
                             "
                             :title="item.title"
@@ -83,11 +78,7 @@ console.log(services.value);
                             :url="item.url"
                         />
                         <GoTo
-                            v-if="
-                                item.id === 6 &&
-                                isNotServiceProvider &&
-                                !isVerifiedProvider
-                            "
+                            v-if="item.id === 6 && !isServiceProvider"
                             :title="item.title"
                             :icon="item.icon"
                             :url="item.url"
