@@ -15,6 +15,10 @@ import TabPanel from "primevue/tabpanel";
 
 import { useLoader } from "../../Composables/loader";
 
+const page = usePage();
+
+const authUser = page.props.auth.user;
+
 const props = defineProps([
     "providerProfile",
     "feedbackCount",
@@ -135,7 +139,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                             />
                                         </div>
 
-                                        <div>
+                                        <div v-if="authUser.id === user.id">
                                             <Link href="#" class="text-primary"
                                                 ><i class="ri-edit-2-line"></i>
                                                 Edit details</Link
