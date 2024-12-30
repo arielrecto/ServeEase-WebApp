@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Inertia\Middleware;
+use App\Models\AvailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,6 +32,14 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $hasProfileSetup = $request->user()->profile ?? false;
+        $finishedBookings = null;
+
+        if (Auth::check()) {
+            $finishedBookings = AvailService::with('service.user')
+                ->whereStatus('done')
+                ->latest()
+                ->get();
+        }
 
         return [
             ...parent::share($request),
@@ -40,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                 'roleName' => $request?->user()?->getRoleNames()?->toArray(),
                 'isServiceProvider' => $request?->user()?->hasProviderProfile(),
                 'isVerifiedProvider' => $request?->user()?->hasVerifiedProviderProfile(),
+                'finishedBookings' => $finishedBookings,
             ],
             'flash' => [
                 'message_success' => $request->session()->get('message_success'),

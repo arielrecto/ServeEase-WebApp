@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { ModalRoot } from "@inertiaui/modal-vue";
 import { Link, usePage } from "@inertiajs/vue3";
+import moment from "moment";
 
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
@@ -17,8 +18,7 @@ const showingNavigationDropdown = ref(false);
 const isServiceProvider = usePage().props.auth.isServiceProvider;
 const roleName = usePage().props.auth.roleName;
 const profile = usePage().props.auth.user.profile;
-
-// const flashMessageShown = ref()
+const finishedBookings = usePage().props.auth.finishedBookings;
 </script>
 
 <template>
@@ -88,6 +88,62 @@ const profile = usePage().props.auth.user.profile;
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <!-- Notifications popup -->
+                            <div class="relative ms-3">
+                                <Dropdown align="right" width="80">
+                                    <template #trigger>
+                                        <span class="inline-flex rounded-md">
+                                            <button
+                                                type="button"
+                                                class="w-10 h-10 justify-center text-lg inline-flex items-center font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white hover:text-gray-700 focus:outline-none rounded-full border border-gray-400 hover:bg-gray-100"
+                                            >
+                                                <i
+                                                    class="ri-notification-2-line"
+                                                ></i>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <DropdownLink
+                                            v-for="finishedBooking in finishedBookings"
+                                            :href="
+                                                route(
+                                                    'customer.booking.detail',
+                                                    finishedBooking.id
+                                                )
+                                            "
+                                        >
+                                            <div class="space-y-1">
+                                                <p>
+                                                    The service that you booked
+                                                    with
+                                                    <span class="font-bold">{{
+                                                        finishedBooking.service
+                                                            .user.name
+                                                    }}</span>
+                                                    has been finished. Write a
+                                                    review.
+                                                </p>
+                                                <div class="text-xs">
+                                                    {{
+                                                        moment(
+                                                            finishedBooking.created_at
+                                                        ).fromNow()
+                                                    }}
+                                                </div>
+                                            </div>
+                                        </DropdownLink>
+                                        <div
+                                            v-if="finishedBookings.length === 0"
+                                            class="py-5 text-center text-sm"
+                                        >
+                                            There are no notifications.
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </div>
+
                             <!-- Settings Dropdown -->
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
