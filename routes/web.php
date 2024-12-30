@@ -58,13 +58,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/profile/provider', [ProfileController::class, 'provider'])->name('profile.provider');
-    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.updateProfile');
-    Route::put('/profile/update/provider', [ProfileController::class, 'updateProviderProfile'])->name('profile.updateProviderProfile');
-
+    Route::prefix('profile')->as('profile.')->controller(ProfileController::class)->group(function () {
+        Route::get('', 'edit')->name('edit');
+        Route::patch('', 'update')->name('update');
+        Route::delete('', 'destroy')->name('destroy');
+        Route::get('/provider', 'provider')->name('provider');
+        Route::get('/provider/{providerProfile}', 'showProviderProfile')->name('showProviderProfile');
+        Route::post('/update', 'updateProfile')->name('updateProfile');
+        Route::put('/update/provider', 'updateProviderProfile')->name('updateProviderProfile');
+    });
 
     Route::prefix('admin')->as('admin.')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
