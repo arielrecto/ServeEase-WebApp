@@ -1,6 +1,6 @@
 <script setup>
 import { Modal } from "@inertiaui/modal-vue";
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link, useForm, router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import moment from "moment";
 
@@ -121,6 +121,7 @@ const modalRef = ref(null);
                                             }}</span
                                         >
                                         <Link
+                                            @click="modalRef.close"
                                             :href="
                                                 route(
                                                     'profile.showProviderProfile',
@@ -145,6 +146,7 @@ const modalRef = ref(null);
 
         <div class="sticky bottom-0 left-0 w-full py-2 bg-white">
             <Link
+                @click="modalRef.close"
                 :href="route('customer.services.show', service.id)"
                 class="flex w-full text-white panel-btn bg-primary"
             >
