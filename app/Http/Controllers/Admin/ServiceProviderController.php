@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Service;
 use App\Enums\UserRoles;
+use App\Models\FeedBack;
+use App\Models\AvailService;
 use Illuminate\Http\Request;
 use App\Models\ProviderProfile;
 use NunoMaduro\Collision\Provider;
@@ -16,29 +19,30 @@ class ServiceProviderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $providers = ProviderProfile::whereVerifiedAt(null)->with(['profile.user'])->latest()->paginate(10);
+        $search = $request->search;
+        $providers = ProviderProfile::whereNotNull('verified_at')
+            ->with(['profile.user'])
+            ->latest()
+            ->when($search, function ($query) use ($search) {
+                $query->with([
+                    'profile' => function ($query) use ($search) {
+                        $query->whereRelation('user', 'name', $search);
+                    }
+                ]);
+            })
+            ->paginate(20)
+            ->through(function ($provider) {
+                return [
+                    'id' => $provider->id,
+                    'name' => $provider->profile->user->name,
+                    'service' => ucwords($provider->service_type),
+                    'experience' => $provider->experience
+                ];
+            });
 
-        // dd($providers);
-
-        return Inertia::render('Users/Admin/ServiceProvider/Index', compact(['providers']));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return Inertia::render('Users/Admin/ServiceProviders/Index', compact(['providers']));
     }
 
     /**
@@ -46,10 +50,33 @@ class ServiceProviderController extends Controller
      */
     public function show(string $id)
     {
-        $providerProfile = ProviderProfile::where('id', $id)
-            ->with(['profile', 'profile.user.services'])->first();
+        $providerProfile = ProviderProfile::findOrFail($id);
+        // dd($providerProfile->profile);
+        $user = $providerProfile->profile->user;
+        $profile = $providerProfile->profile;
+        $service = null;
+        $bookingsCount = 0;
+        $finishedBookingsCount = 0;
+        $feedbackCount = 0;
 
-        return Inertia::render('Users/Admin/ServiceProvider/Show', compact(['providerProfile']));
+        if ($user->services()->exists()) {
+            $service = Service::with(['user', 'availService'])
+                ->withCount([
+                    'availService as bookings_count',
+                    'availService as finished_bookings_count' => function ($query) {
+                        $query->whereStatus('done');
+                    }
+                ])
+                ->whereUserId($user->id)
+                ->first();
+
+            $availServices = AvailService::whereServiceId($service->id);
+            $bookingsCount = $availServices->count();
+            $finishedBookingsCount = $availServices->whereStatus("done")->count();
+            $feedbackCount = FeedBack::whereRelation('availService', 'service_id', $service->id)->count();
+        }
+
+        return Inertia::render('Users/Admin/ServiceProviders/Show', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'bookingsCount', 'finishedBookingsCount', 'service']));
     }
 
     /**
@@ -68,48 +95,24 @@ class ServiceProviderController extends Controller
         //
     }
 
-    public function delete(string $id)
-    {
-        $providerProfile = ProviderProfile::find($id);
+    // public function delete(string $id)
+    // {
+    //     $providerProfile = ProviderProfile::find($id);
 
-        return Inertia::render('Users/Admin/ServiceProvider/Delete', compact(['providerProfile']));
-    }
+    //     return Inertia::render('Users/Admin/ServiceProviders/Delete', compact(['providerProfile']));
+    // }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) {}
-
-    public function approve(string $id)
+    public function destroy(string $id)
     {
-        $providerProfile = ProviderProfile::find($id);
 
-        return Inertia::render('Users/Admin/ServiceProvider/Approve', compact(['providerProfile']));
     }
 
-
-    public function approved(string $id)
+    public function getProviderReviews(AvailService $availService)
     {
-        $provider = ProviderProfile::find($id);
-
-        $serviceProviderRole = Role::where('name', UserRoles::SERVICEPROVIDER->value)->first();
-
-
-        $user = $provider->profile->user;
-
-
-
-        $provider->update([
-            'verified_at' => now(),
-            'status' => 'approved'
-        ]);
-
-
-        // TODO: Add assign service provider role to user
-
-
-        $user->assignRole($serviceProviderRole);
-
-        return to_route('admin.service-provider.index')->with('message_success', 'You have approved the application.');
+        $feedbacks = $availService->feedback;
+        return Inertia::render('Users/Admin/Feedback/Provider', compact(['availService', 'feedbacks']));
     }
 }
