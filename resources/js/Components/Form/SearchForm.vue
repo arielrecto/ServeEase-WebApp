@@ -49,7 +49,7 @@ const query = ref("");
                 :placeholder="placeholder"
                 required
             />
-            <PrimaryButton>Go</PrimaryButton>
+            <PrimaryButton>Search</PrimaryButton>
         </div>
     </form>
 </template>
