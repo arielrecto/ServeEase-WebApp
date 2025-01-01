@@ -46,6 +46,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'hasProfileSetup' => $hasProfileSetup,
+                'isAdmin' => $request?->user()?->getRoleNames()?->contains('admin'),
                 'roleName' => $request?->user()?->getRoleNames()?->toArray(),
                 'isServiceProvider' => $request?->user()?->hasProviderProfile(),
                 'isVerifiedProvider' => $request?->user()?->hasVerifiedProviderProfile(),
