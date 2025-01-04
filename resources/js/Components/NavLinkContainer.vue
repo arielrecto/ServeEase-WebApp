@@ -34,7 +34,13 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
                 :href="route('admin.service-provider.index')"
                 :active="route().current('admin.service-provider.index')"
             >
-                Applications
+                Service Providers
+            </NavLink>
+            <NavLink
+                :href="route('admin.feedbacks.index')"
+                :active="route().current('admin.feedbacks.index')"
+            >
+                Reviews
             </NavLink>
             <NavLink
                 :href="route('admin.users.index')"
