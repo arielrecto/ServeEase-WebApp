@@ -12,7 +12,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(`/admin/service-provider/approved/${props.providerProfile.id}`, {
+    form.put(`/admin/applications/approved/${props.providerProfile.id}`, {
         onFinish: (visit) => {
             modalRef.value.emit("success");
             modalRef.value.close();

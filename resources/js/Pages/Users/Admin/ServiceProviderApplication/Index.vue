@@ -98,7 +98,7 @@ const items = ref([
                                                     actionType="view"
                                                     :href="
                                                         route(
-                                                            'admin.service-provider.show',
+                                                            'admin.applications.show',
                                                             provider.id
                                                         )
                                                     "
@@ -111,7 +111,7 @@ const items = ref([
                                                     actionType="approve"
                                                     :href="
                                                         route(
-                                                            'admin.service-provider.approve',
+                                                            'admin.applications.approve',
                                                             provider.id
                                                         )
                                                     "
@@ -121,7 +121,7 @@ const items = ref([
                                                     actionType="delete"
                                                     :href="
                                                         route(
-                                                            'admin.service-provider.delete',
+                                                            'admin.applications.delete',
                                                             provider.id
                                                         )
                                                     "

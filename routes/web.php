@@ -74,16 +74,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->as('admin.')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
         Route::resource('service-provider', AdminSPController::class);
-        Route::prefix('service-provider')->as('service-provider.')->group(function () {
-            Route::get('/approve/{id}', [AdminSPController::class, 'approve'])->name('approve');
-            Route::put('/approved/{id}', [AdminSPController::class, 'approved'])->name('approved');
-            Route::get('/delete/{id}', [AdminSPController::class, 'delete'])->name('delete');
+        Route::prefix('applications')->as('applications.')->controller(ServiceProviderApplicationController::class)->group(function () {
+            Route::get('/approve/{id}', 'approve')->name('approve');
+            Route::put('/approved/{id}', 'approved')->name('approved');
+            Route::get('/delete/{id}', 'delete')->name('delete');
         });
-        // Route::prefix('applications')->as('applications.')->controller(ServiceProviderApplicationController::class)->group(function () {
-        //     Route::get('/approve/{id}', 'approve')->name('approve');
-        //     Route::put('/approved/{id}', 'approved')->name('approved');
-        //     Route::get('/delete/{id}', 'delete')->name('delete');
-        // });
         Route::resource('applications', ServiceProviderApplicationController::class)->except(["create", "store", "edit", "update"]);
         Route::resource('service-types', ServiceTypeController::class)->except('update');
         Route::post('/service-types/{id}', [ServiceTypeController::class, 'update'])->name('service-types.update');
