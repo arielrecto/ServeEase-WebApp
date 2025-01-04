@@ -89,13 +89,16 @@ const finishedBookings = usePage().props.auth.finishedBookings;
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Notifications popup -->
-                            <div class="relative ms-3">
+                            <div
+                                v-if="!$page.props.auth.isAdmin"
+                                class="relative ms-3"
+                            >
                                 <Dropdown align="right" width="80">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                class="w-10 h-10 justify-center text-lg inline-flex items-center font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white hover:text-gray-700 focus:outline-none rounded-full border border-gray-400 hover:bg-gray-100"
+                                                class="inline-flex items-center justify-center w-10 h-10 text-lg font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-gray-400 rounded-full hover:text-gray-700 focus:outline-none hover:bg-gray-100"
                                             >
                                                 <i
                                                     class="ri-notification-2-line"
@@ -136,7 +139,7 @@ const finishedBookings = usePage().props.auth.finishedBookings;
                                         </DropdownLink>
                                         <div
                                             v-if="finishedBookings.length === 0"
-                                            class="py-5 text-center text-sm"
+                                            class="py-5 text-sm text-center"
                                         >
                                             There are no notifications.
                                         </div>

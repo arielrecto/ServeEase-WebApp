@@ -10,13 +10,13 @@ defineProps({
     },
 });
 
-const emits = defineEmits(["update-value"]);
+const emits = defineEmits(["update:modelValue"]);
 </script>
 
 <template>
     <select
-        @change="emits('update-value')"
         v-model="model"
+        @change="emits('update:modelValue', $event.target.value)"
         class="text-gray-900 border-gray-300 focus:border-primary focus:ring-primary rounded-xl"
     >
         <option disabled selected>{{ placeholder }}</option>

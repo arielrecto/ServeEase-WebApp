@@ -124,7 +124,7 @@ const fetchFeedbacks = async () => {
                                         isModalLink
                                     >
                                         <span
-                                            class="text-error inline-flex gap-x-2"
+                                            class="inline-flex text-error gap-x-2"
                                         >
                                             <i class="ri-delete-bin-line"></i>
                                             Delete
