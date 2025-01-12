@@ -21,6 +21,7 @@ use App\Http\Controllers\Customer\ServiceController as CustomerServiceController
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Admin\CustomerFeedbackController as ADCustomerFeedbackController;
+use App\Http\Controllers\ServiceProvider\BookingController as ServiceProviderBookingController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
 
 
@@ -116,6 +117,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('service-provider')->as('service-provider.')->group(function () {
         Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
         Route::resource('services', ServiceController::class);
+        Route::prefix('booking')->as('booking.')->group(function () {
+            Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');
+            Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
+            Route::put('/{availService}/update/status',[ServiceProviderBookingController::class, 'updateStatus'] )->name('update.status');
+        });
     });
 
     Route::controller(SearchController::class)->prefix('explore')->as('search.')->group(function () {

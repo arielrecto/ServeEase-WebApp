@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->date('start_date');
             $table->date('end_date');
+            $table->string('total_hours')->nullable();
             $table->longText('remarks');
             $table->float('total_price');
             $table->timestamps();

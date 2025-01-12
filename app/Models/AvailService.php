@@ -14,6 +14,7 @@ class AvailService extends Model
         'user_id',
         'service_id',
         'status',
+        'total_hours',
         'start_date',
         'end_date',
         'remarks',

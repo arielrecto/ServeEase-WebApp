@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\FeedBack;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -83,6 +84,29 @@ class ServiceController extends Controller
     public function availStore(Request $request)
     {
 
+        $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date',
+            'remark' => 'required|string',
+            'total' => 'required|numeric',
+            'service' => 'required|exists:services,id'
+        ]);
+
+        $service = Service::find($request->service);
+
+        if ($service->user_id == Auth::user()->id) {
+            return back()->with(['message_error' => 'You cannot avail your own service']);
+        }
+
+
+
+        $total_hours = Carbon::parse($request->startDate)->diffInDays(Carbon::parse($request->endDate)) * 8;
+
+
+        if ($service->price_type == 'hr') {
+            $total_hours = $request->hours;
+        }
+
 
         AvailService::create([
             'start_date' => $request->startDate,
@@ -90,6 +114,7 @@ class ServiceController extends Controller
             'remarks' => $request->remark,
             'total_price' => $request->total,
             'service_id' => $request->service,
+            'total_hours' => $total_hours,
             'user_id' => Auth::user()->id
         ]);
 

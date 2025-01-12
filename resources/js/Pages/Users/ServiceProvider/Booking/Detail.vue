@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import moment from "moment";
 
 import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
@@ -25,6 +25,8 @@ const state = reactive({
         { name: "Reviews", value: "1" },
     ],
 });
+
+const statusOptions = ["Pending", "Working", "Approved", "Done"];
 
 const bookingStatus = computed(() => {
     switch (props.availService.status) {
@@ -54,6 +56,32 @@ const bookingStatusBadgeStyle = computed(() => {
             return "bg-green-100 text-green-800";
         case "done":
             break;
+    }
+});
+
+const isOpenUpdateStatusForm = ref(false);
+
+const selectedStatus = ref(bookingStatus.value);
+
+watch(selectedStatus, (newStatus) => {
+    if (newStatus !== bookingStatus.value) {
+        console.log(newStatus, "Selected status changed");
+        const form = useForm({
+            status: newStatus.toLocaleLowerCase(),
+        });
+        form.put(
+            `/service-provider/booking/${props.availService?.id}/update/status`,
+            {
+                onSuccess: () => {
+                    bookingStatus.value = newStatus;
+                    console.log("Status updated successfully");
+                    isOpenUpdateStatusForm.value = false;
+                },
+                onError: (errors) => {
+                    console.error(errors);
+                },
+            }
+        );
     }
 });
 </script>
@@ -253,14 +281,40 @@ const bookingStatusBadgeStyle = computed(() => {
                                                     <div class="text-gray-600">
                                                         Status
                                                     </div>
-                                                    <div
+
+                                                    <a
+                                                        href="#"
+                                                        @click="
+                                                            isOpenUpdateStatusForm =
+                                                                !isOpenUpdateStatusForm
+                                                        "
+                                                        v-show="
+                                                            !isOpenUpdateStatusForm
+                                                        "
                                                         class="px-5 py-1 text-sm font-bold rounded-lg"
                                                         :class="
                                                             bookingStatusBadgeStyle
                                                         "
                                                     >
                                                         {{ bookingStatus }}
-                                                    </div>
+                                                    </a>
+
+                                                    <select
+                                                        v-show="
+                                                            isOpenUpdateStatusForm
+                                                        "
+                                                        v-model="selectedStatus"
+                                                        id="status"
+                                                        class="block w-full mt-2 p-2 border border-gray-300 rounded-md"
+                                                    >
+                                                        <option
+                                                            v-for="status in statusOptions"
+                                                            :key="status"
+                                                            :value="status"
+                                                        >
+                                                            {{ status }}
+                                                        </option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="space-y-1">

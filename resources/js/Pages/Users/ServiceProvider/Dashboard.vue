@@ -60,21 +60,21 @@ const search = () => {
                         </Link>
                     </div>
                     <div class="flex-1">
-                        <Link :href="route('admin.users.index', { role: 'customer' })
+                        <Link :href="route('service-provider.booking.index')
                             "
                             class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
                         <div>
                             <span>
                                 <i class="fi fi-rr-briefcase"></i>
-                                Availed Services
+                               Booking
                             </span>
                         </div>
                         <div class="text-2xl font-black text-primary">
-                            12
+                           {{ availServicePending.length ?? 0 }}
                         </div>
                         </Link>
                     </div>
-                    <div class="flex-1">
+                    <!-- <div class="flex-1">
                         <Link :href="route('admin.users.index', {
                             role: 'providers',
                         })
@@ -83,14 +83,14 @@ const search = () => {
                         <div>
                             <span>
                                 <i class="fi fi-rr-calendar-clock"></i>
-                                Request Services
+                                Booking
                             </span>
                         </div>
                         <div class="text-2xl font-black text-primary">
                             {{ availServicePending.length ?? 0 }}
                         </div>
                         </Link>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">

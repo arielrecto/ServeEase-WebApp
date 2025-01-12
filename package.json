@@ -20,6 +20,10 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/vue3": "^6.1.15",
         "@inertiaui/modal-vue": "^0.3.0",
         "@primevue/themes": "^4.2.5",
         "moment": "^2.30.1",
