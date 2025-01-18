@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Service extends Model
 {
@@ -34,13 +35,26 @@ class Service extends Model
         return $this->hasMany(AvailService::class);
     }
 
+    /**
+     * Get the barangay that owns the Service
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function barangay(): BelongsTo
+    {
+        return $this->belongsTo(Barangay::class);
+    }
+
     protected function getGroupedRatings()
     {
-        $bookings = $this->availService;
+        $feedback = collect($this->availService)->map(function ($booking) {
+            return $booking->feedback;
+        });
+
         $groupedTotalRatings = [];
 
         for ($i = 1; $i <= 5; $i++) {
-            $groupedTotalRatings[$i] = $bookings->where('rate', $i)->count();
+            array_push($groupedTotalRatings, $feedback->where('rate', $i)->count());
         }
 
         return $groupedTotalRatings;
@@ -53,17 +67,14 @@ class Service extends Model
 
         $totalRatings = array_sum($groupedTotalRatings);
 
-        $ratingSum = array_sum(array_map(fn($key, $value) => $key * $value, array_keys($groupedTotalRatings), $groupedTotalRatings));
-
         // if there are no ratings, return 0
         if ($totalRatings === 0) {
             return 0;
         }
 
-        $avgRate = $ratingSum / $totalRatings;
+        $avgRate = $totalRatings / 15;
 
         // Return the formatted average rating
         return number_format($avgRate, 1);
-
     }
 }
