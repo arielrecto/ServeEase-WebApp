@@ -14,7 +14,9 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import ComboBox from "@/Components/Form/ComboBox.vue";
+import SearchForm from "@/Components/Form/SearchForm.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
+import UserServiceCard from "@/Components/UserServiceCard.vue";
 
 defineProps(["brgys", "services"]);
 
@@ -23,6 +25,7 @@ const priceFilterOptions = ["High", "Low"];
 const transactionFilterOptions = ["High", "Low"];
 
 const form = useForm({
+    search: "",
     service: "",
     brgy: "",
     byRating: "",
@@ -39,6 +42,7 @@ const fetchServices = async () => {
     try {
         const res = await axios.get(route("search.filter"), {
             params: {
+                search: form.search,
                 service: form.service,
                 brgy: form.brgy,
                 byRating: form.byRating,
@@ -61,7 +65,11 @@ const submit = async () => {
     setIsLoading(false);
 };
 
-onMounted(() => {
+onMounted(async () => {
+    setIsLoading(true);
+    await fetchServices();
+    setIsLoading(false);
+
     // console.log(dataContainer.value.scrollHeight);
 
     let prevBottom = 0;
@@ -87,6 +95,7 @@ onMounted(() => {
             try {
                 const res = await axios.get(route("search.filter"), {
                     params: {
+                        search: form.search,
                         more: more.value,
                         service: form.service,
                         brgy: form.brgy,
@@ -125,54 +134,75 @@ onMounted(() => {
         <div class="py-12">
             <div class="mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8">
                 <section class="px-20 space-y-4">
-                    <form @submit.prevent="submit" method="get">
-                        <div class="flex items-end w-full gap-4">
-                            <div class="w-full">
-                                <InputLabel
-                                    for="name"
-                                    value="Select a service"
-                                />
-                                <ComboBox
-                                    :items="services"
-                                    identifier="name"
-                                    valueName="name"
-                                    keyName="id"
-                                    @update:model-value="
-                                        (value) =>
-                                            (form.service = value.toLowerCase())
-                                    "
-                                    :isRequired="true"
-                                    :class="`block w-full bg-white`"
-                                />
+                    <div class="space-y-5">
+                        <SearchForm
+                            @submitted="
+                                async (query) => {
+                                    form.search = query;
+                                    await fetchServices();
+                                }
+                            "
+                            placeholder="Search a keyword"
+                        />
+                        <div class="flex items-center w-full">
+                            <hr class="flex-1 border-gray-300" />
+                            <div
+                                class="mx-5 text-xs font-semibold text-gray-700"
+                            >
+                                OR
                             </div>
-                            <div class="w-full">
-                                <InputLabel
-                                    for="name"
-                                    value="Select a barangay"
-                                />
-                                <ComboBox
-                                    :items="brgys"
-                                    identifier="name"
-                                    valueName="id"
-                                    keyName="id"
-                                    @update:model-value="
-                                        (value) => (form.brgy = value)
-                                    "
-                                    :isRequired="true"
-                                    :class="`block w-full bg-white`"
-                                />
-                            </div>
-                            <div>
-                                <PrimaryButton>Go</PrimaryButton>
-                            </div>
+                            <hr class="flex-1 border-gray-300" />
                         </div>
-                    </form>
+                        <form @submit.prevent="submit" method="get">
+                            <div class="flex items-end w-full gap-4">
+                                <div class="w-full">
+                                    <InputLabel
+                                        for="name"
+                                        value="Select a service"
+                                    />
+                                    <ComboBox
+                                        :items="services"
+                                        identifier="name"
+                                        valueName="name"
+                                        keyName="id"
+                                        @update:model-value="
+                                            (value) =>
+                                                (form.service =
+                                                    value.toLowerCase())
+                                        "
+                                        :isRequired="true"
+                                        :class="`block w-full bg-white`"
+                                    />
+                                </div>
+                                <div class="w-full">
+                                    <InputLabel
+                                        for="name"
+                                        value="Select a barangay"
+                                    />
+                                    <ComboBox
+                                        :items="brgys"
+                                        identifier="name"
+                                        valueName="id"
+                                        keyName="id"
+                                        @update:model-value="
+                                            (value) => (form.brgy = value)
+                                        "
+                                        :isRequired="true"
+                                        :class="`block w-full bg-white`"
+                                    />
+                                </div>
+                                <div>
+                                    <PrimaryButton>Go</PrimaryButton>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
 
                     <div
                         v-if="userServices.length > 0"
                         class="flex flex-wrap items-center justify-center gap-4"
                     >
-                        <div class="flex items-center gap-x-2">
+                        <div class="flex items-center flex-1 gap-x-2">
                             <InputLabel for="byRating" value="Rating" />
 
                             <SelectInput
@@ -192,30 +222,10 @@ onMounted(() => {
 
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
-                        <div class="flex items-center gap-x-2">
-                            <InputLabel for="byPrice" value="Price" />
-
-                            <SelectInput
-                                id="byPrice"
-                                @update-value="fetchServices"
-                                class="block w-full mt-1"
-                                v-model="form.byPrice"
-                                required
-                            >
-                                <option
-                                    v-for="item in priceFilterOptions"
-                                    :value="item"
-                                >
-                                    {{ item }}
-                                </option>
-                            </SelectInput>
-
-                            <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
-                        </div>
-                        <div class="flex items-center gap-x-2">
+                        <div class="flex items-center flex-1 gap-x-2">
                             <InputLabel
                                 for="byTransaction"
-                                value="No. of transactions"
+                                value="Popularity"
                             />
 
                             <SelectInput
@@ -235,6 +245,26 @@ onMounted(() => {
 
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
+                        <div class="flex items-center flex-1 gap-x-2">
+                            <InputLabel for="byPrice" value="Price" />
+
+                            <SelectInput
+                                id="byPrice"
+                                @update-value="fetchServices"
+                                class="block w-full mt-1"
+                                v-model="form.byPrice"
+                                required
+                            >
+                                <option
+                                    v-for="item in priceFilterOptions"
+                                    :value="item"
+                                >
+                                    {{ item }}
+                                </option>
+                            </SelectInput>
+
+                            <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
+                        </div>
                     </div>
                 </section>
 
@@ -243,89 +273,10 @@ onMounted(() => {
                         ref="dataContainer"
                         class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]"
                     >
-                        <article
+                        <UserServiceCard
                             v-for="item in userServices"
-                            class="flex items-center w-full gap-x-2 group"
-                        >
-                            <div
-                                class="h-32 overflow-hidden aspect-video rounded-xl"
-                            >
-                                <img
-                                    alt=""
-                                    :src="
-                                        item.thumbnail ??
-                                        'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
-                                    "
-                                    class="object-cover w-full h-full"
-                                />
-                            </div>
-
-                            <div class="w-full">
-                                <div
-                                    class="flex items-center justify-between w-full gap-x-2"
-                                >
-                                    <h3
-                                        :title="item.name"
-                                        class="text-lg font-medium text-gray-900 line-clamp-1 text-ellipsis"
-                                    >
-                                        <a href="#">{{ item.name }}</a>
-                                    </h3>
-
-                                    <span class="text-sm">
-                                        <i
-                                            class="text-yellow-500 fa-solid fa-star"
-                                        ></i>
-                                        4.8
-                                    </span>
-                                </div>
-
-                                <div class="mt-1">{{ item.user.name }}</div>
-
-                                <div
-                                    class="flex justify-between mt-1 text-gray-500 line-clamp-3 text-sm/relaxed"
-                                >
-                                    <p>
-                                        ₱ {{ item.price }}
-                                        <span v-if="item.price_type === 'fixed'"
-                                            >(Fixed)</span
-                                        >
-                                    </p>
-                                    <span>0 transaction(s)</span>
-                                </div>
-                            </div>
-                        </article>
-                        <!-- <article v-for="n in 20" class="w-64 group">
-                        <img
-                            alt=""
-                            src="https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                            class="object-cover transition shadow-xl rounded-xl aspect-square"
+                            :service="item"
                         />
-
-                        <div class="p-4">
-                            <div class="flex items-center justify-between">
-                                <a href="#">
-                                    <h3
-                                        class="text-lg font-medium text-gray-900"
-                                    >
-                                        John S. Doe
-                                    </h3>
-                                </a>
-
-                                <span class="text-sm"
-                                    ><i
-                                        class="text-yellow-500 fa-solid fa-star"
-                                    ></i>
-                                    4.8</span
-                                >
-                            </div>
-
-                            <p
-                                class="mt-2 text-gray-500 line-clamp-3 text-sm/relaxed"
-                            >
-                                ₱ 120/hr
-                            </p>
-                        </div>
-                    </article> -->
                     </div>
                 </section>
             </div>
