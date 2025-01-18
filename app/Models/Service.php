@@ -72,9 +72,9 @@ class Service extends Model
             return 0;
         }
 
-        $avgRate = $totalRatings / 15;
+        $avgRate = number_format($totalRatings / 15, 1);
 
         // Return the formatted average rating
-        return number_format($avgRate, 1);
+        return "{$avgRate}";
     }
 }
