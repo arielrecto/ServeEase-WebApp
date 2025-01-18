@@ -1,9 +1,10 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\Barangay;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration {
     /**
@@ -22,7 +23,9 @@ return new class extends Migration {
             $table->longText('terms_and_conditions')->nullable();
             $table->boolean('is_approved');
             $table->tinyInteger('service_type');
-            $table->tinyInteger('barangay_id');
+            $table->foreignIdFor(Barangay::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->foreignIdFor(User::class)
                 ->constrained()
                 ->onDelete('cascade');
