@@ -107,10 +107,7 @@ const bookingStatusBadgeStyle = computed(() => {
                                                         class="text-yellow-500 fa-solid fa-star"
                                                     ></i>
                                                     {{
-                                                        Math.floor(
-                                                            Math.random() * 5 +
-                                                                1
-                                                        )
+                                                        service.avg_rate
                                                     }}
                                                 </span>
                                             </div>
@@ -255,9 +252,7 @@ const bookingStatusBadgeStyle = computed(() => {
                                                     </div>
                                                     <div
                                                         class="px-5 py-1 text-sm font-bold rounded-lg"
-                                                        :class="
-                                                            bookingStatusBadgeStyle
-                                                        "
+                                                        :class=" bookingStatusBadgeStyle"
                                                     >
                                                         {{ bookingStatus }}
                                                     </div>
