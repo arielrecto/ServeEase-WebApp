@@ -4,6 +4,7 @@ import { ref, reactive, computed } from "vue";
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import GoTo from "@/Components/Dashboard/GoTo.vue";
+import UserServiceCard from "@/Components/UserServiceCard.vue";
 
 const page = usePage();
 
@@ -91,70 +92,10 @@ console.log(services.value);
                             ref="dataContainer"
                             class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]"
                         >
-                            <article
-                                v-for="item in services"
-                                class="flex items-center w-full gap-x-2 group"
-                            >
-                                <div
-                                    class="h-32 overflow-hidden aspect-video rounded-xl"
-                                >
-                                    <img
-                                        alt=""
-                                        :src="
-                                            item.thumbnail ??
-                                            'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
-                                        "
-                                        class="object-cover w-full h-full"
-                                    />
-                                </div>
-
-                                <div class="w-full">
-                                    <div
-                                        class="flex items-center justify-between w-full gap-x-2"
-                                    >
-                                        <h3
-                                            :title="item.name"
-                                            class="text-lg font-medium text-gray-900 line-clamp-1 text-ellipsis"
-                                        >
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'customer.services.show',
-                                                        item.id
-                                                    )
-                                                "
-                                                >{{ item.name }}</Link
-                                            >
-                                        </h3>
-
-                                        <span class="text-sm">
-                                            <i
-                                                class="text-yellow-500 fa-solid fa-star"
-                                            ></i>
-                                            4.8
-                                        </span>
-                                    </div>
-
-                                    <div class="mt-1">
-                                        {{ item.user.name }}
-                                    </div>
-
-                                    <div
-                                        class="flex justify-between mt-1 text-gray-500 line-clamp-3 text-sm/relaxed"
-                                    >
-                                        <p>
-                                            ₱ {{ item.price }}
-                                            <span
-                                                v-if="
-                                                    item.price_type === 'fixed'
-                                                "
-                                                >(Fixed)</span
-                                            >
-                                        </p>
-                                        <span>0 transaction(s)</span>
-                                    </div>
-                                </div>
-                            </article>
+                            <UserServiceCard
+                                v-for="service in services"
+                                :service="service"
+                            />
                         </div>
                     </section>
                 </div>
@@ -170,12 +111,3 @@ console.log(services.value);
         </div>
     </AuthenticatedLayout>
 </template>
-
-<!-- <template>
-    <h1>
-        Customer dashboard
-    </h1>
-
-
-    <Link href="/logout" method="POST">Log out</Link>
-</template> -->
