@@ -29,6 +29,7 @@ class FavoriteController extends Controller
                     'user' => $favorite->user->name,
                     'name' => $favorite->name,
                     'price' => $favorite->price,
+                    'price_type' => $favorite->price_type,
                     'thumbnail' => $favorite->thumbnail,
                     'avg_rate' => $favorite->avg_rate,
                     'avail_service_count' => $favorite->avail_service_count,
