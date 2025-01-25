@@ -54,12 +54,7 @@ const finishedBookings = usePage().props.auth.finishedBookings;
                             <!-- Logo -->
                             <div class="flex items-center shrink-0">
                                 <Link :href="route('dashboard')">
-                                    <!-- <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9" /> -->
-                                    <h1 class="text-lg font-black uppercase">
-                                        Serv<span class="text-primary"
-                                            >Ease</span
-                                        >
-                                    </h1>
+                                    <ApplicationLogo />
                                 </Link>
                             </div>
 
