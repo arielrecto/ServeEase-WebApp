@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Service extends Model
 {
@@ -23,7 +24,7 @@ class Service extends Model
         'user_id'
     ];
 
-    protected $appends = ['avg_rate'];
+    protected $appends = ['avg_rate', 'is_added_to_favorites'];
 
     public function user()
     {
@@ -43,6 +44,16 @@ class Service extends Model
     public function barangay(): BelongsTo
     {
         return $this->belongsTo(Barangay::class);
+    }
+
+    /**
+     * The users that belong to the Service
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'service_users');
     }
 
     protected function getGroupedRatings()
@@ -76,5 +87,17 @@ class Service extends Model
 
         // Return the formatted average rating
         return "{$avgRate}";
+    }
+
+    public function getIsAddedToFavoritesAttribute()
+    {
+        if (!auth()->user()) {
+            return false;
+        }
+
+        return auth()->user()
+            ->favorites()
+            ->where('service_id', $this->id)
+            ->exists();
     }
 }

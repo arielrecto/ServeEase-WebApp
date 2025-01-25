@@ -44,7 +44,6 @@ class ServiceController extends Controller
     {
         $service = Service::with(['user'])->where('id', $id)->first();
 
-
         return Inertia::render('Users/Customer/Services/Show', compact(['service']));
     }
 

@@ -46,7 +46,9 @@ const props = defineProps({
                 </div>
             </div>
 
-            <div class="mt-1">{{ service.user.name }}</div>
+            <div class="mt-1">
+                {{ !service?.user?.name ? service.user : service.user.name }}
+            </div>
 
             <div class="flex justify-between mt-1 line-clamp-3 text-sm/relaxed">
                 <p class="text-lg">

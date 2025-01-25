@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ServiceTypeController;
+use App\Http\Controllers\Customer\FavoriteController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
 use App\Http\Controllers\Customer\CustomerFeedbackController;
 use App\Http\Controllers\Admin\ServiceProviderApplicationController;
@@ -109,6 +110,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/{feedback}/delete', 'delete')->name('delete');
         });
         Route::resource('feedbacks', CustomerFeedbackController::class);
+        Route::prefix('favorites')->as('favorites.')->controller(FavoriteController::class)->group(function () {
+            Route::post('/{favorite}', 'add')->name('add');
+        });
+        Route::resource('favorites', FavoriteController::class)->except(['show', 'create', 'edit', 'update']);
         Route::resource('booking', BookingController::class);
         Route::resource('services', CustomerServiceController::class)->only('show');
         Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
@@ -120,7 +125,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('booking')->as('booking.')->group(function () {
             Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');
             Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
-            Route::put('/{availService}/update/status',[ServiceProviderBookingController::class, 'updateStatus'] )->name('update.status');
+            Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
         });
     });
 

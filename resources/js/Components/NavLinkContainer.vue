@@ -70,7 +70,12 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
             >
                 My Bookings
             </NavLink>
-            <NavLink :href="'#'" :active="false"> Favorites </NavLink>
+            <NavLink
+                :href="route('customer.favorites.index')"
+                :active="route().current('customer.favorites.index')"
+            >
+                Favorites
+            </NavLink>
             <NavLink
                 :href="route('search.index')"
                 :active="route().current('search.index')"
