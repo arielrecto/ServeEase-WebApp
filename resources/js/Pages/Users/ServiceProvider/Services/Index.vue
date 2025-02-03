@@ -49,7 +49,7 @@ const search = () => {
 
                             <template #body>
                                 <template v-if="services.length !== 0">
-                                    <tr v-for="service in services.data">
+                                    <tr v-for="service in services.data" :key="service.id">
                                         <th>{{ service.name }}</th>
                                         <td>
                                             {{
@@ -63,7 +63,7 @@ const search = () => {
                                                 <ActionButton
                                                     type="link"
                                                     actionType="view"
-                                                    href="#"
+                                                    :href="route('service-provider.services.show',  service.id)"
                                                 />
                                             </div>
                                         </td>

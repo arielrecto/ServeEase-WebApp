@@ -210,7 +210,7 @@ console.log(props.availServices);
                                     v-if="availServices.data.length !== 0"
                                 >
                                     <tr
-                                        v-for="availService in availServices.data"
+                                        v-for="availService in availServices.data" :key="availService.id"
                                     >
                                         <th>{{ availService.name }}</th>
                                         <td>

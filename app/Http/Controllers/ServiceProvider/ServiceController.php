@@ -18,7 +18,6 @@ class ServiceController extends Controller
     {
         $services = Service::latest()->paginate(10);
 
-
         return Inertia::render('Users/ServiceProvider/Services/Index', compact(['services']));
     }
 
@@ -27,7 +26,6 @@ class ServiceController extends Controller
      */
     public function create()
     {
-
         $serviceTypes = ServiceType::get();
 
         $barangays = Barangay::get();
@@ -40,17 +38,14 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-
         $request->validate([
             'name' => 'required',
             'price' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ]);
-
 
         $imageName = 'thumbnail-' . uniqid() . '.' . $request->thumbnail->extension();
         $dir = $request->thumbnail->storeAs('/service_thumbnails', $imageName, 'public');
-
 
         Service::create([
             'name' => $request->name,
@@ -62,13 +57,11 @@ class ServiceController extends Controller
             'is_approved' => false,
             'barangay_id' => $request->barangay,
             'user_id' => $request->user()->id,
-            'thumbnail' => asset('/storage/' . $dir)
+            'thumbnail' => asset('/storage/' . $dir),
         ]);
 
-
-
         return back()->with([
-            'message_success' => 'Service Added'
+            'message_success' => 'Service Added',
         ]);
     }
 
@@ -77,7 +70,83 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        $service = Service::find($id);
+        $service = Service::with(['user.profile.providerProfile'])
+            ->where('id', $id)
+            ->first();
+
+        $availServices = $service->AvailService()
+            ->with(['service.user', 'user'])
+            ->latest()
+            ->paginate(10);
+
+        // Get chart data
+        $chartData = $this->getServiceChartData($service);
+
+        return Inertia::render('Users/ServiceProvider/Services/Show', compact([
+            'service',
+            'availServices',
+            'chartData'
+        ]));
+    }
+
+    /**
+     * Get chart data for service analytics
+     */
+    private function getServiceChartData(Service $service)
+    {
+        // Get all avail services for this service
+        $availServices = $service->availService()->get();
+
+        // Initialize monthly sales data
+        $monthlySales = array_fill(0, 12, 0);
+
+        // Initialize ratings data
+        $ratings = [
+            '5 Stars' => 0,
+            '4 Stars' => 0,
+            '3 Stars' => 0,
+            '2 Stars' => 0,
+            '1 Star' => 0
+        ];
+
+        foreach ($availServices as $booking) {
+            // Calculate monthly sales
+            if ($booking->start_date) {
+                $month = date('n', strtotime($booking->start_date)) - 1; // 0-based month index
+                $monthlySales[$month] += $booking->total_price;
+            }
+
+            // Calculate ratings distribution
+            if ($booking->rate) {
+                $ratingKey = $booking->rate . ($booking->rate === 1 ? ' Star' : ' Stars');
+                $ratings[$ratingKey]++;
+            }
+        }
+
+        return [
+            'monthlySales' => [
+                'labels' => [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ],
+                'datasets' => [
+                    [
+                        'label' => 'Monthly Sales',
+                        'backgroundColor' => '#f87979',
+                        'data' => array_values($monthlySales)
+                    ]
+                ]
+            ],
+            'ratings' => [
+                'labels' => array_keys($ratings),
+                'datasets' => [
+                    [
+                        'backgroundColor' => ['#41B883', '#00D8FF', '#E46651', '#DD1B16', '#FD8008'],
+                        'data' => array_values($ratings)
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
@@ -95,12 +164,11 @@ class ServiceController extends Controller
     {
         $service = Service::find($id);
 
-
         $service->update([
             'name' => $request->name,
             'price' => $request->price,
             'description' => $request->description,
-            'user_id' => $request->user()->id
+            'user_id' => $request->user()->id,
         ]);
     }
 
@@ -110,7 +178,6 @@ class ServiceController extends Controller
     public function destroy(string $id)
     {
         $service = Service::find($id);
-
 
         $service->delete();
     }
