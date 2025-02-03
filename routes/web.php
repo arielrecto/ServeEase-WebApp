@@ -24,6 +24,7 @@ use App\Http\Controllers\Customer\DashboardController as CustomerDashboardContro
 use App\Http\Controllers\Admin\CustomerFeedbackController as ADCustomerFeedbackController;
 use App\Http\Controllers\ServiceProvider\BookingController as ServiceProviderBookingController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
+use App\Http\Controllers\MessageController;
 
 
 /*
@@ -132,6 +133,10 @@ Route::middleware('auth')->group(function () {
     Route::controller(SearchController::class)->prefix('explore')->as('search.')->group(function () {
         Route::get('', 'redirectAuthUser')->name('index')->middleware(['profile-required']);
     });
+
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
 });
 
 Route::get('/booking/services/{id}', [BookingController::class, 'show'])->name('booking.show');

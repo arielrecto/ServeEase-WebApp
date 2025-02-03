@@ -85,6 +85,7 @@ const bookingStatusBadgeStyle = computed(() => {
                                 <Tab
                                     v-for="tab in state.tabs"
                                     :value="tab.value"
+                                    :key="tab.value"
                                     >{{ tab.name }}</Tab
                                 >
                             </TabList>
@@ -359,6 +360,14 @@ const bookingStatusBadgeStyle = computed(() => {
                                                     {{ availService.remarks }}
                                                 </div>
                                             </div>
+
+                                            <Link
+                                                :href="route('messages.index', { participant_id: service.user.id })"
+                                                class="flex items-center justify-center w-full gap-2 py-2 text-white rounded-lg bg-primary hover:bg-primary-dark"
+                                            >
+                                                <i class="ri-message-3-line"></i>
+                                                Message Provider
+                                            </Link>
                                         </div>
                                     </div>
                                 </TabPanel>

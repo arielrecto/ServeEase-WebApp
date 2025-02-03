@@ -82,6 +82,12 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
             >
                 Search
             </NavLink>
+            <NavLink
+                :href="route('messages.index')"
+                :active="route().current('messages.*')"
+            >
+                Messages
+            </NavLink>
         </template>
     </div>
 </template>

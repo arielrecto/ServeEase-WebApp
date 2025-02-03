@@ -16,7 +16,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::latest()->paginate(10);
+        $services = Service::where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10);
 
         return Inertia::render('Users/ServiceProvider/Services/Index', compact(['services']));
     }

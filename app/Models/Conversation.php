@@ -18,11 +18,11 @@ class Conversation extends Model
 
 
     public function owner(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     public function participant(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'participant_id');
     }
 
 

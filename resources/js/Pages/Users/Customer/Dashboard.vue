@@ -61,7 +61,7 @@ console.log(services.value);
                 <div
                     class="flex flex-wrap items-start justify-center gap-x-8 gap-y-10"
                 >
-                    <template v-for="item in menuItems">
+                    <template v-for="item in menuItems" :key="item.id">
                         <GoTo
                             v-if="item.id < 5"
                             :title="item.title"
