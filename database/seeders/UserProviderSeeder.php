@@ -11,6 +11,8 @@ use App\Models\ProviderProfile;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserProviderSeeder extends Seeder
 {
@@ -23,7 +25,6 @@ class UserProviderSeeder extends Seeder
 
         foreach ($users as $user) {
             $customerRole = Role::where('name', UserRoles::CUSTOMER->value)->first();
-
             $user->assignRole($customerRole);
 
             $profile = Profile::factory()->create(['user_id' => $user->id]);

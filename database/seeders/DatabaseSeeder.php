@@ -62,5 +62,12 @@ class DatabaseSeeder extends Seeder
         // });
 
         $this->call([BarangaySeeder::class, UserProviderSeeder::class]);
+
+        $this->call([
+            UserProviderSeeder::class,
+            ServiceTypeSeeder::class,
+            AvailServiceSeeder::class,
+            FeedbackSeeder::class,
+        ]);
     }
 }
