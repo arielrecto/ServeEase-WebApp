@@ -78,7 +78,9 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                     <span> Finished Transactions </span>
                                 </div>
                                 <div class="text-2xl font-black text-primary">
-                                    {{ service.finished_bookings_count }}
+                                    {{
+                                        service?.finished_bookings_count ?? "--"
+                                    }}
                                 </div>
                             </div>
 
@@ -89,7 +91,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                     <span> Total transactions </span>
                                 </div>
                                 <div class="text-2xl font-black text-primary">
-                                    {{ service.bookings_count }}
+                                    {{ service?.bookings_count ?? "--" }}
                                 </div>
                             </div>
                         </div>
@@ -202,7 +204,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                         <i
                                             class="text-yellow-500 fa-solid fa-star"
                                         ></i>
-                                        {{ service.avg_rate }} / 5
+                                        {{ service?.avg_rate ?? "0" }} / 5
                                     </div>
                                     <div class="text-gray-500">
                                         {{ feedbackCount }} total reviews

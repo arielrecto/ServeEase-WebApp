@@ -54,7 +54,7 @@ class User extends Authenticatable
             return false;
         }
 
-        return ProviderProfile::whereProfileId($profile->id)->exists();
+        return ProviderProfile::where('profile_id', $profile->id)->exists();
     }
 
     public function hasVerifiedProviderProfile()
@@ -65,7 +65,7 @@ class User extends Authenticatable
             return false;
         }
 
-        return Profile::whereId($profile->id)->whereNotNull('verified_at')->exists();
+        return ProviderProfile::where('profile_id', $profile->id)->whereNotNull('verified_at')->exists();
     }
 
     // Relations

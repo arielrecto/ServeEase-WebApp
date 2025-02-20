@@ -103,9 +103,13 @@ class ProfileController extends Controller
             ->whereUserId($user->id)
             ->first();
         $providerProfile = $user->profile->providerProfile;
-        $feedbackCount = FeedBack::whereHas('availService', function ($query) use ($service) {
-            $query->whereServiceId($service->id);
+        $feedbackCount = FeedBack::when($service, function ($query) {
+            $query->whereHas('availService', function ($query) use ($service) {
+                $query->whereServiceId($service->id);
+            });
         })->count();
+
+        // dd($service, $feedbackCount);
 
         return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
     }
