@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Barangay;
+use App\Models\ServiceType;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -22,7 +23,9 @@ return new class extends Migration {
             $table->longText('description');
             $table->longText('terms_and_conditions')->nullable();
             $table->boolean('is_approved');
-            $table->tinyInteger('service_type');
+            $table->foreignIdFor(ServiceType::class)
+                ->constrained()
+                ->cascadeOnDelete();
             $table->foreignIdFor(Barangay::class)
                 ->constrained()
                 ->cascadeOnDelete();

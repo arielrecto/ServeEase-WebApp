@@ -61,11 +61,11 @@ class DatabaseSeeder extends Seeder
         //     ]);
         // });
 
-        $this->call([BarangaySeeder::class, UserProviderSeeder::class]);
 
         $this->call([
-            UserProviderSeeder::class,
             ServiceTypeSeeder::class,
+            BarangaySeeder::class,
+            UserProviderSeeder::class,
             AvailServiceSeeder::class,
             FeedbackSeeder::class,
         ]);

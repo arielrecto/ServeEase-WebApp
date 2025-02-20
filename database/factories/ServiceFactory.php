@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Barangay;
+use App\Models\ServiceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,9 +24,8 @@ class ServiceFactory extends Factory
             'price_type' => 'fixed',
             'description' => fake()->paragraph(),
             'is_approved' => true,
-            'service_type' => 'plumbing',
-            // 'barangay_id' => fake()->numberBetween(15, 30)
-            'barangay_id' => 30,
+            'service_type_id' => ServiceType::all()->random()->id,
+            'barangay_id' => Barangay::all()->random()->id,
         ];
     }
 }

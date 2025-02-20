@@ -19,7 +19,7 @@ class Service extends Model
         'description',
         'terms_and_conditions',
         'is_approved',
-        'service_type',
+        'service_type_id',
         'barangay_id',
         'user_id'
     ];

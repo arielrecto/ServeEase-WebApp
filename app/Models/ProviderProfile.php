@@ -12,7 +12,7 @@ class ProviderProfile extends Model
 
 
     protected $fillable = [
-        'service_type',
+        'service_type_id',
         'experience',
         'contact',
         'verified_at',
@@ -21,7 +21,8 @@ class ProviderProfile extends Model
     ];
 
 
-    public function profile(){
+    public function profile()
+    {
         return $this->belongsTo(Profile::class);
     }
 }
