@@ -144,6 +144,7 @@ const search = () => {
 
                                                 <!-- TODO: Add activate & deactivate -->
                                                 <ActionButton
+                                                    v-if="!user.is_suspended"
                                                     type="modal"
                                                     actionType="reject"
                                                     :href="
@@ -155,6 +156,7 @@ const search = () => {
                                                 />
 
                                                 <ActionButton
+                                                    v-if="user.is_suspended"
                                                     type="modal"
                                                     actionType="approve"
                                                     :href="

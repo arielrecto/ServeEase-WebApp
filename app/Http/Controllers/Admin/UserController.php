@@ -59,6 +59,7 @@ class UserController extends Controller
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'is_suspended' => $user->is_suspended,
                     'created_at' => $user->created_at
                 ];
             });
@@ -146,11 +147,15 @@ class UserController extends Controller
     // TODO: Deactivate & activate
     public function destroy(User $user)
     {
-        dd('Feature is currently work in progress');
+        $user->update(['is_suspended' => true]);
+
+        return back()->with('message_success', 'User account has been suspended.');
     }
 
     public function restore(User $user)
     {
-        dd('Feature is currently work in progress');
+        $user->update(['is_suspended' => false]);
+
+        return back()->with('message_success', 'Account suspension has been revoked.');
     }
 }

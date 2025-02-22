@@ -158,7 +158,7 @@ onMounted(async () => {
                                 <ComboBox
                                     :items="services"
                                     identifier="name"
-                                    valueName="name"
+                                    valueName="id"
                                     keyName="id"
                                     @update:model-value="
                                         (value) =>

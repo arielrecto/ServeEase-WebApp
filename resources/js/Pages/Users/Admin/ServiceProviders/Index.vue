@@ -31,6 +31,8 @@ const searchForm = useForm({
 const search = () => {
     searchForm.get(route("admin.users.index"));
 };
+
+const ratingOptions = [5, 4, 3, 2, 1];
 </script>
 
 <template>

@@ -60,7 +60,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -98,45 +98,47 @@ Route::middleware('auth')->group(function () {
         Route::resource('users', UserController::class);
     });
 
-    Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
-        Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
-        Route::prefix('services')->as('services.')->group(function () {
-            Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
-            Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
+    Route::middleware('suspended')->group(function () {
+        Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
+            Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
+            Route::prefix('services')->as('services.')->group(function () {
+                Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
+                Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
+            });
+            Route::prefix('booking')->controller(BookingController::class)->as('booking.')->group(function () {
+                Route::get('/{availService}/detail', 'detail')->name('detail');
+            });
+            Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {
+                Route::get('/{feedback}/delete', 'delete')->name('delete');
+            });
+            Route::resource('feedbacks', CustomerFeedbackController::class);
+            Route::prefix('favorites')->as('favorites.')->controller(FavoriteController::class)->group(function () {
+                Route::post('/{favorite}', 'add')->name('add');
+            });
+            Route::resource('favorites', FavoriteController::class)->except(['show', 'create', 'edit', 'update']);
+            Route::resource('booking', BookingController::class);
+            Route::resource('services', CustomerServiceController::class)->only('show');
+            Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
         });
-        Route::prefix('booking')->controller(BookingController::class)->as('booking.')->group(function () {
-            Route::get('/{availService}/detail', 'detail')->name('detail');
-        });
-        Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {
-            Route::get('/{feedback}/delete', 'delete')->name('delete');
-        });
-        Route::resource('feedbacks', CustomerFeedbackController::class);
-        Route::prefix('favorites')->as('favorites.')->controller(FavoriteController::class)->group(function () {
-            Route::post('/{favorite}', 'add')->name('add');
-        });
-        Route::resource('favorites', FavoriteController::class)->except(['show', 'create', 'edit', 'update']);
-        Route::resource('booking', BookingController::class);
-        Route::resource('services', CustomerServiceController::class)->only('show');
-        Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
-    });
 
-    Route::prefix('service-provider')->as('service-provider.')->group(function () {
-        Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
-        Route::resource('services', ServiceController::class);
-        Route::prefix('booking')->as('booking.')->group(function () {
-            Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');
-            Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
-            Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
+        Route::prefix('service-provider')->as('service-provider.')->group(function () {
+            Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
+            Route::resource('services', ServiceController::class);
+            Route::prefix('booking')->as('booking.')->group(function () {
+                Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');
+                Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
+                Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
+            });
         });
-    });
 
-    Route::controller(SearchController::class)->prefix('explore')->as('search.')->group(function () {
-        Route::get('', 'redirectAuthUser')->name('index')->middleware(['profile-required']);
-    });
+        Route::controller(SearchController::class)->prefix('explore')->as('search.')->group(function () {
+            Route::get('', 'redirectAuthUser')->name('index')->middleware(['profile-required']);
+        });
 
-    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
-    Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+        Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
+        Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+    });
 });
 
 Route::get('/booking/services/{id}', [BookingController::class, 'show'])->name('booking.show');

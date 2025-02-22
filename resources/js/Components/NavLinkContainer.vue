@@ -4,6 +4,7 @@ import { usePage } from "@inertiajs/vue3";
 import { computed } from "vue";
 
 const isServiceProvider = usePage().props?.auth?.isServiceProvider;
+const isVerifiedProvider = usePage().props?.auth?.isVerifiedProvider;
 const roleName = usePage().props.auth.roleName;
 
 const isAdmin = computed(() => roleName.some((role) => role == "admin"));
@@ -58,7 +59,7 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
                 Home
             </NavLink>
             <NavLink
-                v-if="isServiceProvider"
+                v-if="isVerifiedProvider"
                 :href="route('service-provider.dashboard')"
                 :active="route().current('service-provider.dashboard')"
             >

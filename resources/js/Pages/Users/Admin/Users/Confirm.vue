@@ -1,6 +1,6 @@
 <script setup>
 import { Modal } from "@inertiaui/modal-vue";
-import { useForm } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -15,8 +15,8 @@ const form = useForm({
 });
 
 const handleSubmit = () => {
-    if (props.action.value === "deactivate") {
-        form.delete(route("admin.users.destroy", props.user.id), {
+    if (props.action === "deactivate") {
+        router.delete(route("admin.users.destroy", props.user.id), {
             onFinish: () => {
                 modalRef.value.close();
             },
@@ -25,7 +25,7 @@ const handleSubmit = () => {
         return;
     }
 
-    form.put(route("admin.users.restore", props.user.id), {
+    router.put(route("admin.users.restore", props.user.id), {
         onFinish: () => {
             modalRef.value.close();
         },
@@ -49,10 +49,10 @@ const handleSubmit = () => {
         </h2>
 
         <p v-if="action === 'deactivate'">
-            This will deactivate the user's account.
+            This will suspend the user's account.
         </p>
         <p v-else-if="action === 'activate'">
-            This will activate the user's account.
+            This will revoke the user's account suspension.
         </p>
 
         <form @submit.prevent="deleteBrgy">
@@ -66,7 +66,7 @@ const handleSubmit = () => {
                         Cancel
                     </button>
                     <button
-                        type="submit"
+                        @click="handleSubmit"
                         :disabled="form.processing"
                         class="button-primary"
                     >

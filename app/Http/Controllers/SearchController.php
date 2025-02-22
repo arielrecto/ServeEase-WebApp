@@ -38,7 +38,7 @@ class SearchController extends Controller
                 $q->where('name', 'LIKE', "%{$request->search}%");
             })
             ->when($request->service, function ($q) use ($request) {
-                $q->where('service_type', $request->service);
+                $q->where('service_type_id', $request->service);
             })
             ->when($request->brgy, function ($q) use ($request) {
                 $q->where('barangay_id', $request->brgy);

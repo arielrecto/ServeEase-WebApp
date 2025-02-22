@@ -50,7 +50,7 @@ class ServiceProviderController extends Controller
      */
     public function show(string $id)
     {
-        $providerProfile = ProviderProfile::findOrFail($id);
+        $providerProfile = ProviderProfile::with('serviceType:id,name')->where('id', $id)->first();
         // dd($providerProfile->profile);
         $user = $providerProfile->profile->user;
         $profile = $providerProfile->profile;

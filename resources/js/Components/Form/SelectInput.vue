@@ -8,6 +8,14 @@ defineProps({
         type: [Array, Object],
         required: false,
     },
+    optionKey: {
+        type: [String, null],
+        default: null,
+    },
+    valueKey: {
+        type: [String, null],
+        default: null,
+    },
 });
 
 const emits = defineEmits(["update:modelValue"]);
@@ -21,8 +29,11 @@ const emits = defineEmits(["update:modelValue"]);
     >
         <option disabled selected>{{ placeholder }}</option>
         <template v-if="choices">
-            <option v-for="choice in choices" :value="choice">
-                {{ choice }}
+            <option
+                v-for="choice in choices"
+                :value="valueKey ? choice[valueKey] : choice"
+            >
+                {{ optionKey ? choice[optionKey] : choice }}
             </option>
         </template>
 

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProviderProfile extends Model
 {
@@ -24,5 +25,15 @@ class ProviderProfile extends Model
     public function profile()
     {
         return $this->belongsTo(Profile::class);
+    }
+
+    /**
+     * Get the serviceType that owns the ProviderProfile
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function serviceType(): BelongsTo
+    {
+        return $this->belongsTo(ServiceType::class);
     }
 }

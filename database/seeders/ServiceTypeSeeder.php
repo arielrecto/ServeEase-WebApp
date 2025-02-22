@@ -23,21 +23,37 @@ class ServiceTypeSeeder extends Seeder
     {
         $services = [
             [
-                'name' => 'Basic Cleaning',
+                'name' => 'Plumbing',
                 'thumbnail' => $this->faker->imageUrl(),
-                'description' => 'Standard cleaning service for residential spaces'
+                'description' => 'Installation, repair, and maintenance of water pipes, drainage systems, and fixtures.'
             ],
             [
-                'name' => 'Deep Cleaning',
+                'name' => 'Carpentry',
                 'thumbnail' => $this->faker->imageUrl(),
-                'description' => 'Thorough cleaning including hard-to-reach areas'
+                'description' => 'Custom woodwork, furniture making, repairs, and structural improvements.'
             ],
             [
-                'name' => 'Commercial Cleaning',
+                'name' => 'Electrician',
                 'thumbnail' => $this->faker->imageUrl(),
-                'description' => 'Office and commercial space maintenance'
+                'description' => 'Installation, repair, and maintenance of electrical systems, wiring, and appliances.'
+            ],
+            [
+                'name' => 'Catering',
+                'thumbnail' => $this->faker->imageUrl(),
+                'description' => 'Professional food preparation and service for events, parties, and corporate functions.'
+            ],
+            [
+                'name' => 'Driver',
+                'thumbnail' => $this->faker->imageUrl(),
+                'description' => 'Safe and reliable transportation services for individuals, businesses, and deliveries.'
+            ],
+            [
+                'name' => 'IT Professional',
+                'thumbnail' => $this->faker->imageUrl(),
+                'description' => 'Technical support, network management, software development, and IT solutions.'
             ]
         ];
+
 
         foreach ($services as $service) {
             ServiceType::create($service);

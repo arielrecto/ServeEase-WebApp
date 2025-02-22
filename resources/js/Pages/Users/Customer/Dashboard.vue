@@ -47,8 +47,6 @@ const menuItems = [
 ];
 
 const services = computed(() => page.props.services);
-
-console.log(services.value);
 </script>
 
 <template>
@@ -84,7 +82,7 @@ console.log(services.value);
                             :url="item.url"
                         />
                         <GoTo
-                            v-if="item.id === 6 && !isServiceProvider"
+                            v-if="item.id === 6 && !isVerifiedProvider"
                             :title="item.title"
                             :icon="item.icon"
                             :url="item.url"
