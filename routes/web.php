@@ -8,23 +8,24 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ServiceTypeController;
 use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ServiceTypeController;
 use App\Http\Controllers\Customer\FavoriteController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
 use App\Http\Controllers\Customer\CustomerFeedbackController;
 use App\Http\Controllers\Admin\ServiceProviderApplicationController;
 use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
+use App\Http\Controllers\Admin\ServiceTypeController as ADServiceTypeController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Admin\CustomerFeedbackController as ADCustomerFeedbackController;
 use App\Http\Controllers\ServiceProvider\BookingController as ServiceProviderBookingController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
-use App\Http\Controllers\MessageController;
 
 
 /*
@@ -83,8 +84,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete/{id}', 'delete')->name('delete');
         });
         Route::resource('applications', ServiceProviderApplicationController::class)->except(["create", "store", "edit", "update"]);
-        Route::resource('service-types', ServiceTypeController::class)->except('update');
-        Route::post('/service-types/{id}', [ServiceTypeController::class, 'update'])->name('service-types.update');
+        Route::resource('service-types', ADServiceTypeController::class)->except('update');
+        Route::post('/service-types/{id}', [ADServiceTypeController::class, 'update'])->name('service-types.update');
 
         Route::get('/feedbacks/delete/{feedback}', [ADCustomerFeedbackController::class, 'delete'])->name('feedbacks.delete');
         Route::resource('feedbacks', ADCustomerFeedbackController::class)->except(['create', 'store']);
@@ -129,6 +130,11 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
                 Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
             });
+        });
+
+        Route::prefix('service-types')->as('types.')->controller(ServiceTypeController::class)->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::get('/{serviceType}', 'show')->name('show');
         });
 
         Route::controller(SearchController::class)->prefix('explore')->as('search.')->group(function () {

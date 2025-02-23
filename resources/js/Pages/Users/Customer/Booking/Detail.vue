@@ -26,36 +26,42 @@ const state = reactive({
     ],
 });
 
-const bookingStatus = computed(() => {
-    switch (props.availService.status) {
+const bookingStatus = (status) => {
+    switch (status) {
+        case "cancelled":
+            return "Cancelled";
+            break;
         case "pending":
             return "Pending";
             break;
-        case "working":
-            return "Working";
+        case "in_progress":
+            return "In Progress";
             break;
-        case "approved":
-            return "Approved";
-        case "done":
-            return "Done";
+        case "confirmed":
+            return "Confirmed";
+        case "completed":
+            return "Completed";
             break;
     }
-});
+};
 
-const bookingStatusBadgeStyle = computed(() => {
-    switch (props.availService.status) {
+const bookingStatusBadgeStyle = (status) => {
+    switch (status) {
+        case "cancelled":
+            return "bg-red-100 text-red-800";
+            break;
         case "pending":
             return "bg-yellow-100 text-yellow-800";
             break;
-        case "working":
+        case "in_progress":
             return "bg-orange-100 text-orange-800";
             break;
-        case "approved":
+        case "confirmed":
             return "bg-green-100 text-green-800";
-        case "done":
+        case "completed":
             break;
     }
-});
+};
 </script>
 
 <template>
@@ -107,9 +113,7 @@ const bookingStatusBadgeStyle = computed(() => {
                                                     <i
                                                         class="text-yellow-500 fa-solid fa-star"
                                                     ></i>
-                                                    {{
-                                                        service.avg_rate
-                                                    }}
+                                                    {{ service.avg_rate }}
                                                 </span>
                                             </div>
 
@@ -215,7 +219,7 @@ const bookingStatusBadgeStyle = computed(() => {
                                                 <ModalLinkDialog
                                                     v-if="
                                                         availService.status ===
-                                                            'done' &&
+                                                            'completed' &&
                                                         !availService.has_feedback
                                                     "
                                                     :href="
@@ -253,7 +257,9 @@ const bookingStatusBadgeStyle = computed(() => {
                                                     </div>
                                                     <div
                                                         class="px-5 py-1 text-sm font-bold rounded-lg"
-                                                        :class=" bookingStatusBadgeStyle"
+                                                        :class="
+                                                            bookingStatusBadgeStyle
+                                                        "
                                                     >
                                                         {{ bookingStatus }}
                                                     </div>
@@ -362,10 +368,17 @@ const bookingStatusBadgeStyle = computed(() => {
                                             </div>
 
                                             <Link
-                                                :href="route('messages.index', { participant_id: service.user.id })"
+                                                :href="
+                                                    route('messages.index', {
+                                                        participant_id:
+                                                            service.user.id,
+                                                    })
+                                                "
                                                 class="flex items-center justify-center w-full gap-2 py-2 text-white rounded-lg bg-primary hover:bg-primary-dark"
                                             >
-                                                <i class="ri-message-3-line"></i>
+                                                <i
+                                                    class="ri-message-3-line"
+                                                ></i>
                                                 Message Provider
                                             </Link>
                                         </div>

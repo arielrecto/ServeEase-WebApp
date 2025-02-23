@@ -22,8 +22,8 @@ class BookingController extends Controller
                 $q->where('user_id', Auth::user()->id);
             })
             ->when($filter, function ($query) use ($filter) {
-                if ($filter === "done") {
-                    $query->whereStatus("done");
+                if ($filter === "completed") {
+                    $query->whereStatus("completed");
                 }
                 if ($filter === "pending") {
                     $query->whereStatus("pending");
@@ -59,7 +59,7 @@ class BookingController extends Controller
             ->whereStatus('pending')
             ->count();
         $finishedBookingsCount = $query
-            ->whereStatus('done')
+            ->whereStatus('completed')
             ->count();
         $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
 

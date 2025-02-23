@@ -244,7 +244,7 @@ console.log(props.availServices);
                                                 <ModalLinkDialog
                                                     v-if="
                                                         availService.status ===
-                                                            'done' &&
+                                                            'completed' &&
                                                         !availService.has_feedback
                                                     "
                                                     :href="

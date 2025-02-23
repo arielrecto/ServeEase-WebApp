@@ -155,7 +155,7 @@ const submit = () => {
                         </section>
 
                         <div
-                            v-if="!service?.verified_at"
+                            v-if="service !== null && !service.verified_at"
                             class="absolute top-0 left-0 flex items-center justify-center w-full h-full backdrop-blur-sm"
                         >
                             <div class="p-4 bg-white rounded-md">

@@ -97,7 +97,7 @@ class ProfileController extends Controller
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
-                    $query->whereStatus('done');
+                    $query->whereStatus('completed');
                 }
             ])
             ->whereUserId($user->id)
@@ -123,7 +123,7 @@ class ProfileController extends Controller
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
-                    $query->whereStatus('done');
+                    $query->whereStatus('completed');
                 }
             ])
             ->whereUserId($user->id)

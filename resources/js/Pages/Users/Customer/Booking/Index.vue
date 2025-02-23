@@ -45,31 +45,37 @@ const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
 
 const getBookingStatus = (status) => {
     switch (status) {
+        case "cancelled":
+            return "Cancelled";
+            break;
         case "pending":
             return "Pending";
             break;
-        case "working":
-            return "Working";
+        case "in_progress":
+            return "In Progress";
             break;
-        case "approved":
-            return "Approved";
-        case "done":
-            return "Done";
+        case "confirmed":
+            return "Confirmed";
+        case "completed":
+            return "Completed";
             break;
     }
 };
 
 const bookingStatusBadgeStyle = (status) => {
     switch (status) {
+        case "cancelled":
+            return "bg-red-100 text-red-800";
+            break;
         case "pending":
             return "bg-yellow-100 text-yellow-800";
             break;
-        case "working":
+        case "in_progress":
             return "bg-orange-100 text-orange-800";
             break;
-        case "approved":
+        case "confirmed":
             return "bg-green-100 text-green-800";
-        case "done":
+        case "completed":
             break;
     }
 };
@@ -131,7 +137,7 @@ console.log(props.availServices);
                         <Link
                             :href="
                                 route('customer.booking.index', {
-                                    filter: 'done',
+                                    filter: 'completed',
                                 })
                             "
                             class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
@@ -210,7 +216,7 @@ console.log(props.availServices);
                                                 <ModalLinkDialog
                                                     v-if="
                                                         availService.status ===
-                                                            'done' &&
+                                                            'completed' &&
                                                         !availService.has_feedback
                                                     "
                                                     :href="

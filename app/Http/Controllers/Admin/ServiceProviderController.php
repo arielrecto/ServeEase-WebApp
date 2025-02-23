@@ -64,7 +64,7 @@ class ServiceProviderController extends Controller
                 ->withCount([
                     'availService as bookings_count',
                     'availService as finished_bookings_count' => function ($query) {
-                        $query->whereStatus('done');
+                        $query->whereStatus('completed');
                     }
                 ])
                 ->whereUserId($user->id)
@@ -72,7 +72,7 @@ class ServiceProviderController extends Controller
 
             $availServices = AvailService::whereServiceId($service->id);
             $bookingsCount = $availServices->count();
-            $finishedBookingsCount = $availServices->whereStatus("done")->count();
+            $finishedBookingsCount = $availServices->whereStatus("completed")->count();
             $feedbackCount = FeedBack::whereRelation('availService', 'service_id', $service->id)->count();
         }
 

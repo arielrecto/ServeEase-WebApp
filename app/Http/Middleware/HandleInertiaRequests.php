@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
 
         if (Auth::check()) {
             $finishedBookings = AvailService::with('service.user')
-                ->whereStatus('done')
+                ->whereStatus('completed')
                 ->latest()
                 ->get();
         }

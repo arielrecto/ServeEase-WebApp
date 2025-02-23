@@ -21,8 +21,8 @@ class BookingController extends Controller
         $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
             ->whereUserId(Auth::user()->id)
             ->when($filter, function ($query) use ($filter) {
-                if ($filter === "done") {
-                    $query->whereStatus("done");
+                if ($filter === "completed") {
+                    $query->whereStatus("completed");
                 }
                 if ($filter === "pending") {
                     $query->whereStatus("pending");
@@ -52,7 +52,7 @@ class BookingController extends Controller
             ->whereStatus('pending')
             ->count();
         $finishedBookingsCount = AvailService::whereUserId(Auth::user()->id)
-            ->whereStatus('done')
+            ->whereStatus('completed')
             ->count();
         $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
 

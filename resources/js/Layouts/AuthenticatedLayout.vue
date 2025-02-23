@@ -88,7 +88,11 @@ const finishedBookings = usePage().props.auth.finishedBookings;
                                 v-if="!$page.props.auth.isAdmin"
                                 class="relative ms-3"
                             >
-                                <Dropdown align="right" width="80">
+                                <Dropdown
+                                    align="right"
+                                    width="80"
+                                    contentClasses="py-1 bg-white max-h-[50vh] overflow-y-auto"
+                                >
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button
