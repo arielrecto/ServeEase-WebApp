@@ -7,6 +7,7 @@ import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 import FeedbackList from "@/Components/Feedbacks/FeedbackList.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -25,43 +26,6 @@ const state = reactive({
         { name: "Reviews", value: "1" },
     ],
 });
-
-const bookingStatus = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "Cancelled";
-            break;
-        case "pending":
-            return "Pending";
-            break;
-        case "in_progress":
-            return "In Progress";
-            break;
-        case "confirmed":
-            return "Confirmed";
-        case "completed":
-            return "Completed";
-            break;
-    }
-};
-
-const bookingStatusBadgeStyle = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "bg-red-100 text-red-800";
-            break;
-        case "pending":
-            return "bg-yellow-100 text-yellow-800";
-            break;
-        case "in_progress":
-            return "bg-orange-100 text-orange-800";
-            break;
-        case "confirmed":
-            return "bg-green-100 text-green-800";
-        case "completed":
-            break;
-    }
-};
 </script>
 
 <template>
@@ -255,14 +219,11 @@ const bookingStatusBadgeStyle = (status) => {
                                                     <div class="text-gray-600">
                                                         Status
                                                     </div>
-                                                    <div
-                                                        class="px-5 py-1 text-sm font-bold rounded-lg"
-                                                        :class="
-                                                            bookingStatusBadgeStyle
+                                                    <StatusBadge
+                                                        :status="
+                                                            availService.status
                                                         "
-                                                    >
-                                                        {{ bookingStatus }}
-                                                    </div>
+                                                    />
                                                 </div>
                                             </div>
                                             <div class="space-y-1">

@@ -1,7 +1,7 @@
 <script setup>
 import { Link, usePage } from "@inertiajs/vue3";
 import { ref, reactive, computed, defineAsyncComponent, watch } from "vue";
-import moment from 'moment'
+import moment from "moment";
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TableWrapper from "@/Components/Table/TableWrapper.vue";
@@ -9,6 +9,7 @@ import TableHeader from "@/Components/Table/TableHeader.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
 import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -48,37 +49,6 @@ const isNotServiceProvider = computed(() => {
 
 const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
 
-const getBookingStatus = (status) => {
-    switch (status) {
-        case "pending":
-            return "Pending";
-            break;
-        case "working":
-            return "Working";
-            break;
-        case "approved":
-            return "Approved";
-        case "done":
-            return "Done";
-            break;
-    }
-};
-
-const bookingStatusBadgeStyle = (status) => {
-    switch (status) {
-        case "pending":
-            return "bg-yellow-100 text-yellow-800";
-            break;
-        case "working":
-            return "bg-orange-100 text-orange-800";
-            break;
-        case "approved":
-            return "bg-green-100 text-green-800";
-        case "done":
-            break;
-    }
-};
-
 const openCalendar = ref(false);
 
 const events = ref([]);
@@ -88,7 +58,7 @@ watch(openCalendar, () => {
         ...props.availServices.data.map((item) => ({
             title: `${item.name} | status : ${item.status}`,
             start: item.start_date,
-            end:  moment(item.end_date).add(1, 'day').format('YYYY-MM-DD'),
+            end: moment(item.end_date).add(1, "day").format("YYYY-MM-DD"),
         })),
     ];
 
@@ -116,7 +86,7 @@ console.log(props.availServices);
                     <i class="ri-calendar-2-line"></i>
                 </button>
                 <div
-                    class="h-full w-full bg-white shadow-sm sm:rounded-lg mb-5 p-2"
+                    class="w-full h-full p-2 mb-5 bg-white shadow-sm sm:rounded-lg"
                     v-if="openCalendar"
                 >
                     <Calendar :events="events" />
@@ -210,7 +180,8 @@ console.log(props.availServices);
                                     v-if="availServices.data.length !== 0"
                                 >
                                     <tr
-                                        v-for="availService in availServices.data" :key="availService.id"
+                                        v-for="availService in availServices.data"
+                                        :key="availService.id"
                                     >
                                         <th>{{ availService.name }}</th>
                                         <td>
@@ -222,20 +193,9 @@ console.log(props.availServices);
                                             }}
                                         </td>
                                         <td>
-                                            <span
-                                                class="px-4 py-1.5 font-bold rounded-lg"
-                                                :class="[
-                                                    bookingStatusBadgeStyle(
-                                                        availService.status
-                                                    ),
-                                                ]"
-                                            >
-                                                {{
-                                                    getBookingStatus(
-                                                        availService.status
-                                                    )
-                                                }}
-                                            </span>
+                                            <StatusBadge
+                                                :status="availService.status"
+                                            />
                                         </td>
                                         <td>
                                             <div

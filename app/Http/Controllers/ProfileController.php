@@ -103,7 +103,7 @@ class ProfileController extends Controller
             ->whereUserId($user->id)
             ->first();
         $providerProfile = $user->profile->providerProfile;
-        $feedbackCount = FeedBack::when($service, function ($query) {
+        $feedbackCount = FeedBack::when($service, function ($query) use ($service) {
             $query->whereHas('availService', function ($query) use ($service) {
                 $query->whereServiceId($service->id);
             });

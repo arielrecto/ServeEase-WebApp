@@ -37,9 +37,9 @@ const modalRef = ref(null);
             <div class="flex flex-col gap-y-3">
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Service Offered</span>
-                    <span class="text-gray-600">{{
-                        providerProfile.serviceType.name
-                    }}</span>
+                    <span class="text-gray-600">
+                        {{ providerProfile.service_type.name }}
+                    </span>
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Years of experience</span>

@@ -8,6 +8,7 @@ import TableHeader from "@/Components/Table/TableHeader.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
 import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -42,43 +43,6 @@ const isNotServiceProvider = computed(() => {
 });
 
 const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
-
-const getBookingStatus = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "Cancelled";
-            break;
-        case "pending":
-            return "Pending";
-            break;
-        case "in_progress":
-            return "In Progress";
-            break;
-        case "confirmed":
-            return "Confirmed";
-        case "completed":
-            return "Completed";
-            break;
-    }
-};
-
-const bookingStatusBadgeStyle = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "bg-red-100 text-red-800";
-            break;
-        case "pending":
-            return "bg-yellow-100 text-yellow-800";
-            break;
-        case "in_progress":
-            return "bg-orange-100 text-orange-800";
-            break;
-        case "confirmed":
-            return "bg-green-100 text-green-800";
-        case "completed":
-            break;
-    }
-};
 
 console.log(props.availServices);
 </script>
@@ -194,20 +158,9 @@ console.log(props.availServices);
                                             }}
                                         </td>
                                         <td>
-                                            <span
-                                                class="px-4 py-1.5 font-bold rounded-lg"
-                                                :class="[
-                                                    bookingStatusBadgeStyle(
-                                                        availService.status
-                                                    ),
-                                                ]"
-                                            >
-                                                {{
-                                                    getBookingStatus(
-                                                        availService.status
-                                                    )
-                                                }}
-                                            </span>
+                                            <StatusBadge
+                                                :status="availService.status"
+                                            />
                                         </td>
                                         <td>
                                             <div

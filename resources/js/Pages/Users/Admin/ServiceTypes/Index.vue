@@ -65,7 +65,7 @@ const headers = ref([
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-10 overflow-y-auto">
+                <div class="grid grid-cols-1 gap-10 overflow-y-auto sm:grid-cols-3">
                     <article v-for="(service, index) in serviceTypes" :key="service.id" class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
                         <ModalLinkSlideover :href="route('admin.service-types.show', service.id)">
                             <img

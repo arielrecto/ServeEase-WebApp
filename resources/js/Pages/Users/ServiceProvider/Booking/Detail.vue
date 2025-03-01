@@ -7,6 +7,8 @@ import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 import FeedbackList from "@/Components/Feedbacks/FeedbackList.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
+import SelectInput from "@/Components/Form/SelectInput.vue";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -26,26 +28,15 @@ const state = reactive({
     ],
 });
 
-const statusOptions = ["Pending", "Working", "Approved", "Completed"];
-
-const bookingStatus = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "Cancelled";
-            break;
-        case "pending":
-            return "Pending";
-            break;
-        case "in_progress":
-            return "In Progress";
-            break;
-        case "confirmed":
-            return "Confirmed";
-        case "completed":
-            return "Completed";
-            break;
-    }
-};
+const bookingStatus = computed(() => {
+    return {
+        cancelled: "Cancelled",
+        pending: "Pending",
+        in_progress: "In Progress",
+        confirmed: "Confirmed",
+        completed: "Completed",
+    }[props.availService.status];
+});
 
 const bookingStatusBadgeStyle = (status) => {
     switch (status) {
@@ -64,6 +55,22 @@ const bookingStatusBadgeStyle = (status) => {
             break;
     }
 };
+
+const statusOptions = [
+    "Cancelled",
+    "Pending",
+    "In Progress",
+    "Confirmed",
+    "Completed",
+];
+
+const options = [
+    { label: "Cancelled", value: "cancelled" },
+    { label: "Pending", value: "pending" },
+    { label: "In Progress", value: "in_progress" },
+    { label: "Confirmed", value: "confirmed" },
+    { label: "Completed", value: "completed" },
+];
 
 const isOpenUpdateStatusForm = ref(false);
 
@@ -298,20 +305,38 @@ watch(selectedStatus, (newStatus) => {
                                                             !isOpenUpdateStatusForm
                                                         "
                                                         class="px-5 py-1 text-sm font-bold rounded-lg"
-                                                        :class="
-                                                            bookingStatusBadgeStyle
-                                                        "
+                                                        :class=" bookingStatusBadgeStyle"
                                                     >
                                                         {{ bookingStatus }}
                                                     </a>
 
-                                                    <select
+                                                    <SelectInput
+                                                        v-show="
+                                                            isOpenUpdateStatusForm
+                                                        "
+                                                        id="sex"
+                                                        class="block w-full mt-1"
+                                                        v-model="selectedStatus"
+                                                        required
+                                                    >
+                                                        <option
+                                                            v-for="option in options"
+                                                            :key="option.value"
+                                                            :value="
+                                                                option.value
+                                                            "
+                                                        >
+                                                            {{ option.label }}
+                                                        </option>
+                                                    </SelectInput>
+
+                                                    <!-- <select
                                                         v-show="
                                                             isOpenUpdateStatusForm
                                                         "
                                                         v-model="selectedStatus"
                                                         id="status"
-                                                        class="block w-full mt-2 p-2 border border-gray-300 rounded-md"
+                                                        class="block w-full p-2 mt-2 border border-gray-300 rounded-md"
                                                     >
                                                         <option
                                                             v-for="status in statusOptions"
@@ -320,7 +345,7 @@ watch(selectedStatus, (newStatus) => {
                                                         >
                                                             {{ status }}
                                                         </option>
-                                                    </select>
+                                                    </select> -->
                                                 </div>
                                             </div>
                                             <div class="space-y-1">
@@ -336,10 +361,11 @@ watch(selectedStatus, (newStatus) => {
                                                     <div class="font-bold">
                                                         <span
                                                             class="text-xl text-primary"
-                                                            >{{
-                                                                availService.total_hours.toLocaleString()
-                                                            }}</span
                                                         >
+                                                            {{
+                                                                availService.total_hours.toLocaleString()
+                                                            }}
+                                                        </span>
                                                     </div>
                                                 </template>
                                                 <template v-else>
@@ -349,7 +375,8 @@ watch(selectedStatus, (newStatus) => {
                                                     <div class="font-bold">
                                                         <span
                                                             class="text-xl text-primary"
-                                                            >{{
+                                                        >
+                                                            {{
                                                                 moment(
                                                                     availService.end_date
                                                                 ).diff(
@@ -358,8 +385,8 @@ watch(selectedStatus, (newStatus) => {
                                                                     ),
                                                                     "days"
                                                                 )
-                                                            }}</span
-                                                        >
+                                                            }}
+                                                        </span>
                                                     </div>
                                                 </template>
                                             </div>
@@ -371,7 +398,8 @@ watch(selectedStatus, (newStatus) => {
                                                 <div class="font-bold">
                                                     ₱<span
                                                         class="text-xl text-primary"
-                                                        >{{
+                                                    >
+                                                        {{
                                                             availService.service.price.toLocaleString()
                                                         }}
                                                         *
@@ -379,10 +407,11 @@ watch(selectedStatus, (newStatus) => {
 
                                                     <span
                                                         class="text-xl text-primary"
-                                                        >{{
-                                                            availService.service.price_type.toLocaleString()
-                                                        }}</span
                                                     >
+                                                        {{
+                                                            availService.service.price_type.toLocaleString()
+                                                        }}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="flex gap-x-12">

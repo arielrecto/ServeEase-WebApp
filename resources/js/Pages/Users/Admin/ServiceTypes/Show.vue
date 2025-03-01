@@ -29,7 +29,7 @@ const modalRef = ref(null);
             <div class="flex flex-col gap-y-3">
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Thumbnail</span>
-                    <div class="aspect-video overflow-hidden">
+                    <div class="overflow-hidden aspect-video">
                         <img
                             :src="service.thumbnail"
                             alt="Service thumbnail"
@@ -53,13 +53,13 @@ const modalRef = ref(null);
             <Link
                 @click="modalRef.close"
                 :href="route('admin.service-types.edit', service.id)"
-                class="text-primary hover:underline inline-flex gap-x-1 items-center"
+                class="inline-flex items-center text-primary hover:underline gap-x-1"
                 ><i class="fi fi-br-file-edit"></i>Edit</Link
             >
 
             <button
                 onclick="my_modal_2.showModal()"
-                class="text-error hover:underline inline-flex gap-x-1 items-center"
+                class="inline-flex items-center text-error hover:underline gap-x-1"
             >
                 <i class="fi fi-rs-trash"></i>Delete
             </button>

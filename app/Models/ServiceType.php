@@ -27,4 +27,14 @@ class ServiceType extends Model
         return $this->hasMany(Service::class);
     }
 
+    /**
+     * Get all of the providerProfiles for the ServiceType
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function providerProfiles(): HasMany
+    {
+        return $this->hasMany(ProviderProfile::class);
+    }
+
 }

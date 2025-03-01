@@ -1,11 +1,14 @@
 <script setup>
+import { Link, usePage } from "@inertiajs/vue3";
+
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
 import TableWrapper from "@/Components/Table/TableWrapper.vue";
 import TableHeader from "@/Components/Table/TableHeader.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
-import { Link, usePage } from "@inertiajs/vue3";
+import StatusBadge from "@/Components/StatusBadge.vue";
+
 const props = defineProps({
     service: Object,
     availServices: Object,
@@ -56,44 +59,6 @@ ChartJS.register(
     Legend,
     ArcElement
 );
-
-console.log(props.service, props.availServices);
-const getBookingStatus = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "Cancelled";
-            break;
-        case "pending":
-            return "Pending";
-            break;
-        case "in_progress":
-            return "In Progress";
-            break;
-        case "confirmed":
-            return "Confirmed";
-        case "completed":
-            return "Completed";
-            break;
-    }
-};
-
-const bookingStatusBadgeStyle = (status) => {
-    switch (status) {
-        case "cancelled":
-            return "bg-red-100 text-red-800";
-            break;
-        case "pending":
-            return "bg-yellow-100 text-yellow-800";
-            break;
-        case "in_progress":
-            return "bg-orange-100 text-orange-800";
-            break;
-        case "confirmed":
-            return "bg-green-100 text-green-800";
-        case "completed":
-            break;
-    }
-};
 </script>
 
 <template>
@@ -172,20 +137,11 @@ const bookingStatusBadgeStyle = (status) => {
                                                 }}
                                             </td>
                                             <td>
-                                                <span
-                                                    class="px-4 py-1.5 font-bold rounded-lg"
-                                                    :class="[
-                                                        bookingStatusBadgeStyle(
-                                                            availService.status
-                                                        ),
-                                                    ]"
-                                                >
-                                                    {{
-                                                        getBookingStatus(
-                                                            availService.status
-                                                        )
-                                                    }}
-                                                </span>
+                                                <StatusBadge
+                                                    :status="
+                                                        availService.status
+                                                    "
+                                                />
                                             </td>
                                             <td>
                                                 <div
