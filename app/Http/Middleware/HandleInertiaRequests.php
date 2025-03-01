@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Inertia\Middleware;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
@@ -33,18 +34,23 @@ class HandleInertiaRequests extends Middleware
     {
         $hasProfileSetup = $request->user()->profile ?? false;
         $finishedBookings = null;
+        $user = null;
 
         if (Auth::check()) {
             $finishedBookings = AvailService::with('service.user')
                 ->whereStatus('completed')
                 ->latest()
                 ->get();
+
+            $user = User::with(['profile'])
+                ->whereId($request->user()->id)
+                ->first();
         }
 
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
                 'hasProfileSetup' => $hasProfileSetup,
                 'isAdmin' => $request?->user()?->getRoleNames()?->contains('admin'),
                 'roleName' => $request?->user()?->getRoleNames()?->toArray(),

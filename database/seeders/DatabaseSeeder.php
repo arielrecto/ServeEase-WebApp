@@ -4,13 +4,14 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Enums\ServicesType;
 use App\Models\User;
+use App\Models\Profile;
 use App\Enums\UserRoles;
-use App\Models\ServiceType as ModelsServiceType;
+use App\Enums\ServicesType;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use App\Models\ServiceType as ModelsServiceType;
 
 class DatabaseSeeder extends Seeder
 {
@@ -35,11 +36,7 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
-
-
         $adminRole = Role::where('name', UserRoles::ADMIN->value)->first();
-
-
 
         $admin = User::create([
             'name' => 'admin',
@@ -47,20 +44,17 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('admin123')
         ]);
 
-
         $admin->assignRole($adminRole);
 
-
+        Profile::factory()->create(['user_id' => $admin->id]);
 
         // $serviceTypes = ServicesType::cases();
-
 
         // collect($serviceTypes)->map(function($serviceType) {
         //     ModelsServiceType::create([
         //         'name' => $serviceType->value
         //     ]);
         // });
-
 
         $this->call([
             ServiceTypeSeeder::class,

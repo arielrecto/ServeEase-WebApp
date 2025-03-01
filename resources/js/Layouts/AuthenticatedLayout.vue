@@ -155,8 +155,10 @@ const finishedBookings = usePage().props.auth.finishedBookings;
                                                 type="button"
                                                 class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
                                             >
-                                                {{ $page.props.auth.user.name }}
-
+                                                {{
+                                                    $page.props.auth.user
+                                                        .profile.full_name
+                                                }}
                                                 <svg
                                                     class="ms-2 -me-0.5 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"

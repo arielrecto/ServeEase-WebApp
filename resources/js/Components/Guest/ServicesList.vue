@@ -56,7 +56,7 @@ const servicesOffered = ref([
                 <article v-for="(service, index) in services" :key="service.id" class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
                     <img
                         alt=""
-                        :src="service.thumbnail"
+                        :src="service.service_thumbnail"
                         class="object-cover w-full h-56"
                     />
                     <div class="p-4 bg-white sm:p-6">

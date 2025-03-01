@@ -51,14 +51,19 @@ const ratingOptions = [5, 4, 3, 2, 1];
 
         <div class="py-12">
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
-                    <div class="p-4 bg-white shadow sm:p-8 sm:rounded-lg">
+                <div class="p-4 bg-white shadow sm:p-8 sm:rounded-lg">
                     <div
                         class="flex flex-col items-start justify-between gap-5 md:flex-row"
                     >
                         <div class="flex items-center gap-x-6">
                             <div
-                                class="w-16 h-16 bg-gray-300 rounded-full q md:w-28 md:h-28"
-                            ></div>
+                                class="w-16 h-16 overflow-hidden bg-gray-300 rounded-full q md:w-28 md:h-28"
+                            >
+                                <img
+                                    :src="user.profile.user_avatar"
+                                    class="object-cover w-full h-full"
+                                />
+                            </div>
                             <div class="space-y-1">
                                 <div class="text-xl">{{ user.name }}</div>
                                 <div class="text-sm italic text-gray-600">
@@ -132,10 +137,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                             class="overflow-hidden aspect-video"
                                         >
                                             <img
-                                                :src="
-                                                    service.thumbnail ??
-                                                    'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
-                                                "
+                                                :src="service.service_thumbnail"
                                                 alt="Service thumbnail"
                                                 class="object-cover"
                                             />

@@ -66,7 +66,7 @@ watch(priceRange, () => {
                         >
                             <img
                                 alt=""
-                                :src="service.thumbnail"
+                                :src="service.service_thumbnail"
                                 class="object-cover w-full h-56"
                             />
                             <div class="p-4 bg-white sm:p-6">

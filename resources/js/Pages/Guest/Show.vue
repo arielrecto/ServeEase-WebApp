@@ -3,7 +3,7 @@ import { Head, Link } from "@inertiajs/vue3";
 import Header from "@/Components/Guest/Header.vue";
 import Footer from "@/Components/Footer.vue";
 
-defineProps(["service", 'canLogin', 'canRegister']);
+defineProps(["service", "canLogin", "canRegister"]);
 </script>
 
 <template>
@@ -21,7 +21,7 @@ defineProps(["service", 'canLogin', 'canRegister']);
                         class="w-full mx-auto overflow-hidden text-center rounded-lg h-96"
                     >
                         <img
-                            :src="service.thumbnail"
+                            :src="service.service_thumbnail"
                             :alt="service.name"
                             class="object-cover"
                         />

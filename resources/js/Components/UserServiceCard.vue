@@ -16,10 +16,7 @@ const props = defineProps({
         <div class="h-32 overflow-hidden aspect-video rounded-xl">
             <img
                 alt=""
-                :src="
-                    service.thumbnail ??
-                    'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
-                "
+                :src="service.service_thumbnail"
                 class="object-cover w-full h-full"
             />
         </div>

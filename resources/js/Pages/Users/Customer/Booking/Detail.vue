@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, getCurrentInstance } from "vue";
 import moment from "moment";
 
 import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
@@ -20,12 +20,17 @@ const props = defineProps({
     service: Object,
 });
 
+const instance = getCurrentInstance();
 const state = reactive({
     tabs: [
         { name: "About", value: "0" },
         { name: "Reviews", value: "1" },
     ],
 });
+
+const back = () => {
+    window.history.back();
+};
 </script>
 
 <template>
@@ -33,7 +38,9 @@ const state = reactive({
 
     <AuthenticatedLayout>
         <template #header>
-            <HeaderBackButton :url="'#'" />
+            <button @click="back" type="button" class="button-ghost">
+                <i class="fi fi-br-arrow-left"></i>
+            </button>
         </template>
         <div class="py-12">
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
@@ -41,7 +48,7 @@ const state = reactive({
                     <div class="h-[35vh] w-full">
                         <img
                             :src="
-                                service.thumbnail ??
+                                service.service_thumbnail ??
                                 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
                             "
                             alt="Image showing the service"
@@ -124,8 +131,17 @@ const state = reactive({
                                                         class="flex items-start gap-x-4"
                                                     >
                                                         <div
-                                                            class="w-16 bg-gray-600 rounded-full aspect-square"
-                                                        ></div>
+                                                            class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square"
+                                                        >
+                                                            <img
+                                                                :src="
+                                                                    service.user
+                                                                        .profile
+                                                                        .user_avatar
+                                                                "
+                                                                class="object-cover w-full h-full"
+                                                            />
+                                                        </div>
                                                         <div
                                                             class="flex flex-col space-y-1"
                                                         >

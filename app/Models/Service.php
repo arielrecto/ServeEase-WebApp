@@ -24,7 +24,7 @@ class Service extends Model
         'user_id'
     ];
 
-    protected $appends = ['avg_rate', 'is_added_to_favorites'];
+    protected $appends = ['avg_rate', 'is_added_to_favorites', 'service_thumbnail'];
 
     public function user()
     {
@@ -99,5 +99,10 @@ class Service extends Model
             ->favorites()
             ->where('service_id', $this->id)
             ->exists();
+    }
+
+    public function getServiceThumbnailAttribute()
+    {
+        return $this->thumbnail ?? '/assets/images/default_thumbnail.png';
     }
 }

@@ -66,14 +66,20 @@ const fetchFeedbacks = async () => {
             <div v-for="feedback in state.feedbacks" class="flex pt-2 gap-x-4">
                 <div>
                     <div
-                        class="w-8 bg-gray-600 rounded-full aspect-square"
-                    ></div>
+                        class="w-8 h-8 overflow-hidden bg-gray-600 rounded-full aspect-square"
+                    >
+                        <img
+                            :src="feedback.user.profile.user_avatar"
+                            loading="lazy"
+                            class="object-cover w-full h-full"
+                        />
+                    </div>
                 </div>
                 <div class="space-y-1">
-                    <div class="flex items-center gap-x-3">
-                        <span class="inline-block mr-3 text-primary"
-                            >John Doe</span
-                        >
+                    <div class="flex items-center gap-x-2">
+                        <span class="inline-block text-primary">{{
+                            feedback.user.profile.full_name
+                        }}</span>
                         <span class="inline-block mr-3 text-sm">
                             <i class="text-yellow-500 fa-solid fa-star"></i>
                             {{ feedback.rate }}

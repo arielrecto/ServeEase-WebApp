@@ -69,9 +69,7 @@ ChartJS.register(
                     <div class="overflow-hidden aspect-video">
                         <img
                             :src="
-                                service.thumbnail ??
-                                'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
-                            "
+                                service.service_thumbnail"
                             alt="Service thumbnail"
                             class="object-cover"
                         />

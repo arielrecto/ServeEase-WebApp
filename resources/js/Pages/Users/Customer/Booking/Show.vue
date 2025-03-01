@@ -66,7 +66,7 @@ const modalRef = ref(null);
                         <div class="overflow-hidden aspect-video">
                             <img
                                 :src="
-                                    service.thumbnail ??
+                                    service.service_thumbnail ??
                                     'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
                                 "
                                 alt="Service thumbnail"
@@ -99,8 +99,15 @@ const modalRef = ref(null);
                             <div class="flex flex-col gap-y-1">
                                 <div class="flex items-start gap-x-4">
                                     <div
-                                        class="w-16 bg-gray-600 rounded-full aspect-square"
-                                    ></div>
+                                        class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square"
+                                    >
+                                        <img
+                                            :src="
+                                                service.user.profile.user_avatar
+                                            "
+                                            class="object-cover w-full h-full"
+                                        />
+                                    </div>
                                     <div class="flex flex-col space-y-1">
                                         <span class="text-xl">{{
                                             service.user.name

@@ -92,7 +92,7 @@ const submit = () => {
                         </h1>
                         <div class="flex justify-center">
                             <img
-                                :src="service.thumbnail"
+                                :src="service.service_thumbnail"
                                 alt=""
                                 srcset=""
                                 class="w-1/2 aspect-auto object-center"

@@ -112,9 +112,7 @@ watch(selectedStatus, (newStatus) => {
                     <div class="h-[35vh] w-full">
                         <img
                             :src="
-                                service.thumbnail ??
-                                'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'
-                            "
+                                service.service_thumbnail"
                             alt="Image showing the service"
                             class="object-cover w-full h-full"
                         />
@@ -199,8 +197,10 @@ watch(selectedStatus, (newStatus) => {
                                                         class="flex items-start gap-x-4"
                                                     >
                                                         <div
-                                                            class="w-16 bg-gray-600 rounded-full aspect-square"
-                                                        ></div>
+                                                            class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square"
+                                                        >
+                                                        <img :src="service.user.profile.user_avatar" class="object-cover w-full h-full">
+                                                    </div>
                                                         <div
                                                             class="flex flex-col space-y-1"
                                                         >
