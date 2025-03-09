@@ -34,10 +34,15 @@ class UserProviderSeeder extends Seeder
 
             ProviderProfile::create([
                 'service_type_id' => $serviceTypeId,
-                'experience' => '2-4 yrs.',
+                'experience' => '2',
+                'experience_duration' => 'Years',
                 'contact' => '09123456789',
+                'valid_id_type' => 'Passport',
+                'valid_id_image' => 'default.jpg',
+                'citizenship_document_type' => 'Barangay ID',
+                'citizenship_document_image' => 'default.jpg',
                 'verified_at' => Carbon::now()->format('Y-m-d h:i:s'),
-                'certificate' => 'default.jpg',
+                'proof_document_image' => 'default.jpg',
                 'profile_id' => $profile->id
             ]);
 
