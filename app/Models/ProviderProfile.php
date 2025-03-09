@@ -15,9 +15,14 @@ class ProviderProfile extends Model
     protected $fillable = [
         'service_type_id',
         'experience',
+        'experience_duration',
         'contact',
         'verified_at',
-        'certificate',
+        'valid_id_type',
+        'valid_id_image',
+        'citizenship_document_type',
+        'citizenship_document_image',
+        'proof_document_image',
         'profile_id'
     ];
 

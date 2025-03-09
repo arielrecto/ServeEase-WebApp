@@ -16,7 +16,7 @@ class ServiceProviderApplicationController extends Controller
      */
     public function index()
     {
-        $providers = ProviderProfile::whereVerifiedAt(null)->with(['profile.user'])->latest()->paginate(10);
+        $providers = ProviderProfile::whereNull('verified_at')->with(['profile.user'])->latest()->paginate(10);
 
         // dd($providers);
 
@@ -104,12 +104,17 @@ class ServiceProviderApplicationController extends Controller
             'status' => 'approved'
         ]);
 
-
-        // TODO: Add assign service provider role to user
-
-
         $user->assignRole($serviceProviderRole);
 
         return to_route('admin.applications.index')->with('message_success', 'You have approved the application.');
+    }
+
+    public function reject(string $id)
+    {
+        $provider = ProviderProfile::find($id);
+
+        $provider->delete();
+
+        return back()->with('message_success', 'You have rejected the application.');
     }
 }

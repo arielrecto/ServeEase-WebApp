@@ -81,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('applications')->as('applications.')->controller(ServiceProviderApplicationController::class)->group(function () {
             Route::get('/approve/{id}', 'approve')->name('approve');
             Route::put('/approved/{id}', 'approved')->name('approved');
+            Route::delete('/rejected/{id}', 'reject')->name('reject');
             Route::get('/delete/{id}', 'delete')->name('delete');
         });
         Route::resource('applications', ServiceProviderApplicationController::class)->except(["create", "store", "edit", "update"]);

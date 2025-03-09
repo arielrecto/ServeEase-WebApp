@@ -15,10 +15,15 @@ return new class extends Migration {
         Schema::create('provider_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(ServiceType::class)->constrained()->cascadeOnDelete();
+            $table->string('experience_duration');
             $table->string('experience');
             $table->string('contact');
+            $table->string('valid_id_type');
+            $table->string('valid_id_image');
+            $table->string('citizenship_document_type');
+            $table->string('citizenship_document_image');
+            $table->string('proof_document_image');
             $table->dateTime('verified_at')->nullable();
-            $table->string('certificate');
             $table->foreignIdFor(Profile::class)->constrained()->onDelete('cascade');
             $table->timestamps();
         });
