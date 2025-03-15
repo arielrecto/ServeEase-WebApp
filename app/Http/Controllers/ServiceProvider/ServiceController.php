@@ -55,14 +55,14 @@ class ServiceController extends Controller
             'description' => $request->description,
             'price_type' => $request->priceType,
             'terms_and_conditions' => $request->termAndCondition,
-            'service_type' => $request->serviceType,
+            'service_type_id' => $request->serviceType,
             'is_approved' => false,
             'barangay_id' => $request->barangay,
             'user_id' => $request->user()->id,
             'thumbnail' => asset('/storage/' . $dir),
         ]);
 
-        return back()->with([
+        return to_route('profile.provider')->with([
             'message_success' => 'Service Added',
         ]);
     }
@@ -128,8 +128,18 @@ class ServiceController extends Controller
         return [
             'monthlySales' => [
                 'labels' => [
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December'
                 ],
                 'datasets' => [
                     [
