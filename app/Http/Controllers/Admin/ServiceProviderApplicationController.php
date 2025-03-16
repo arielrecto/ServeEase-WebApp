@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use App\Enums\UserRoles;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\ProviderProfile;
+use App\Events\NotificationSent;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use App\Actions\GenerateNotificationAction;
 
 class ServiceProviderApplicationController extends Controller
 {
@@ -16,7 +19,7 @@ class ServiceProviderApplicationController extends Controller
      */
     public function index()
     {
-        $providers = ProviderProfile::whereNull('verified_at')->with(['profile.user'])->latest()->paginate(10);
+        $providers = ProviderProfile::whereNull('verified_at')->with(['serviceType:id,name', 'profile.user'])->latest()->paginate(10);
 
         // dd($providers);
 
@@ -94,10 +97,7 @@ class ServiceProviderApplicationController extends Controller
 
         $serviceProviderRole = Role::where('name', UserRoles::SERVICEPROVIDER->value)->first();
 
-
         $user = $provider->profile->user;
-
-
 
         $provider->update([
             'verified_at' => now(),
@@ -105,6 +105,15 @@ class ServiceProviderApplicationController extends Controller
         ]);
 
         $user->assignRole($serviceProviderRole);
+
+        $notification = Notification::create([
+            'user_id' => $user->id,
+            'content' => GenerateNotificationAction::handle('application', 'application-approved'),
+            'type' => 'application',
+            'url' => '/'
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return to_route('admin.applications.index')->with('message_success', 'You have approved the application.');
     }
@@ -114,6 +123,17 @@ class ServiceProviderApplicationController extends Controller
         $provider = ProviderProfile::find($id);
 
         $provider->delete();
+
+        $user = $provider->profile->user;
+
+        $notification = Notification::create([
+            'user_id' => $user->id,
+            'content' => GenerateNotificationAction::handle('application', 'application-rejected'),
+            'type' => 'application',
+            'url' => '/'
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return back()->with('message_success', 'You have rejected the application.');
     }

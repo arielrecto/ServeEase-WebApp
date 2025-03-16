@@ -12,6 +12,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ServiceTypeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Customer\FavoriteController;
@@ -145,6 +146,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
         Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
         Route::post('/messages/{conversation}', [MessageController::class, 'store'])->name('messages.store');
+
+        Route::put('/notifications/read', [NotificationController::class, 'markAsSeen']);
     });
 });
 

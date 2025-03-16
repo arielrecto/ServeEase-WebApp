@@ -6,14 +6,17 @@ use Inertia\Inertia;
 use App\Models\Service;
 use App\Models\FeedBack;
 use App\Models\AvailService;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\GenerateNotificationAction;
 
 class BookingController extends Controller
 {
-    public  function  index(Request $request)
+    public function index(Request $request)
     {
 
         $filter = $request->filter;
@@ -48,7 +51,7 @@ class BookingController extends Controller
         $weekStartDate = Carbon::now()->startOfWeek()->format('Y-m-d H:i');
         $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
 
-        $query =  AvailService::whereHas('service', function ($q) {
+        $query = AvailService::whereHas('service', function ($q) {
             $q->where('user_id', Auth::user()->id);
         });
 
@@ -82,7 +85,16 @@ class BookingController extends Controller
             'status' => $request->status
         ]);
 
+        if ($availService->status === 'completed') {
+            $notification = Notification::create([
+                'user_id' => $availService->user->id,
+                'content' => GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user),
+                'type' => 'application',
+                'url' => '/'
+            ]);
 
+            broadcast(new NotificationSent($notification))->toOthers();
+        }
 
         return back();
     }

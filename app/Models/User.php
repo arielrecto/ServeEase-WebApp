@@ -91,6 +91,11 @@ class User extends Authenticatable
         return $this->hasMany(FeedBack::class);
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     public function rescheduleServices()
     {
         return $this->hasMany(RescheduleService::class);

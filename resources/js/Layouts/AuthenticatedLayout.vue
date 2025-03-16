@@ -11,6 +11,7 @@ import NavLink from "@/Components/NavLink.vue";
 import NavLinkContainer from "@/Components/NavLinkContainer.vue";
 import FlashMessage from "@/Components/FlashMessage.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import NotificationsPopup from "@/Components/NotificationsPopup.vue";
 import Footer from "@/Components/Footer.vue";
 import Loader from "@/Components/Loader.vue";
 
@@ -84,67 +85,10 @@ const finishedBookings = usePage().props.auth.finishedBookings;
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Notifications popup -->
-                            <div
+                            <NotificationsPopup
                                 v-if="!$page.props.auth.isAdmin"
-                                class="relative ms-3"
-                            >
-                                <Dropdown
-                                    align="right"
-                                    width="80"
-                                    contentClasses="py-1 bg-white max-h-[50vh] overflow-y-auto"
-                                >
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center justify-center w-10 h-10 text-lg font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-gray-400 rounded-full hover:text-gray-700 focus:outline-none hover:bg-gray-100"
-                                            >
-                                                <i
-                                                    class="ri-notification-2-line"
-                                                ></i>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            v-for="finishedBooking in finishedBookings"
-                                            :href="
-                                                route(
-                                                    'customer.booking.detail',
-                                                    finishedBooking.id
-                                                )
-                                            "
-                                        >
-                                            <div class="space-y-1">
-                                                <p>
-                                                    The service that you booked
-                                                    with
-                                                    <span class="font-bold">{{
-                                                        finishedBooking.service
-                                                            .user.name
-                                                    }}</span>
-                                                    has been finished. Write a
-                                                    review.
-                                                </p>
-                                                <div class="text-xs">
-                                                    {{
-                                                        moment(
-                                                            finishedBooking.created_at
-                                                        ).fromNow()
-                                                    }}
-                                                </div>
-                                            </div>
-                                        </DropdownLink>
-                                        <div
-                                            v-if="finishedBookings.length === 0"
-                                            class="py-5 text-sm text-center"
-                                        >
-                                            There are no notifications.
-                                        </div>
-                                    </template>
-                                </Dropdown>
-                            </div>
+                                :user="$page.props.auth?.user"
+                            />
 
                             <!-- Settings Dropdown -->
                             <div class="relative ms-3">

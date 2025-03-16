@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\User;
 use Inertia\Middleware;
 use App\Models\AvailService;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,6 +36,7 @@ class HandleInertiaRequests extends Middleware
         $hasProfileSetup = $request->user()->profile ?? false;
         $finishedBookings = null;
         $user = null;
+        $notifications = null;
 
         if (Auth::check()) {
             $finishedBookings = AvailService::with('service.user')
@@ -45,12 +47,15 @@ class HandleInertiaRequests extends Middleware
             $user = User::with(['profile'])
                 ->whereId($request->user()->id)
                 ->first();
+
+            $notifications = Notification::latest()->take(8)->get();
         }
 
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $user,
+                'notifications' => $notifications,
                 'hasProfileSetup' => $hasProfileSetup,
                 'isAdmin' => $request?->user()?->getRoleNames()?->contains('admin'),
                 'roleName' => $request?->user()?->getRoleNames()?->toArray(),
