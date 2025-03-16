@@ -82,7 +82,9 @@ const items = ref([
                                         <td>
                                             {{ provider.profile.user.name }}
                                         </td>
-                                        <td>{{ provider.service_type }}</td>
+                                        <td>
+                                            {{ provider.service_type.name }}
+                                        </td>
                                         <td>{{ provider.experience }}</td>
                                         <td>
                                             {{
