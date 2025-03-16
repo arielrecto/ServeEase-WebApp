@@ -89,8 +89,8 @@ class BookingController extends Controller
             $notification = Notification::create([
                 'user_id' => $availService->user->id,
                 'content' => GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user),
-                'type' => 'application',
-                'url' => '/'
+                'type' => 'booking',
+                'url' => "/customer/booking/{$availService->id}/detail"
             ]);
 
             broadcast(new NotificationSent($notification))->toOthers();

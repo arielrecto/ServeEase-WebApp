@@ -29,7 +29,6 @@ const filteredNotifications = computed(() => {
 });
 
 const newNotificationReceived = computed(() => {
-    console.log("new notif");
     return notifications.value.some((notification) => !notification.is_seen);
 });
 

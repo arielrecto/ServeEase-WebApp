@@ -6,10 +6,13 @@ use Inertia\Inertia;
 use App\Models\Service;
 use App\Models\FeedBack;
 use App\Models\AvailService;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\GenerateNotificationAction;
 
 class ServiceController extends Controller
 {
@@ -107,7 +110,7 @@ class ServiceController extends Controller
         }
 
 
-        AvailService::create([
+        $availService =AvailService::create([
             'start_date' => $request->startDate,
             'end_date' => $request->endDate,
             'remarks' => $request->remark,
@@ -117,6 +120,14 @@ class ServiceController extends Controller
             'user_id' => Auth::user()->id
         ]);
 
+        $notification = Notification::create([
+            'user_id' => $availService->service->user->id,
+            'content' => GenerateNotificationAction::handle('booking', 'booking-created', Auth::user()),
+            'type' => 'booking',
+            'url' => "/service-provider/booking/{$availService->id}/detail"
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return to_route('customer.services.show', ['service' => $request->service])->with(['message_success']);
     }

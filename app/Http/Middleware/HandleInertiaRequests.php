@@ -48,7 +48,7 @@ class HandleInertiaRequests extends Middleware
                 ->whereId($request->user()->id)
                 ->first();
 
-            $notifications = Notification::latest()->take(8)->get();
+            $notifications = Notification::where('user_id', $request->user()->id)->latest()->take(8)->get();
         }
 
         return [
