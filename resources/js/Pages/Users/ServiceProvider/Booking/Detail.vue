@@ -111,8 +111,7 @@ watch(selectedStatus, (newStatus) => {
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="h-[35vh] w-full">
                         <img
-                            :src="
-                                service.service_thumbnail"
+                            :src="service.service_thumbnail"
                             alt="Image showing the service"
                             class="object-cover w-full h-full"
                         />
@@ -199,8 +198,15 @@ watch(selectedStatus, (newStatus) => {
                                                         <div
                                                             class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square"
                                                         >
-                                                        <img :src="service.user.profile.user_avatar" class="object-cover w-full h-full">
-                                                    </div>
+                                                            <img
+                                                                :src="
+                                                                    service.user
+                                                                        .profile
+                                                                        .user_avatar
+                                                                "
+                                                                class="object-cover w-full h-full"
+                                                            />
+                                                        </div>
                                                         <div
                                                             class="flex flex-col space-y-1"
                                                         >
@@ -254,27 +260,6 @@ watch(selectedStatus, (newStatus) => {
                                         <div
                                             class="order-1 h-auto p-5 space-y-4 border border-gray-300 rounded-lg md:order-2"
                                         >
-                                            <div>
-                                                <ModalLinkDialog
-                                                    v-if="
-                                                        availService.status ===
-                                                            'completed' &&
-                                                        !availService.has_feedback
-                                                    "
-                                                    :href="
-                                                        route(
-                                                            'customer.feedbacks.create'
-                                                        ) +
-                                                        `?id=${availService.id}`
-                                                    "
-                                                    class="cursor-pointer text-primary"
-                                                >
-                                                    <i
-                                                        class="ri-edit-2-line"
-                                                    ></i>
-                                                    Write a review
-                                                </ModalLinkDialog>
-                                            </div>
                                             <div class="flex gap-x-12">
                                                 <div class="space-y-1">
                                                     <div class="text-gray-600">
@@ -295,22 +280,11 @@ watch(selectedStatus, (newStatus) => {
                                                         Status
                                                     </div>
 
-                                                    <a
-                                                        href="#"
-                                                        @click="
-                                                            isOpenUpdateStatusForm =
-                                                                !isOpenUpdateStatusForm
-                                                        "
-                                                        v-show="
-                                                            !isOpenUpdateStatusForm
-                                                        "
-                                                        class="px-5 py-1 text-sm font-bold rounded-lg"
-                                                        :class=" bookingStatusBadgeStyle"
-                                                    >
-                                                        {{ bookingStatus }}
-                                                    </a>
+                                                    <StatusBadge
+                                                        :status="availService.status"
+                                                    />
 
-                                                    <SelectInput
+                                                    <!-- <SelectInput
                                                         v-show="
                                                             isOpenUpdateStatusForm
                                                         "
@@ -328,7 +302,7 @@ watch(selectedStatus, (newStatus) => {
                                                         >
                                                             {{ option.label }}
                                                         </option>
-                                                    </SelectInput>
+                                                    </SelectInput> -->
 
                                                     <!-- <select
                                                         v-show="

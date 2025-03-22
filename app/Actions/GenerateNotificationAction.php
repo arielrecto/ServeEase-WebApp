@@ -17,6 +17,18 @@ class GenerateNotificationAction
                 }
                 break;
             case 'booking':
+                if ($action === 'booking-confirmed') {
+                    return "{$user->name} has confirmed your booking. Click to see the details.";
+                }
+
+                if ($action === 'booking-started') {
+                    return "Your booking for {$user->name}'s service has started.";
+                }
+
+                if ($action === 'booking-cancelled') {
+                    return "{$user->name} has cancelled your booking.";
+                }
+
                 if ($action === 'booking-created') {
                     return "{$user->name} has booked with your service. Click to see the details.";
                 }

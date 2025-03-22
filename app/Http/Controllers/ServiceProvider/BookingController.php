@@ -78,6 +78,15 @@ class BookingController extends Controller
 
         return Inertia::render('Users/ServiceProvider/Booking/Detail', compact(['availService', 'service']));
     }
+
+    public function confirm(Request $request, AvailService $availService)
+    {
+        $status = $request->status;
+        $id = $availService->id;
+
+        return Inertia::render('Users/ServiceProvider/Booking/Confirm', compact(['status', 'id']));
+    }
+
     public function updateStatus(Request $request, AvailService $availService)
     {
 
@@ -85,16 +94,31 @@ class BookingController extends Controller
             'status' => $request->status
         ]);
 
-        if ($availService->status === 'completed') {
-            $notification = Notification::create([
-                'user_id' => $availService->user->id,
-                'content' => GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user),
-                'type' => 'booking',
-                'url' => "/customer/booking/{$availService->id}/detail"
-            ]);
+        $message = '';
 
-            broadcast(new NotificationSent($notification))->toOthers();
+        switch ($availService->status) {
+            case 'confirmed':
+                $message = GenerateNotificationAction::handle('booking', 'booking-confirmed', $availService->service->user);
+                break;
+            case 'cancelled':
+                $message = GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->service->user);
+                break;
+            case 'in_progress':
+                $message = GenerateNotificationAction::handle('booking', 'booking-started', $availService->service->user);
+                break;
+            case 'completed':
+                $message = GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user);
+                break;
         }
+
+        $notification = Notification::create([
+            'user_id' => $availService->user->id,
+            'content' => $message,
+            'type' => 'booking',
+            'url' => "/customer/booking/{$availService->id}/detail"
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return back();
     }

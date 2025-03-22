@@ -1,16 +1,16 @@
 <script setup>
-import { computed, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
-import { ModalLink } from '@inertiaui/modal-vue';
-import ModalLinkDialog from '@/Components/Modal/ModalLinkDialog.vue';
-import ModalLinkSlideover from '@/Components/Modal/ModalLinkSlideover.vue';
+import { computed, onMounted } from "vue";
+import { Link } from "@inertiajs/vue3";
+import { ModalLink } from "@inertiaui/modal-vue";
+import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
+import ModalLinkSlideover from "@/Components/Modal/ModalLinkSlideover.vue";
 
 const props = defineProps({
     type: {
         validator(value, props) {
             // The value must match one of these strings
-            return ['link', 'modal', 'button'].includes(value);
-        }
+            return ["link", "modal", "button"].includes(value);
+        },
     },
     href: String,
     actionType: String,
@@ -18,8 +18,10 @@ const props = defineProps({
     modalSlideoverEnabled: {
         type: [Boolean, null],
         default: null,
-    }
+    },
 });
+
+const emits = defineEmits(["buttonClick"]);
 
 const tooltipText = computed(() => {
     const firstChar = props.actionType[0].toUpperCase();
@@ -29,27 +31,40 @@ const tooltipText = computed(() => {
 
 const icon = computed(() => {
     switch (props.actionType.toLowerCase()) {
-        case 'view':
-            return 'ri-eye-line';
-        break;
-        case 'edit':
-            return 'fa-solid fa-pen-to-square';
-        break;
-        case 'delete':
-            return 'ri-delete-bin-line';
-        break;
-        case 'approve':
-            return 'fa-solid fa-thumbs-up';
-        break;
-        case 'reject':
-            return 'fa-solid fa-thumbs-down';
-        break;
+        case "view":
+            return "ri-eye-line";
+            break;
+        case "complete":
+            return "fa-solid fa-square-check";
+            break;
+        case "cancel":
+            return "fa-solid fa-xmark";
+            break;
+        case "confirm":
+            return "fa-solid fa-thumbs-up";
+            break;
+        case "start service":
+            return "fa-solid fa-circle-play";
+            break;
+        case "edit":
+            return "fa-solid fa-pen-to-square";
+            break;
+        case "delete":
+            return "ri-delete-bin-line";
+            break;
+        case "approve":
+            return "fa-solid fa-thumbs-up";
+            break;
+        case "reject":
+            return "fa-solid fa-thumbs-down";
+            break;
         default:
-        break;
+            break;
     }
 });
 
-const CLASSES = 'inline-flex items-center justify-center w-12 h-12 text-lg transition duration-200 ease-in-out border border-gray-300 rounded-lg bg-neutral-50 active:scale-95';
+const CLASSES =
+    "inline-flex items-center justify-center w-12 h-12 text-lg transition duration-200 ease-in-out border border-gray-300 rounded-lg bg-neutral-50 active:scale-95";
 </script>
 
 <template>
@@ -78,7 +93,13 @@ const CLASSES = 'inline-flex items-center justify-center w-12 h-12 text-lg trans
             </template>
         </template>
         <template v-else-if="type === 'button'">
-            <button></button>
+            <button
+                @click="emits('buttonClick', actionType)"
+                type="button"
+                :class="CLASSES"
+            >
+                <i :class="icon"></i>
+            </button>
         </template>
     </div>
 </template>

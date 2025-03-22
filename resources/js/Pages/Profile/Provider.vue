@@ -60,7 +60,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                 class="w-16 h-16 overflow-hidden bg-gray-300 rounded-full q md:w-28 md:h-28"
                             >
                                 <img
-                                    :src="user.profile.user_avatar"
+                                    :src="user?.profile?.user_avatar"
                                     class="object-cover w-full h-full"
                                 />
                             </div>

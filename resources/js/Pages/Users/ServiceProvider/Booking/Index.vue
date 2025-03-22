@@ -1,5 +1,5 @@
 <script setup>
-import { Link, usePage } from "@inertiajs/vue3";
+import { Link, usePage, useForm, router } from "@inertiajs/vue3";
 import { ref, reactive, computed, defineAsyncComponent, watch } from "vue";
 import moment from "moment";
 
@@ -53,6 +53,15 @@ const openCalendar = ref(false);
 
 const events = ref([]);
 
+const startService = (id) => {
+    router.get(`/service-provider/booking/${id}/confirm?status=in_progress`, {
+        onSuccess: () => {},
+        onError: (errors) => {
+            console.error(errors);
+        },
+    });
+};
+
 watch(openCalendar, () => {
     events.value = [
         ...props.availServices.data.map((item) => ({
@@ -61,11 +70,7 @@ watch(openCalendar, () => {
             end: moment(item.end_date).add(1, "day").format("YYYY-MM-DD"),
         })),
     ];
-
-    console.log(events.value);
 });
-
-console.log(props.availServices);
 </script>
 
 <template>
@@ -201,26 +206,6 @@ console.log(props.availServices);
                                             <div
                                                 class="flex items-center gap-x-4"
                                             >
-                                                <ModalLinkDialog
-                                                    v-if="
-                                                        availService.status ===
-                                                            'completed' &&
-                                                        !availService.has_feedback
-                                                    "
-                                                    :href="
-                                                        route(
-                                                            'customer.feedbacks.create'
-                                                        ) +
-                                                        `?id=${availService.service_id}`
-                                                    "
-                                                    class="cursor-pointer text-primary"
-                                                >
-                                                    <i
-                                                        class="ri-edit-2-line"
-                                                    ></i>
-                                                    Write a review
-                                                </ModalLinkDialog>
-
                                                 <ActionButton
                                                     type="link"
                                                     actionType="view"
@@ -232,9 +217,84 @@ console.log(props.availServices);
                                                     "
                                                 />
                                                 <ActionButton
-                                                    type="link"
-                                                    actionType="edit"
-                                                    :href="'#'"
+                                                    v-if="
+                                                        availService.status ===
+                                                        'pending'
+                                                    "
+                                                    type="modal"
+                                                    actionType="confirm"
+                                                    :href="
+                                                        route(
+                                                            'service-provider.booking.confirm',
+                                                            {
+                                                                availService:
+                                                                    availService.id,
+                                                                _query: {
+                                                                    status: 'confirmed',
+                                                                },
+                                                            }
+                                                        )
+                                                    "
+                                                />
+                                                <ActionButton
+                                                    v-if="
+                                                        availService.status ===
+                                                        'confirmed'
+                                                    "
+                                                    type="modal"
+                                                    actionType="start service"
+                                                    :href="
+                                                        route(
+                                                            'service-provider.booking.confirm',
+                                                            {
+                                                                availService:
+                                                                    availService.id,
+                                                                _query: {
+                                                                    status: 'in_progress',
+                                                                },
+                                                            }
+                                                        )
+                                                    "
+                                                />
+                                                <ActionButton
+                                                    v-if="
+                                                        availService.status ===
+                                                        'in_progress'
+                                                    "
+                                                    type="modal"
+                                                    actionType="complete"
+                                                    :href="
+                                                        route(
+                                                            'service-provider.booking.confirm',
+                                                            {
+                                                                availService:
+                                                                    availService.id,
+                                                                _query: {
+                                                                    status: 'completed',
+                                                                },
+                                                            }
+                                                        )
+                                                    "
+                                                />
+                                                <ActionButton
+                                                    v-if="
+                                                        availService.status ===
+                                                        'in_progress'
+                                                    "
+                                                    type="modal"
+                                                    actionType="cancel"
+                                                    :href="
+                                                        route(
+                                                            'service-provider.booking.confirm',
+                                                            {
+                                                                availService:
+                                                                    availService.id,
+                                                                _query: {
+                                                                    status: 'cancelled',
+                                                                },
+                                                            }
+                                                        )
+                                                    "
                                                 />
                                             </div>
                                         </td>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Sex;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Profile;
@@ -117,7 +118,7 @@ class ProfileController extends Controller
 
     public function showProviderProfile(Request $request, ProviderProfile $providerProfile)
     {
-        $user = $providerProfile->profile->user;
+        $user = User::with(['profile'])->where('id', $providerProfile->profile->user->id)->firstOrFail();
         $profile = $providerProfile->profile;
         $service = Service::with(['user', 'availService'])
             ->withCount([

@@ -130,6 +130,7 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('booking')->as('booking.')->group(function () {
                 Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');
                 Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
+                Route::get('/{availService}/confirm', [ServiceProviderBookingController::class, 'confirm'])->name('confirm');
                 Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
             });
         });
