@@ -7,6 +7,7 @@ const props = defineProps({
 const statusClass = computed(() => {
     return {
         cancelled: "bg-red-100 text-red-800",
+        rejected: "bg-red-100 text-red-800",
         pending: "bg-yellow-100 text-yellow-800",
         in_progress: "bg-orange-100 text-orange-800",
         confirmed: "bg-green-100 text-green-800",
@@ -17,6 +18,7 @@ const statusClass = computed(() => {
 const statusText = computed(() => {
     return {
         cancelled: "Cancelled",
+        rejected: "Rejected",
         pending: "Pending",
         in_progress: "In Progress",
         confirmed: "Confirmed",

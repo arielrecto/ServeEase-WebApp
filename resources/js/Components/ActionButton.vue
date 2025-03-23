@@ -43,6 +43,9 @@ const icon = computed(() => {
         case "confirm":
             return "fa-solid fa-thumbs-up";
             break;
+        case "reject":
+            return "fa-solid fa-thumbs-down";
+            break;
         case "start service":
             return "fa-solid fa-circle-play";
             break;

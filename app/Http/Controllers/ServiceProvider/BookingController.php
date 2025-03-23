@@ -32,6 +32,7 @@ class BookingController extends Controller
                     $query->whereStatus("pending");
                 }
             })
+            ->whereNot('status', 'rejected')
             ->latest()
             ->paginate(20)
             ->through(function ($availService) {
@@ -89,6 +90,17 @@ class BookingController extends Controller
 
     public function updateStatus(Request $request, AvailService $availService)
     {
+        if (
+            ($request->status === 'confirmed' ||
+                $request->status === 'in_progress') &&
+            AvailService::whereRelation(
+                'service',
+                'user_id',
+                Auth::user()->id
+            )->exists()
+        ) {
+            return back()->with('message_error', 'You currently have an ongoing booking!');
+        }
 
         $availService->update([
             'status' => $request->status
@@ -99,6 +111,9 @@ class BookingController extends Controller
         switch ($availService->status) {
             case 'confirmed':
                 $message = GenerateNotificationAction::handle('booking', 'booking-confirmed', $availService->service->user);
+                break;
+            case 'rejected':
+                $message = GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user);
                 break;
             case 'cancelled':
                 $message = GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->service->user);

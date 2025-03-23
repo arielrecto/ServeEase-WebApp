@@ -21,6 +21,10 @@ class GenerateNotificationAction
                     return "{$user->name} has confirmed your booking. Click to see the details.";
                 }
 
+                if ($action === 'booking-rejected') {
+                    return "The service that you booked with {$user->name} has been declined.";
+                }
+
                 if ($action === 'booking-started') {
                     return "Your booking for {$user->name}'s service has started.";
                 }

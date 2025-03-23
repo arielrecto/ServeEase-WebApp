@@ -45,9 +45,21 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        $service = Service::with(['user'])->where('id', $id)->first();
+        $service = Service::with(['user', 'user.profile'])->where('id', $id)->first();
 
-        return Inertia::render('Users/Customer/Services/Show', compact(['service']));
+        $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
+            ->whereRelation(
+                'service',
+                'user_id',
+                $service->user->id
+            )
+            ->whereDate('created_at', '>=', Carbon::now()->startOfMonth())
+            ->where('status', 'pending')
+            ->orwhere('status', 'in_progress')
+            ->get()
+            ->toArray();
+
+        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices']));
     }
 
     /**
@@ -110,7 +122,7 @@ class ServiceController extends Controller
         }
 
 
-        $availService =AvailService::create([
+        $availService = AvailService::create([
             'start_date' => $request->startDate,
             'end_date' => $request->endDate,
             'remarks' => $request->remark,

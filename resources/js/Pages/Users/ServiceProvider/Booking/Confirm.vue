@@ -24,6 +24,7 @@ const headingText = computed(() => {
     return {
         cancelled: "Cancel booking?",
         confirmed: "Confirm booking?",
+        rejected: "Reject booking?",
         in_progress: "Start the service?",
         completed: "Service done?",
     }[props.status];
@@ -33,6 +34,7 @@ const dialogText = computed(() => {
     return {
         cancelled: "This will cancel the booking.",
         confirmed: "You are about to accept this request.",
+        rejected: "You are about to decline this request.",
         in_progress: "You are about to start the service.",
         completed: "This will set the booking as completed.",
     }[props.status];

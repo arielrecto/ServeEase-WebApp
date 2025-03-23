@@ -239,6 +239,26 @@ watch(openCalendar, () => {
                                                 <ActionButton
                                                     v-if="
                                                         availService.status ===
+                                                        'pending'
+                                                    "
+                                                    type="modal"
+                                                    actionType="reject"
+                                                    :href="
+                                                        route(
+                                                            'service-provider.booking.confirm',
+                                                            {
+                                                                availService:
+                                                                    availService.id,
+                                                                _query: {
+                                                                    status: 'rejected',
+                                                                },
+                                                            }
+                                                        )
+                                                    "
+                                                />
+                                                <ActionButton
+                                                    v-if="
+                                                        availService.status ===
                                                         'confirmed'
                                                     "
                                                     type="modal"
