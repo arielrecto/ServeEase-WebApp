@@ -96,8 +96,11 @@ class BookingController extends Controller
             AvailService::whereRelation(
                 'service',
                 'user_id',
+                '=',
                 Auth::user()->id
-            )->exists()
+            )
+                ->whereIn('status', ['in_progress', 'confirmed'])
+                ->exists()
         ) {
             return back()->with('message_error', 'You currently have an ongoing booking!');
         }
