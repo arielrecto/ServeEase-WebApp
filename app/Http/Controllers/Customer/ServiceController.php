@@ -53,9 +53,8 @@ class ServiceController extends Controller
                 'user_id',
                 $service->user->id
             )
-            ->whereDate('created_at', '>=', Carbon::now()->startOfMonth())
-            ->where('status', 'pending')
-            ->orwhere('status', 'in_progress')
+            ->whereDate('created_at', '>=', Carbon::now())
+            ->whereIn('status', ['pending', 'in_progress'])
             ->get()
             ->toArray();
 

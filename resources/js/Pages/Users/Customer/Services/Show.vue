@@ -42,13 +42,6 @@ const events = computed(() => {
             <div
                 class="mx-auto max-w-7xl sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-5"
             >
-                <div class="h-max bg-white p-5 rounded-lg shadow-lg">
-                    <h2 class="mb-4">
-                        {{ service.user.profile.first_name }}'s upcoming
-                        bookings
-                    </h2>
-                    <Calendar :events="events" />
-                </div>
                 <div class="col-span-2 flex flex-col gap-5">
                     <div
                         class="flex flex-col gap-5 p-5 bg-white rounded-lg shadow-lg"
@@ -106,6 +99,13 @@ const events = computed(() => {
                             >
                         </div>
                     </div>
+                </div>
+                <div class="h-max bg-white p-5 rounded-lg shadow-lg">
+                    <h2 class="mb-4">
+                        {{ service.user.profile.first_name }}'s upcoming
+                        bookings
+                    </h2>
+                    <Calendar :events="events" />
                 </div>
             </div>
         </div>
