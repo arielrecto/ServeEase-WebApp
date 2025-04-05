@@ -9,6 +9,10 @@ import About from '@/Components/Guest/About.vue';
 import ComboBox from '@/Components/Form/ComboBox.vue';
 
 defineProps({
+    pages: {
+        type: Array,
+        required: true,
+    },
     canLogin: {
         type: Boolean,
     },
@@ -29,10 +33,11 @@ defineProps({
 </script>
 
 <template>
+
     <Head title="ServEase" />
 
     <div class="min-h-screen bg-gray-100">
-        <Header :canLogin="canLogin" :canRegister="canRegister" />
+        <Header :canLogin="canLogin" :canRegister="canRegister" :pages="pages" />
 
         <main>
 

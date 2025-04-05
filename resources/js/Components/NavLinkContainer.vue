@@ -44,6 +44,12 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
                 Reviews
             </NavLink>
             <NavLink
+                :href="route('admin.cms.index')"
+                :active="route().current('admin.cms.index')"
+            >
+                Pages
+            </NavLink>
+            <NavLink
                 :href="route('admin.users.index')"
                 :active="route().current('admin.users.index')"
             >
