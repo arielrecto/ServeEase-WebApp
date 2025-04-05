@@ -125,4 +125,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ServiceCart::class);
     }
+
+
+    public function remarks()
+    {
+        return $this->hasMany(Remark::class);
+    }
 }

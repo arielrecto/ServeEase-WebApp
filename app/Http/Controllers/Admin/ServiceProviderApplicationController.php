@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
+use App\Models\Remark;
 use App\Enums\UserRoles;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class ServiceProviderApplicationController extends Controller
      */
     public function index()
     {
-        $providers = ProviderProfile::whereNull('verified_at')->with(['serviceType:id,name', 'profile.user'])->latest()->paginate(10);
+        $providers = ProviderProfile::whereNull('verified_at')
+        ->where('status', 'pending')->with(['serviceType:id,name', 'profile.user'])->latest()->paginate(10);
 
         // dd($providers);
 
@@ -118,23 +120,41 @@ class ServiceProviderApplicationController extends Controller
         return to_route('admin.applications.index')->with('message_success', 'You have approved the application.');
     }
 
-    public function reject(string $id)
+    public function reject(Request $request, string $id)
     {
-        $provider = ProviderProfile::find($id);
+        $request->validate([
+            'remark' => 'required|string'
+        ]);
 
-        $provider->delete();
 
-        $user = $provider->profile->user;
+        $providerProfile = ProviderProfile::find($id);
 
+        // Update status to rejected
+        $providerProfile->update([
+            'status' => 'rejected'
+        ]);
+
+
+        // Create remark
+        Remark::create([
+            'remarkable_id' => $providerProfile->id,
+            'remarkable_type' => ProviderProfile::class,
+            'user_id' => auth()->id(),
+            'content' => $request->remark
+        ]);
+
+        // Create notification for the provider
         $notification = Notification::create([
-            'user_id' => $user->id,
-            'content' => GenerateNotificationAction::handle('application', 'application-rejected'),
+            'user_id' => $providerProfile->profile->user->id,
+            'content' => GenerateNotificationAction::handle('application', 'application-rejected', auth()->user()),
             'type' => 'application',
-            'url' => '/'
+            'url' => '/service-provider/profile'
         ]);
 
         broadcast(new NotificationSent($notification))->toOthers();
 
-        return back()->with('message_success', 'You have rejected the application.');
+        return redirect()
+            ->back()
+            ->with('message_success', 'Application has been rejected');
     }
 }

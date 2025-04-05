@@ -8,10 +8,14 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 import ImageUpload from "@/Components/Form/ImageUpload.vue";
+import { ref, computed } from "vue";
 
-defineProps({
+const activeTab = ref('form');
+
+const props = defineProps({
     serviceTypes: Object,
     service: Object,
+    providerProfile: Object,
 });
 
 const form = useForm({
@@ -49,6 +53,29 @@ const submit = () => {
         onFinish: () => form.reset(),
     });
 };
+
+// Add computed property for application status
+const applicationStatus = computed(() => {
+    if (!props.providerProfile) return null;
+
+    const statusMap = {
+        'pending': { color: 'yellow', text: 'Pending Review' },
+        'approved': { color: 'green', text: 'Approved' },
+        'rejected': { color: 'red', text: 'Rejected' }
+    };
+
+    return statusMap[props.providerProfile.status] || { color: 'gray', text: 'Unknown' };
+});
+
+// Add new computed property for remarks display
+const remarkClass = computed(() => (status) => {
+    const classes = {
+        'rejected': 'bg-red-50 border-red-200 text-red-700',
+        'pending': 'bg-yellow-50 border-yellow-200 text-yellow-700',
+        'approved': 'bg-green-50 border-green-200 text-green-700'
+    };
+    return classes[status] || 'bg-gray-50 border-gray-200 text-gray-700';
+});
 </script>
 
 <template>
@@ -67,7 +94,36 @@ const submit = () => {
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="p-4 bg-white shadow sm:p-8 sm:rounded-lg">
-                    <div class="relative p-6">
+                    <!-- Add tabs -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="flex -mb-px space-x-8">
+                            <button
+                                @click="activeTab = 'form'"
+                                :class="[
+                                    activeTab === 'form'
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                                ]"
+                            >
+                                Application Form
+                            </button>
+                            <button
+                                @click="activeTab = 'status'"
+                                :class="[
+                                    activeTab === 'status'
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                                ]"
+                            >
+                                Application Status
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Application Form Tab -->
+                    <div v-if="activeTab === 'form'" class="relative p-6">
                         <p class="text-gray-600">
                             Fill out the form for your application for service
                             provider in <strong>ServEase</strong>. Make sure
@@ -293,12 +349,82 @@ const submit = () => {
                         </section>
 
                         <div
-                            v-if="service !== null && !service.verified_at"
+                            v-if="service !== null && !service?.verified_at"
                             class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm"
                         >
                             <div class="h-auto p-4 bg-white rounded-md">
                                 Application sent! Please wait for the approval.
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Status Tab -->
+                    <div v-else-if="activeTab === 'status'" class="p-6">
+                        <div v-if="providerProfile" class="space-y-6">
+                            <!-- Status Badge -->
+                            <div class="flex items-center gap-x-3">
+                                <span class="text-lg font-semibold">Status:</span>
+                                <span
+                                    :class="`px-3 py-1 rounded-full text-${applicationStatus.color}-700 bg-${applicationStatus.color}-100`"
+                                >
+                                    {{ applicationStatus.text }}
+                                </span>
+                            </div>
+
+                            <!-- Remarks Section -->
+                            <div v-if="providerProfile.remarks?.length" class="mt-4">
+                                <h3 class="text-lg font-semibold mb-4">Application Remarks</h3>
+                                <div class="space-y-4">
+                                    <div
+                                        v-for="remark in providerProfile.remarks"
+                                        :key="remark.id"
+                                        class="p-4 rounded-lg border"
+                                        :class="remarkClass(providerProfile.status)"
+                                    >
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div class="space-y-1">
+                                                <p class="font-medium">{{ remark.content }}</p>
+                                                <p class="text-sm text-gray-600">
+                                                    By: {{ remark.user?.name }}
+                                                </p>
+                                            </div>
+                                            <span class="text-sm text-gray-500">
+                                                {{ new Date(remark.created_at).toLocaleDateString() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Application Details -->
+                            <div class="mt-6">
+                                <h3 class="font-semibold mb-4">Application Details</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Service Type</p>
+                                        <p class="font-medium">{{ providerProfile.service_type?.name }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Experience</p>
+                                        <p class="font-medium">
+                                            {{ providerProfile.experience }} {{ providerProfile.experience_duration }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Contact</p>
+                                        <p class="font-medium">{{ providerProfile.contact }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Submitted On</p>
+                                        <p class="font-medium">
+                                            {{ new Date(providerProfile.created_at).toLocaleDateString() }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="text-center text-gray-500 py-8">
+                            No application found. Please submit an application first.
                         </div>
                     </div>
                 </div>

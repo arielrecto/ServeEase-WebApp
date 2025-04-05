@@ -23,6 +23,7 @@ class ProviderProfile extends Model
         'citizenship_document_type',
         'citizenship_document_image',
         'proof_document_image',
+        'status',
         'profile_id'
     ];
 
@@ -40,5 +41,9 @@ class ProviderProfile extends Model
     public function serviceType(): BelongsTo
     {
         return $this->belongsTo(ServiceType::class);
+    }
+    public function remarks()
+    {
+        return $this->morphMany(Remark::class, 'remarkable');
     }
 }

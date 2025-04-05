@@ -15,14 +15,16 @@ class ServiceProviderController extends Controller
     public function create()
     {
         $serviceTypes = ServiceType::all();
+        $providerProfile = auth()->user()->profile->providerProfile;
 
-        $service = transform(
-            ProviderProfile::where('profile_id', auth()->user()->profile->id)->first(),
-            fn() => ProviderProfile::where('profile_id', auth()->user()->profile->id)->first(),
-            null
-        );
+        if ($providerProfile) {
+            $providerProfile->load(['serviceType', 'remarks.user']);
+        }
 
-        return Inertia::render('Users/Customer/ServiceProvider/Create', compact(['serviceTypes', 'service']));
+        return Inertia::render('Users/Customer/ServiceProvider/Create', [
+            'serviceTypes' => $serviceTypes,
+            'providerProfile' => $providerProfile
+        ]);
     }
 
 
