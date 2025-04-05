@@ -51,6 +51,11 @@ class ServiceTypeSeeder extends Seeder
                 'name' => 'IT Professional',
                 'thumbnail' => $this->faker->imageUrl(),
                 'description' => 'Technical support, network management, software development, and IT solutions.'
+            ],
+            [
+                'name' => 'Other',
+                'thumbnail' => $this->faker->imageUrl(),
+                'description' => 'Miscellaneous services that do not fall under specific categories.'
             ]
         ];
 
