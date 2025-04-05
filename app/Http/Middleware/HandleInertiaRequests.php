@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Page;
 use App\Models\User;
 use Inertia\Middleware;
 use App\Models\AvailService;
@@ -37,6 +38,7 @@ class HandleInertiaRequests extends Middleware
         $finishedBookings = null;
         $user = null;
         $notifications = null;
+        $pages = Page::all();
 
         if (Auth::check()) {
             $finishedBookings = AvailService::with('service.user')
@@ -62,6 +64,7 @@ class HandleInertiaRequests extends Middleware
                 'isServiceProvider' => $request?->user()?->hasProviderProfile(),
                 'isVerifiedProvider' => $request?->user()?->hasVerifiedProviderProfile(),
                 'finishedBookings' => $finishedBookings,
+                'pages' => $pages,
             ],
             'flash' => [
                 'message_success' => $request->session()->get('message_success'),

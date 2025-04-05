@@ -26,6 +26,7 @@
         "@fullcalendar/vue3": "^6.1.15",
         "@inertiaui/modal-vue": "^0.3.0",
         "@primevue/themes": "^4.2.5",
+        "@vueup/vue-quill": "^1.2.0",
         "chart.js": "^4.4.7",
         "dayjs": "^1.11.13",
         "laravel-echo": "^1.19.0",

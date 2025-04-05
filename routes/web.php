@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Page;
 use Inertia\Inertia;
 use App\Models\ServiceType;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +11,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ServiceTypeController;
 use App\Http\Controllers\NotificationController;
@@ -41,6 +43,8 @@ use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderD
 */
 
 Route::get('/', function () {
+    // $pages = Page::all();
+
     return Inertia::render('Index', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -48,6 +52,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
         'services' => App\Models\ServiceType::orderBy('name')->take(6)->get(),
         'totalServices' => App\Models\ServiceType::all()->count(),
+        // 'pages' => $pages,
     ]);
 });
 
@@ -56,6 +61,7 @@ Route::middleware('guest')->controller(GuestController::class)->as('guest.')->gr
     Route::get('/search', 'search')->name('search');
     Route::get('/services', 'services')->name('services');
     Route::get('/services/{id}', 'show')->name('show');
+    Route::get('/page/{slug}', 'showPageContent')->name('page.show');
 });
 
 Route::get('/dashboard', function () {
@@ -77,6 +83,11 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('admin')->as('admin.')->group(function () {
+        Route::prefix('cms')->as('cms.')->group(function () {
+            Route::get('', [PageController::class, 'index'])->name('index');
+            Route::put('/{slug}', [PageController::class, 'update'])->name('update');
+            Route::get('/{slug}/edit', [PageController::class, 'edit'])->name('edit');
+        });
         Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
         Route::resource('service-provider', AdminSPController::class);
         Route::prefix('applications')->as('applications.')->controller(ServiceProviderApplicationController::class)->group(function () {

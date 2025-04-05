@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ServicesType;
+use App\Models\Page;
 use Inertia\Inertia;
 use App\Models\Barangay;
+use App\Enums\ServicesType;
 use App\Models\ServiceType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,5 +37,13 @@ class GuestController extends Controller
         $services = ServiceType::orderBy('name')->get();
         $service = ServiceType::findOrFail($id);
         return Inertia::render('Guest/Show', compact(['service', 'canLogin', 'canRegister']));
+    }
+
+    public function showPageContent(string $slug)
+    {
+        $canLogin = Route::has('login');
+        $canRegister = Route::has('register');
+        $page = Page::where('slug', $slug)->firstOrFail();
+        return Inertia::render('Guest/Page', compact(['page', 'canLogin', 'canRegister']));
     }
 }

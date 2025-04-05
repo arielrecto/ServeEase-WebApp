@@ -57,11 +57,12 @@ class DatabaseSeeder extends Seeder
         // });
 
         $this->call([
-        //     ServiceTypeSeeder::class,
-        //     BarangaySeeder::class,
-        //     UserProviderSeeder::class,
-        //     AvailServiceSeeder::class,
-        //     FeedbackSeeder::class,
-         ]);
+            ServiceTypeSeeder::class,
+            BarangaySeeder::class,
+            UserProviderSeeder::class,
+            AvailServiceSeeder::class,
+            FeedbackSeeder::class,
+            PageSeeder::class,
+        ]);
     }
 }
