@@ -18,7 +18,8 @@ class AvailService extends Model
         'start_date',
         'end_date',
         'remarks',
-        'total_price'
+        'total_price',
+        'service_cart_id',
     ];
 
     protected $appends = ['has_feedback'];
@@ -47,5 +48,11 @@ class AvailService extends Model
     public function getHasFeedbackAttribute()
     {
         return $this->feedback()->exists();
+    }
+
+
+    public function serviceCart()
+    {
+        return $this->belongsTo(ServiceCart::class);
     }
 }

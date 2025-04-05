@@ -87,6 +87,8 @@ const submit = () => {
 
                                         <option value="hr">Hourly</option>
                                         <option value="day">Day(8hrs)</option>
+                                        <option value="fixed rate">Fixed Rate</option>
+
 
 
                                     </select>
@@ -153,9 +155,6 @@ const submit = () => {
                                         <template v-for="barangay in barangays" :key="barangay?.id">
                                             <option :value="barangay.id">{{ barangay?.name }} </option>
                                         </template>
-
-
-
 
                                     </select>
 

@@ -13,6 +13,7 @@ use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\GenerateNotificationAction;
+use App\Models\ServiceCart;
 
 class BookingController extends Controller
 {
@@ -20,7 +21,7 @@ class BookingController extends Controller
     {
 
         $filter = $request->filter;
-        $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
+        $availServices = AvailService::with(['service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile'])
             ->whereHas('service', function ($q) {
                 $q->where('user_id', Auth::user()->id);
             })
@@ -45,6 +46,8 @@ class BookingController extends Controller
                     'provider' => $availService->service->user->name,
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
+                    'reference_number' => $availService->serviceCart->reference_number,
+                    'cart_id' => $availService->service_cart_id,
                     'created_at' => $availService->created_at
                 ];
             });
@@ -73,6 +76,13 @@ class BookingController extends Controller
 
     public function detail(AvailService $availService)
     {
+
+
+        $availService = AvailService::with(['service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile'])
+            ->where('id', $availService->id)
+            ->first();
+
+
         $service = Service::with(['user', 'user.profile', 'user.profile.providerProfile'])
             ->where('id', $availService->service->id)
             ->first();
@@ -139,5 +149,79 @@ class BookingController extends Controller
         broadcast(new NotificationSent($notification))->toOthers();
 
         return back();
+    }
+
+    public function showCart(string $serviceCartId)
+    {
+
+        $serviceCart = ServiceCart::with(['user', 'availServices.service'])
+            ->where('id', $serviceCartId)
+            ->first();
+
+        $availServices = $serviceCart->availServices()
+            ->with(['service'])
+            ->get()
+            ->map(function ($availService) {
+                return [
+                    'id' => $availService->id,
+                    'name' => $availService->service->name,
+                    'total_price' => $availService->total_price,
+                    'status' => $availService->status,
+                    'start_date' => $availService->start_date,
+                    'end_date' => $availService->end_date,
+                    'remarks' => $availService->remarks,
+                ];
+            });
+
+        return Inertia::render('Users/ServiceProvider/Booking/ServiceCartShow', [
+            'serviceCart' => $serviceCart,
+            'availServices' => $availServices
+        ]);
+    }
+
+    public function approveAll(ServiceCart $serviceCart)
+    {
+        $availServices = $serviceCart->availServices()
+            ->where('status', 'pending')
+            ->get();
+
+        foreach ($availServices as $service) {
+            $service->update(['status' => 'confirmed']);
+
+            // Create notification for customer
+            $notification = Notification::create([
+                'user_id' => $service->user_id,
+                'content' => GenerateNotificationAction::handle('booking', 'booking-confirmed', auth()->user()),
+                'type' => 'booking',
+                'url' => "/customer/booking/{$service->id}/detail"
+            ]);
+
+            broadcast(new NotificationSent($notification))->toOthers();
+        }
+
+        return back()->with('message_success', 'All services have been approved');
+    }
+
+    public function rejectAll(ServiceCart $serviceCart)
+    {
+        $availServices = $serviceCart->availServices()
+            ->where('status', 'pending')
+            ->get();
+
+        foreach ($availServices as $service) {
+            $service->update(['status' => 'rejected']);
+
+            // Create notification for customer
+            $notification = Notification::create([
+                'user_id' => $service->user_id,
+                'content' => GenerateNotificationAction::handle('booking', 'booking-rejected', auth()->user()),
+                'type' => 'booking',
+                'url' => "/customer/booking/{$service->id}/detail"
+            ]);
+
+            broadcast(new NotificationSent($notification))->toOthers();
+        }
+
+        return back()->with('message_success', 'All services have been rejected');
     }
 }

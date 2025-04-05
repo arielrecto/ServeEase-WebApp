@@ -47,7 +47,7 @@ const isNotServiceProvider = computed(() => {
     );
 });
 
-const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
+const headers = ["Reference #", "Service", "Provider", "Agreed Price", "Status", "Actions"];
 
 const openCalendar = ref(false);
 
@@ -188,6 +188,18 @@ watch(openCalendar, () => {
                                         v-for="availService in availServices.data"
                                         :key="availService.id"
                                     >
+                                        <td class="font-medium">
+                                            <Link
+                                                v-if="availService.reference_number"
+                                                :href="route('service-provider.booking.cart.show', {
+                                                    serviceCartId: availService.cart_id,
+                                                })"
+                                                class="text-primary hover:underline"
+                                            >
+                                                {{ availService.reference_number }}
+                                            </Link>
+                                            <span v-else>---</span>
+                                        </td>
                                         <th>{{ availService.name }}</th>
                                         <td>
                                             {{ availService.provider }}

@@ -86,7 +86,13 @@ const events = computed(() => {
                             </p>
                         </div>
 
-                        <div class="flex justify-end">
+                        <div class="flex justify-end gap-2">
+                            <Link
+                                :href="route('customer.services.bulk-form', { provider_id: service.user.id, query :{ service_id: service.id } })"
+                                class="btn btn-secondary"
+                            >
+                                Add to Bulk Service
+                            </Link>
                             <Link
                                 :href="
                                     route(

@@ -21,6 +21,15 @@ const props = defineProps({
     service: Object,
 });
 
+// Add computed property for service cart reference
+const cartReference = computed(() => {
+
+    return props.availService.service_cart_id ? {
+        reference: props.availService.service_cart?.reference_number,
+        id: props.availService.service_cart_id
+    } : null;
+});
+
 const state = reactive({
     tabs: [
         { name: "About", value: "0" },
@@ -260,6 +269,18 @@ watch(selectedStatus, (newStatus) => {
                                         <div
                                             class="order-1 h-auto p-5 space-y-4 border border-gray-300 rounded-lg md:order-2"
                                         >
+                                            <!-- Add reference number section -->
+                                            <div v-if="cartReference" class="space-y-1 mb-4">
+                                                <div class="text-gray-600">Reference Number</div>
+                                                <div>
+                                                    <Link
+                                                        :href="route('service-provider.booking.cart.show', cartReference.id)"
+                                                        class="text-primary hover:underline font-semibold"
+                                                    >
+                                                        {{ cartReference.reference }}
+                                                    </Link>
+                                                </div>
+                                            </div>
                                             <div class="flex gap-x-12">
                                                 <div class="space-y-1">
                                                     <div class="text-gray-600">

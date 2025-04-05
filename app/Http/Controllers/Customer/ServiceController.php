@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Service;
 use App\Models\FeedBack;
+use App\Models\ServiceCart;
 use App\Models\AvailService;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -158,5 +160,84 @@ class ServiceController extends Controller
             ->get();
 
         return response()->json($feedbacks, 200);
+    }
+
+    public function bulkForm(Request $request, $provider_id)
+    {
+        $provider = User::findOrFail($provider_id);
+        $services = Service::where('user_id', $provider_id)
+            ->get();
+
+
+
+        return Inertia::render('Users/Customer/Services/BulkForm', [
+            'provider' => $provider,
+            'services' => $services
+        ]);
+    }
+
+    public function bulkAvail(Request $request)
+    {
+
+        $request->validate([
+            'services' => ['required', 'array', 'min:1'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'remark' => ['required', 'string'],
+        ]);
+
+        $services = Service::whereIn('id', $request->services)->get();
+        $total_hours = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) * 8;
+
+
+        $serviceChart = ServiceCart::create([
+            'user_id' => Auth::user()->id,
+            'reference_number' => strtoupper(uniqid('REF-')),
+            'total_amount' => $request->total_price
+        ]);
+
+
+
+        try {
+            foreach ($services as $service) {
+                // Check if user is trying to avail their own service
+                if ($service->user_id == Auth::user()->id) {
+                    return response()->json(['message' => 'You cannot avail your own service'], 422);
+                }
+
+                // Calculate total price based on price type
+                $total_price = $service->price;
+                if ($service->price_type == 'hr') {
+                    $total_price *= $total_hours;
+                }
+
+                // Create avail service record
+                $availService = AvailService::create([
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'remarks' => $request->remark,
+                    'total_price' => $total_price,
+                    'service_id' => $service->id,
+                    'total_hours' => $total_hours,
+                    'user_id' => Auth::user()->id,
+                    'service_cart_id' => $serviceChart->id,
+                ]);
+
+                // Create notification for service provider
+                // $notification = Notification::create([
+                //     'user_id' => $service->user_id,
+                //     'content' => GenerateNotificationAction::handle('booking', 'bulk-booking-created', Auth::user()),
+                //     'type' => 'booking',
+                //     'url' => "/service-provider/booking/{$availService->id}/detail"
+                // ]);
+
+                // broadcast(new NotificationSent($notification))->toOthers();
+            }
+
+            return to_route('customer.services.show', ['service' => $services->first()->id])
+                ->with('message_success', 'Bulk service booking successful');
+        } catch (\Exception $e) {
+            return back()->with('message_error', $e->getMessage());
+        }
     }
 }

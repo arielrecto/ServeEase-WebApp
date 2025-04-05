@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('total_hours')->nullable();
             $table->longText('remarks');
             $table->float('total_price');
+            $table->foreignId('service_cart_id')->nullable()->constrained('service_carts')->onDelete('cascade');
             $table->timestamps();
         });
     }

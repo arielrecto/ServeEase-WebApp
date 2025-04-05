@@ -107,6 +107,8 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('services')->as('services.')->group(function () {
                 Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
                 Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
+                Route::get('bulk-forms/{provider_id}', [CustomerServiceController::class, 'bulkForm'])->name('bulk-form');
+                Route::post('bulk-forms/store', [CustomerServiceController::class, 'bulkAvail'])->name('bulk-avail');
             });
             Route::prefix('booking')->controller(BookingController::class)->as('booking.')->group(function () {
                 Route::get('/{availService}/detail', 'detail')->name('detail');
@@ -128,12 +130,20 @@ Route::middleware(['auth'])->group(function () {
             Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
             Route::resource('services', ServiceController::class);
             Route::prefix('booking')->as('booking.')->group(function () {
+                Route::get('/{serviceCartId}/cart', [ServiceProviderBookingController::class, 'showCart'])->name('cart.show');
+                Route::post('cart/{serviceCart}/approve-all', [ServiceProviderBookingController::class, 'approveAll'])
+                    ->name('cart.approve-all');
+                Route::post('cart/{serviceCart}/reject-all',  [ServiceProviderBookingController::class, 'rejectAll'])
+                    ->name('cart.reject-all');
+
                 Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');
                 Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
                 Route::get('/{availService}/confirm', [ServiceProviderBookingController::class, 'confirm'])->name('confirm');
                 Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
             });
         });
+
+
 
         Route::prefix('service-types')->as('types.')->controller(ServiceTypeController::class)->group(function () {
             Route::get('', 'index')->name('index');

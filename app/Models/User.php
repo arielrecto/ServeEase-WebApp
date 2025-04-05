@@ -120,4 +120,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Service::class, 'service_users');
     }
+
+    public function serviceCarts()
+    {
+        return $this->hasMany(ServiceCart::class);
+    }
 }

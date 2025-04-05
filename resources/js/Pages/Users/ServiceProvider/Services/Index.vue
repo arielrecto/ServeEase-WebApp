@@ -15,7 +15,7 @@ import SearchForm from "@/Components/Form/SearchForm.vue";
 
 defineProps(['services']);
 
-const headers = ref(["Name", "Date Joined", "Action"]);
+const headers = ref(["Name", "Reference #", "Date Joined", "Action"]);
 
 
 const search = () => {
@@ -51,6 +51,16 @@ const search = () => {
                                 <template v-if="services.length !== 0">
                                     <tr v-for="service in services.data" :key="service.id">
                                         <th>{{ service.name }}</th>
+                                        <td class="font-medium">
+                                            <Link
+                                                v-if="service.service_cart_id"
+                                                :href="route('service-provider.booking.cart.show', service.service_cart_id)"
+                                                class="text-primary hover:underline"
+                                            >
+                                                {{ service.reference_number || '---' }}
+                                            </Link>
+                                            <span v-else>---</span>
+                                        </td>
                                         <td>
                                             {{
                                                 moment(service.created_at).format(
