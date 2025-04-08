@@ -27,6 +27,7 @@ const events = computed(() => {
 </script>
 
 <template>
+
     <Head title="Home" />
 
     <AuthenticatedLayout>
@@ -39,30 +40,20 @@ const events = computed(() => {
         </template>
 
         <div class="py-12">
-            <div
-                class="mx-auto max-w-7xl sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-5"
-            >
-                <div class="col-span-2 flex flex-col gap-5">
-                    <div
-                        class="flex flex-col gap-5 p-5 bg-white rounded-lg shadow-lg"
-                    >
+            <div class="grid grid-cols-1 gap-5 mx-auto max-w-7xl sm:px-6 lg:px-8 md:grid-cols-3">
+                <div class="flex flex-col col-span-2 gap-5">
+                    <div class="flex flex-col gap-5 p-5 bg-white rounded-lg shadow-lg">
                         <div class="flex items-center justify-between">
-                            <h1
-                                class="w-full py-2 text-4xl font-bold capitalize border-b text-primary"
-                            >
+                            <h1 class="w-full py-2 text-4xl font-bold capitalize border-b text-primary">
                                 {{ service.name }}
                             </h1>
 
-                            <AddToFavorites :service="service" />
+                            <!-- <AddToFavorites :service="service" /> -->
                         </div>
 
                         <div class="flex justify-center">
-                            <img
-                                :src="service.service_thumbnail"
-                                alt=""
-                                srcset=""
-                                class="object-center w-1/2 aspect-auto"
-                            />
+                            <img :src="service.service_thumbnail" alt="" srcset=""
+                                class="object-center w-1/2 aspect-auto" />
                         </div>
 
                         <div class="flex flex-col gap-2 py-10 border-t">
@@ -88,25 +79,19 @@ const events = computed(() => {
 
                         <div class="flex justify-end gap-2">
                             <Link
-                                :href="route('customer.services.bulk-form', { provider_id: service.user.id, query :{ service_id: service.id } })"
-                                class="btn btn-secondary"
-                            >
-                                Add to Bulk Service
+                                :href="route('customer.services.bulk-form', { provider_id: service.user.id, query: { service_id: service.id } })"
+                                class="btn btn-secondary">
+                            Add to Bulk Service
                             </Link>
-                            <Link
-                                :href="
-                                    route(
-                                        'customer.services.avail.create',
-                                        service.id
-                                    )
-                                "
-                                class="btn btn-primary"
-                                >Avail</Link
-                            >
+                            <Link :href="route(
+                                'customer.services.avail.create',
+                                service.id
+                            )
+                                " class="btn btn-primary">Avail</Link>
                         </div>
                     </div>
                 </div>
-                <div class="h-max bg-white p-5 rounded-lg shadow-lg">
+                <div class="p-5 bg-white rounded-lg shadow-lg h-max">
                     <h2 class="mb-4">
                         {{ service.user.profile.first_name }}'s upcoming
                         bookings
