@@ -167,7 +167,7 @@ class ServiceProviderApplicationController extends Controller
             'user_id' => $providerProfile->profile->user->id,
             'content' => GenerateNotificationAction::handle('application', 'application-rejected', auth()->user()),
             'type' => 'application',
-            'url' => '/service-provider/profile'
+            'url' => '/customer/service-provider/create'
         ]);
 
         broadcast(new NotificationSent($notification))->toOthers();

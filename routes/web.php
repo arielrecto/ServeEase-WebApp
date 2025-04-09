@@ -135,6 +135,7 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('booking', BookingController::class);
             Route::resource('services', CustomerServiceController::class)->only('show');
             Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
+            Route::post('/service-provider/{providerProfile}', [CustomerSPController::class, 'update'])->name('service-provider.update');
         });
 
         Route::prefix('service-provider')->as('service-provider.')->group(function () {
@@ -144,7 +145,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/{serviceCartId}/cart', [ServiceProviderBookingController::class, 'showCart'])->name('cart.show');
                 Route::post('cart/{serviceCart}/approve-all', [ServiceProviderBookingController::class, 'approveAll'])
                     ->name('cart.approve-all');
-                Route::post('cart/{serviceCart}/reject-all',  [ServiceProviderBookingController::class, 'rejectAll'])
+                Route::post('cart/{serviceCart}/reject-all', [ServiceProviderBookingController::class, 'rejectAll'])
                     ->name('cart.reject-all');
 
                 Route::get('', [ServiceProviderBookingController::class, 'index'])->name('index');

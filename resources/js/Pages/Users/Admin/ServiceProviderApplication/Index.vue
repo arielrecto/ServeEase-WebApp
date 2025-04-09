@@ -108,7 +108,7 @@ const items = ref([
                                                     provider.id
                                                 )
                                                     " />
-                                                <ActionButton type="modal" actionType="delete" :href="route(
+                                                <ActionButton type="modal" actionType="reject" :href="route(
                                                     'admin.applications.delete',
                                                     provider.id
                                                 )

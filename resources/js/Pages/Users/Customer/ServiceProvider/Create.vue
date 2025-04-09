@@ -49,7 +49,20 @@ const citizenshipDocumentTypes = [
 ];
 
 const submit = () => {
-    form.post(route("customer.service-provider.store"), {
+    if (props.providerProfile === null) {
+        console.log('create');
+
+        form.post(route("customer.service-provider.store"), {
+            onFinish: () => form.reset(),
+        });
+
+        return;
+    }
+
+    console.log('update');
+
+    form.post(route("customer.service-provider.update", props.providerProfile?.id), {
+        _method: 'put',
         onFinish: () => form.reset(),
     });
 };
@@ -245,10 +258,13 @@ const remarkClass = computed(() => (status) => {
                             </form>
                         </section>
 
-                        <div v-if="providerProfile !== null && !providerProfile.verified_at"
+                        <div v-if="providerProfile !== null && !providerProfile.status === 'pending' || providerProfile?.status !== 'rejected'"
                             class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm">
                             <div class="h-auto p-4 bg-white rounded-md">
                                 Application sent! Please wait for the approval.
+
+                                <!-- {{ providerProfile?.status !== 'rejected' || providerProfile !== null &&
+                                    !providerProfile.verified_at }} -->
                             </div>
                         </div>
                     </div>

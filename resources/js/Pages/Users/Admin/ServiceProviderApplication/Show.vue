@@ -1,7 +1,9 @@
 <script setup>
+import { ref } from "vue";
+import { Link } from "@inertiajs/vue3";
+import ModalLinkSlideover from "@/Components/Modal/ModalLinkSlideover.vue";
 import { Modal, ModalLink } from "@inertiaui/modal-vue";
 import { useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
 
 const props = defineProps({
     providerProfile: Object,
@@ -51,13 +53,13 @@ const modalRef = ref(null);
                         providerProfile.experience +
                         " " +
                         providerProfile.experience_duration
-                    }}</span>
+                        }}</span>
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Contact Number</span>
                     <span class="text-gray-600">{{
                         providerProfile.contact
-                    }}</span>
+                        }}</span>
                 </div>
             </div>
 
@@ -67,46 +69,32 @@ const modalRef = ref(null);
                     <span class="font-semibold">Valid ID Selected</span>
                     <span class="text-gray-600">{{
                         providerProfile.valid_id_type
-                    }}</span>
+                        }}</span>
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Valid ID photo</span>
                     <div class="w-full">
-                        <img
-                            :src="providerProfile.valid_id_image"
-                            alt="Valid ID image"
-                            class="object-cover"
-                        />
+                        <img :src="providerProfile.valid_id_image" alt="Valid ID image" class="object-cover" />
                     </div>
                 </div>
                 <div class="flex flex-col gap-y-1">
-                    <span class="font-semibold"
-                        >Citizenship Document Selected</span
-                    >
+                    <span class="font-semibold">Citizenship Document Selected</span>
                     <span class="text-gray-600">{{
                         providerProfile.citizenship_document_type
-                    }}</span>
+                        }}</span>
                 </div>
                 <div class="flex flex-col gap-y-1">
-                    <span class="font-semibold"
-                        >Citizenship Document photo</span
-                    >
+                    <span class="font-semibold">Citizenship Document photo</span>
                     <div class="w-full">
-                        <img
-                            :src="providerProfile.citizenship_document_image"
-                            alt="Citizenship document image"
-                            class="object-cover"
-                        />
+                        <img :src="providerProfile.citizenship_document_image" alt="Citizenship document image"
+                            class="object-cover" />
                     </div>
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Proof document</span>
                     <div class="w-full">
-                        <img
-                            :src="providerProfile.proof_document_image"
-                            alt="Provider certificate"
-                            class="object-cover"
-                        />
+                        <img :src="providerProfile.proof_document_image" alt="Provider certificate"
+                            class="object-cover" />
                     </div>
                 </div>
             </div>
@@ -114,32 +102,26 @@ const modalRef = ref(null);
 
         <section>
             <div class="flex items-center gap-2">
-                <button
-                    class="flex items-center w-full panel-btn panel-btn-accept"
-                    onclick="my_modal_2.showModal()"
-                >
+                <button class="flex items-center w-full panel-btn panel-btn-accept" onclick="my_modal_2.showModal()">
                     Approve
                 </button>
-                <button
-                    class="flex items-center w-full panel-btn panel-btn-reject"
-                    onclick="modal_reject.showModal()"
-                >
+                <ModalLink @success="modalRef.close" :href="route('admin.applications.delete', providerProfile.id)"
+                    class="flex items-center w-full panel-btn panel-btn-reject">
                     Reject
-                </button>
+                </ModalLink>
+                <!-- <button class="flex items-center w-full panel-btn panel-btn-reject" onclick="modal_reject.showModal()">
+                    Reject
+                </button> -->
             </div>
             <dialog id="my_modal_2" class="modal">
                 <div class="modal-box">
                     <form method="dialog">
-                        <button
-                            class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2"
-                        >
+                        <button class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2">
                             ✕
                         </button>
                     </form>
                     <div class="space-y-6">
-                        <h2
-                            class="text-xl font-semibold leading-tight text-gray-800"
-                        >
+                        <h2 class="text-xl font-semibold leading-tight text-gray-800">
                             Approve this application?
                         </h2>
                         <p>
@@ -151,11 +133,7 @@ const modalRef = ref(null);
                                 <button class="button-ghost">Cancel</button>
                             </form>
                             <form @submit.prevent="approve">
-                                <button
-                                    type="submit"
-                                    :disabled="form.processing"
-                                    class="button-primary"
-                                >
+                                <button type="submit" :disabled="form.processing" class="button-primary">
                                     Confirm
                                 </button>
                             </form>
@@ -169,16 +147,12 @@ const modalRef = ref(null);
             <dialog id="modal_reject" class="modal">
                 <div class="modal-box">
                     <form method="dialog">
-                        <button
-                            class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2"
-                        >
+                        <button class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2">
                             ✕
                         </button>
                     </form>
                     <div class="space-y-6">
-                        <h2
-                            class="text-xl font-semibold leading-tight text-gray-800"
-                        >
+                        <h2 class="text-xl font-semibold leading-tight text-gray-800">
                             Reject this application?
                         </h2>
                         <p>This will reject this user's application.</p>
@@ -187,11 +161,7 @@ const modalRef = ref(null);
                                 <button class="button-ghost">Cancel</button>
                             </form>
                             <form @submit.prevent="reject">
-                                <button
-                                    type="submit"
-                                    :disabled="form.processing"
-                                    class="button-primary"
-                                >
+                                <button type="submit" :disabled="form.processing" class="button-primary">
                                     Confirm
                                 </button>
                             </form>
