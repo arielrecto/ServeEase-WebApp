@@ -30,6 +30,27 @@ class PageSeeder extends Seeder
 <p><strong>Email:</strong> support@serveease.com</p>
 <p><strong>Phone:</strong> (555) 123-4567</p>
 <p><strong>Address:</strong> 123 Business Street, Suite 100, City, State 12345</p>'
+            ],
+            [
+                'name' => 'Terms and Conditions',
+                'slug' => 'terms-and-conditions',
+                'content' => "<h3>1. Introduction</h3>
+<p>Welcome to ServEase. By using our service, you agree to these terms...</p>
+
+<h3>2. User Responsibilities</h3>
+<p>Users must provide accurate information and maintain security...</p>
+
+<h3>3. Service Provider Guidelines</h3>
+<p>Service providers must maintain professional standards...</p>
+
+<h3>4. Booking and Payments</h3>
+<p>All transactions must be processed through our platform...</p>
+
+<h3>5. Privacy Policy</h3>
+<p>We protect your personal information according to law...</p>
+
+<h3>6. Dispute Resolution</h3>
+<p>In case of disputes between users and service providers...</p>"
             ]
         ];
 

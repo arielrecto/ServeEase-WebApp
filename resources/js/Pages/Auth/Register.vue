@@ -8,6 +8,10 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
+const props = defineProps({
+    termsAndCondition: Object
+});
+
 const showTermsModal = ref(false);
 
 const form = useForm({
@@ -99,8 +103,8 @@ const submit = () => {
                 </PrimaryButton>
             </div>
 
-            <TermsAndConditionModal v-if="showTermsModal" :show="showTermsModal" @close="showTermsModal = false"
-                @agree="handleTermsAgreement" />
+            <TermsAndConditionModal v-if="showTermsModal" :terms-and-condition="termsAndCondition"
+                :show="showTermsModal" @close="showTermsModal = false" @agree="handleTermsAgreement" />
         </form>
     </GuestLayout>
 </template>
