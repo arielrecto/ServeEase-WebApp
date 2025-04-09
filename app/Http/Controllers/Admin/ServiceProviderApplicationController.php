@@ -131,7 +131,7 @@ class ServiceProviderApplicationController extends Controller
             'user_id' => $user->id,
             'content' => GenerateNotificationAction::handle('application', 'application-approved'),
             'type' => 'application',
-            'url' => '/'
+            'url' => '/customer/dashboard'
         ]);
 
         broadcast(new NotificationSent($notification))->toOthers();

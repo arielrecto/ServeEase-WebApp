@@ -8,7 +8,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 import ImageUpload from "@/Components/Form/ImageUpload.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 const activeTab = ref('form');
 
@@ -89,6 +89,12 @@ const remarkClass = computed(() => (status) => {
     };
     return classes[status] || 'bg-gray-50 border-gray-200 text-gray-700';
 });
+
+onMounted(() => {
+    if (props.providerProfile) {
+        activeTab.value = 'status';
+    }
+})
 </script>
 
 <template>
@@ -111,7 +117,7 @@ const remarkClass = computed(() => (status) => {
                     <!-- Add tabs -->
                     <div class="mb-6 border-b border-gray-200">
                         <nav class="flex -mb-px space-x-8">
-                            <button @click="activeTab = 'form'" :class="[
+                            <button v-if="providerProfile?.status !== 'pending'" @click="activeTab = 'form'" :class="[
                                 activeTab === 'form'
                                     ? 'border-primary text-primary'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
@@ -258,13 +264,14 @@ const remarkClass = computed(() => (status) => {
                             </form>
                         </section>
 
-                        <div v-if="providerProfile !== null && !providerProfile.status === 'pending' || providerProfile?.status !== 'rejected'"
+                        <div v-if="providerProfile === null"
                             class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm">
                             <div class="h-auto p-4 bg-white rounded-md">
                                 Application sent! Please wait for the approval.
 
-                                <!-- {{ providerProfile?.status !== 'rejected' || providerProfile !== null &&
-                                    !providerProfile.verified_at }} -->
+                                <!-- {{ providerProfile?.status !== 'pending') ||
+                                    providerProfile?.status
+                                    !== 'rejected' }} -->
                             </div>
                         </div>
                     </div>
@@ -279,6 +286,13 @@ const remarkClass = computed(() => (status) => {
                                     :class="`px-3 py-1 rounded-full text-${applicationStatus.color}-700 bg-${applicationStatus.color}-100`">
                                     {{ applicationStatus.text }}
                                 </span>
+                            </div>
+
+                            <div v-if="providerProfile.status === 'pending'" class="p-4 border rounded-lg"
+                                :class="remarkClass(providerProfile.status)">
+                                <div class="flex items-center justify-center">
+                                    Waiting for approval...
+                                </div>
                             </div>
 
                             <!-- Remarks Section -->

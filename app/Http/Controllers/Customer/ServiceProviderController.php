@@ -71,7 +71,7 @@ class ServiceProviderController extends Controller
         ]);
 
 
-        return to_route('customer.service-provider.create')->with('message_success', 'Application submitted successfully.');
+        return to_route('customer.dashboard')->with('message_success', 'Application submitted successfully.');
 
     }
 
@@ -115,7 +115,7 @@ class ServiceProviderController extends Controller
         ]);
 
 
-        return to_route('customer.service-provider.create')->with('message_success', 'Application updated successfully.');
+        return to_route('customer.dashboard')->with('message_success', 'Application updated successfully.');
 
     }
 }
