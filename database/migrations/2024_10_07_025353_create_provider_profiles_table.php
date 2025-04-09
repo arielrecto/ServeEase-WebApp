@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->string('citizenship_document_image');
             $table->string('proof_document_image');
             $table->dateTime('verified_at')->nullable();
-            $table->string('status ')->default('pending');
+            $table->string('status')->default('pending');
             $table->foreignIdFor(Profile::class)->constrained()->onDelete('cascade');
             $table->timestamps();
         });

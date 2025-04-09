@@ -79,6 +79,7 @@ const remarkClass = computed(() => (status) => {
 </script>
 
 <template>
+
     <Head title="Home" />
 
     <AuthenticatedLayout>
@@ -95,28 +96,22 @@ const remarkClass = computed(() => (status) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="p-4 bg-white shadow sm:p-8 sm:rounded-lg">
                     <!-- Add tabs -->
-                    <div class="border-b border-gray-200 mb-6">
+                    <div class="mb-6 border-b border-gray-200">
                         <nav class="flex -mb-px space-x-8">
-                            <button
-                                @click="activeTab = 'form'"
-                                :class="[
-                                    activeTab === 'form'
-                                        ? 'border-primary text-primary'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
-                                ]"
-                            >
+                            <button @click="activeTab = 'form'" :class="[
+                                activeTab === 'form'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                            ]">
                                 Application Form
                             </button>
-                            <button
-                                @click="activeTab = 'status'"
-                                :class="[
-                                    activeTab === 'status'
-                                        ? 'border-primary text-primary'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                                    'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
-                                ]"
-                            >
+                            <button @click="activeTab = 'status'" :class="[
+                                activeTab === 'status'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                                'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+                            ]">
                                 Application Status
                             </button>
                         </nav>
@@ -132,55 +127,28 @@ const remarkClass = computed(() => (status) => {
                         </p>
 
                         <section class="max-w-xl">
-                            <form
-                                @submit.prevent="submit"
-                                class="mt-6 space-y-6"
-                            >
+                            <form @submit.prevent="submit" class="mt-6 space-y-6">
                                 <h2 class="font-bold">Provider Information</h2>
                                 <div>
-                                    <InputLabel
-                                        for="service"
-                                        value="Select the service that you offer"
-                                    />
+                                    <InputLabel for="service" value="Select the service that you offer" />
 
-                                    <SelectInput
-                                        id="service"
-                                        :choices="serviceTypes"
-                                        optionKey="name"
-                                        valueKey="id"
-                                        class="block w-full mt-1"
-                                        v-model="form.service"
-                                        required
-                                    />
+                                    <SelectInput id="service" :choices="serviceTypes" optionKey="name" valueKey="id"
+                                        class="block w-full mt-1" v-model="form.service" required />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.service"
-                                    />
+                                    <InputError class="mt-2" :message="form.errors.service" />
                                 </div>
 
                                 <div class="flex items-end gap-4">
                                     <div>
-                                        <InputLabel
-                                            for="experience"
-                                            value="How many years of experience have you been offering your service?"
-                                        />
+                                        <InputLabel for="experience"
+                                            value="How many years of experience have you been offering your service?" />
 
                                         <div>
-                                            <TextInput
-                                                id="experience"
-                                                type="number"
-                                                class="block w-full mt-1"
-                                                v-model="form.experience"
-                                                required
-                                            />
+                                            <TextInput id="experience" type="number" class="block w-full mt-1"
+                                                v-model="form.experience" min="1" required />
 
-                                            <InputError
-                                                class="mt-2"
-                                                :message="
-                                                    form.errors.experience
-                                                "
-                                            />
+                                            <InputError class="mt-2" :message="form.errors.experience
+                                                " />
                                         </div>
                                     </div>
                                     <div>
@@ -189,43 +157,23 @@ const remarkClass = computed(() => (status) => {
                                             value="Select the valid ID that you will submit."
                                         /> -->
 
-                                        <SelectInput
-                                            id="experienceDuration"
-                                            :choices="experienceDurationOptions"
-                                            optionKey="name"
-                                            valueKey="name"
-                                            class="block w-full mt-1"
-                                            v-model="form.experience_duration"
-                                            required
-                                        />
+                                        <SelectInput id="experienceDuration" :choices="experienceDurationOptions"
+                                            optionKey="name" valueKey="name" class="block w-full mt-1"
+                                            v-model="form.experience_duration" required />
 
-                                        <InputError
-                                            class="mt-2"
-                                            :message="
-                                                form.errors.experience_duration
-                                            "
-                                        />
+                                        <InputError class="mt-2" :message="form.errors.experience_duration
+                                            " />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <InputLabel
-                                        for="contact"
-                                        value="Provide a contact number. This will be visible to the customers."
-                                    />
+                                    <InputLabel for="contact"
+                                        value="Provide a contact number. This will be visible to the customers." />
 
-                                    <TextInput
-                                        id="contact"
-                                        type="text"
-                                        class="block w-full mt-1"
-                                        v-model="form.contact"
-                                        required
-                                    />
+                                    <TextInput id="contact" type="text" class="block w-full mt-1" v-model="form.contact"
+                                        required />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.contact"
-                                    />
+                                    <InputError class="mt-2" :message="form.errors.contact" />
                                 </div>
 
                                 <h2 class="!mt-10 font-bold">
@@ -233,125 +181,72 @@ const remarkClass = computed(() => (status) => {
                                 </h2>
 
                                 <div>
-                                    <InputLabel
-                                        for="service"
-                                        value="Select the valid ID that you will submit."
-                                    />
+                                    <InputLabel for="service" value="Select the valid ID that you will submit." />
 
-                                    <SelectInput
-                                        id="service"
-                                        :choices="validIdTypes"
-                                        optionKey="name"
-                                        valueKey="name"
-                                        class="block w-full mt-1"
-                                        v-model="form.valid_id_type"
-                                        required
-                                    />
+                                    <SelectInput id="service" :choices="validIdTypes" optionKey="name" valueKey="name"
+                                        class="block w-full mt-1" v-model="form.valid_id_type" required />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.validIdType"
-                                    />
+                                    <InputError class="mt-2" :message="form.errors.validIdType" />
                                 </div>
 
                                 <div>
-                                    <InputLabel
-                                        for="valid_id_image"
-                                        value="Upload an image of your chosen valid ID."
-                                    />
+                                    <InputLabel for="valid_id_image" value="Upload an image of your chosen valid ID." />
 
-                                    <ImageUpload
-                                        @success="
-                                            (src) => (form.valid_id_image = src)
-                                        "
-                                    />
+                                    <ImageUpload @success="
+                                        (src) => (form.valid_id_image = src)
+                                    " />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="form.errors.valid_id_image"
-                                    />
+                                    <InputError class="mt-2" :message="form.errors.valid_id_image" />
                                 </div>
 
                                 <div>
-                                    <InputLabel
-                                        for="service"
-                                        value="Select the type of document you will submit to prove your Bacoor citizenship."
-                                    />
+                                    <InputLabel for="service"
+                                        value="Select the type of document you will submit to prove your Bacoor citizenship." />
 
-                                    <SelectInput
-                                        id="service"
-                                        :choices="citizenshipDocumentTypes"
-                                        optionKey="name"
-                                        valueKey="name"
-                                        class="block w-full mt-1"
-                                        v-model="form.citizenship_document_type"
-                                        required
-                                    />
+                                    <SelectInput id="service" :choices="citizenshipDocumentTypes" optionKey="name"
+                                        valueKey="name" class="block w-full mt-1"
+                                        v-model="form.citizenship_document_type" required />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="
-                                            form.errors
-                                                .citizenship_document_type
-                                        "
-                                    />
+                                    <InputError class="mt-2" :message="form.errors
+                                        .citizenship_document_type
+                                        " />
                                 </div>
 
                                 <div>
-                                    <InputLabel
-                                        for="valid_id_image"
-                                        value="Upload an image of your chosen citizenship document."
-                                    />
+                                    <InputLabel for="valid_id_image"
+                                        value="Upload an image of your chosen citizenship document." />
 
-                                    <ImageUpload
-                                        @success="
-                                            (src) =>
-                                                (form.citizenship_document_image =
-                                                    src)
-                                        "
-                                    />
+                                    <ImageUpload @success="
+                                        (src) =>
+                                        (form.citizenship_document_image =
+                                            src)
+                                    " />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="
-                                            form.errors
-                                                .citizenship_document_image
-                                        "
-                                    />
+                                    <InputError class="mt-2" :message="form.errors
+                                        .citizenship_document_image
+                                        " />
                                 </div>
 
                                 <div>
-                                    <InputLabel
-                                        for="proof_document_image"
-                                        value="Upload an image to prove your legitimacy as a provider of your service. (e.g. Certificate of Employment, TESDA Certificate etc.)"
-                                    />
+                                    <InputLabel for="proof_document_image"
+                                        value="Upload an image to prove your legitimacy as a provider of your service. (e.g. Certificate of Employment, TESDA Certificate etc.)" />
 
-                                    <ImageUpload
-                                        @success="
-                                            (src) =>
-                                                (form.proof_document_image =
-                                                    src)
-                                        "
-                                    />
+                                    <ImageUpload @success="
+                                        (src) =>
+                                        (form.proof_document_image =
+                                            src)
+                                    " />
 
-                                    <InputError
-                                        class="mt-2"
-                                        :message="
-                                            form.errors.proof_document_image
-                                        "
-                                    />
+                                    <InputError class="mt-2" :message="form.errors.proof_document_image
+                                        " />
                                 </div>
 
-                                <PrimaryButton :disabled="form.processing"
-                                    >Submit</PrimaryButton
-                                >
+                                <PrimaryButton :disabled="form.processing">Submit</PrimaryButton>
                             </form>
                         </section>
 
-                        <div
-                            v-if="providerProfile !== null && !providerProfile.verified_at"
-                            class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm"
-                        >
+                        <div v-if="providerProfile !== null && !providerProfile.verified_at"
+                            class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm">
                             <div class="h-auto p-4 bg-white rounded-md">
                                 Application sent! Please wait for the approval.
                             </div>
@@ -365,23 +260,18 @@ const remarkClass = computed(() => (status) => {
                             <div class="flex items-center gap-x-3">
                                 <span class="text-lg font-semibold">Status:</span>
                                 <span
-                                    :class="`px-3 py-1 rounded-full text-${applicationStatus.color}-700 bg-${applicationStatus.color}-100`"
-                                >
+                                    :class="`px-3 py-1 rounded-full text-${applicationStatus.color}-700 bg-${applicationStatus.color}-100`">
                                     {{ applicationStatus.text }}
                                 </span>
                             </div>
 
                             <!-- Remarks Section -->
                             <div v-if="providerProfile.remarks?.length" class="mt-4">
-                                <h3 class="text-lg font-semibold mb-4">Application Remarks</h3>
+                                <h3 class="mb-4 text-lg font-semibold">Application Remarks</h3>
                                 <div class="space-y-4">
-                                    <div
-                                        v-for="remark in providerProfile.remarks"
-                                        :key="remark.id"
-                                        class="p-4 rounded-lg border"
-                                        :class="remarkClass(providerProfile.status)"
-                                    >
-                                        <div class="flex justify-between items-start mb-2">
+                                    <div v-for="remark in providerProfile.remarks" :key="remark.id"
+                                        class="p-4 border rounded-lg" :class="remarkClass(providerProfile.status)">
+                                        <div class="flex items-start justify-between mb-2">
                                             <div class="space-y-1">
                                                 <p class="font-medium">{{ remark.content }}</p>
                                                 <p class="text-sm text-gray-600">
@@ -398,8 +288,8 @@ const remarkClass = computed(() => (status) => {
 
                             <!-- Application Details -->
                             <div class="mt-6">
-                                <h3 class="font-semibold mb-4">Application Details</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <h3 class="mb-4 font-semibold">Application Details</h3>
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div>
                                         <p class="text-sm text-gray-500">Service Type</p>
                                         <p class="font-medium">{{ providerProfile.service_type?.name }}</p>
@@ -423,7 +313,7 @@ const remarkClass = computed(() => (status) => {
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="text-center text-gray-500 py-8">
+                        <div v-else class="py-8 text-center text-gray-500">
                             No application found. Please submit an application first.
                         </div>
                     </div>

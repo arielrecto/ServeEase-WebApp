@@ -4,6 +4,7 @@ import TableWrapper from "@/Components/Table/TableWrapper.vue";
 import TableHeader from "@/Components/Table/TableHeader.vue";
 import TableBody from "@/Components/Table/TableBody.vue";
 import ActionButton from "@/Components/ActionButton.vue";
+import PaginationLinks from "@/Components/PaginationLinks.vue";
 import { ModalLink } from "@inertiaui/modal-vue";
 import { Link } from "@inertiajs/vue3";
 import moment from "moment";
@@ -50,6 +51,7 @@ const items = ref([
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
@@ -80,10 +82,10 @@ const items = ref([
                                 <template v-if="providers.data.length !== 0">
                                     <tr v-for="provider in providers.data">
                                         <td>
-                                            {{ provider.profile.user.name }}
+                                            {{ provider.name }}
                                         </td>
                                         <td>
-                                            {{ provider.service_type.name }}
+                                            {{ provider.service_type }}
                                         </td>
                                         <td>{{ provider.experience }}</td>
                                         <td>
@@ -95,39 +97,22 @@ const items = ref([
                                         </td>
                                         <td>
                                             <div class="flex gap-x-4">
-                                                <ActionButton
-                                                    type="modal"
-                                                    actionType="view"
-                                                    :href="
-                                                        route(
-                                                            'admin.applications.show',
-                                                            provider.id
-                                                        )
-                                                    "
-                                                    :modalSlideoverEnabled="
-                                                        true
-                                                    "
-                                                />
-                                                <ActionButton
-                                                    type="modal"
-                                                    actionType="approve"
-                                                    :href="
-                                                        route(
-                                                            'admin.applications.approve',
-                                                            provider.id
-                                                        )
-                                                    "
-                                                />
-                                                <ActionButton
-                                                    type="modal"
-                                                    actionType="delete"
-                                                    :href="
-                                                        route(
-                                                            'admin.applications.delete',
-                                                            provider.id
-                                                        )
-                                                    "
-                                                />
+                                                <ActionButton type="modal" actionType="view" :href="route(
+                                                    'admin.applications.show',
+                                                    provider.id
+                                                )
+                                                    " :modalSlideoverEnabled="true
+                                                        " />
+                                                <ActionButton type="modal" actionType="approve" :href="route(
+                                                    'admin.applications.approve',
+                                                    provider.id
+                                                )
+                                                    " />
+                                                <ActionButton type="modal" actionType="delete" :href="route(
+                                                    'admin.applications.delete',
+                                                    provider.id
+                                                )
+                                                    " />
                                             </div>
                                         </td>
                                     </tr>
@@ -144,6 +129,8 @@ const items = ref([
                             </template>
                         </TableWrapper>
                     </div>
+
+                    <PaginationLinks :links="providers.links" />
                 </div>
             </div>
         </div>

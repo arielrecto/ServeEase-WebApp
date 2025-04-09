@@ -20,10 +20,29 @@ class ServiceProviderApplicationController extends Controller
      */
     public function index()
     {
-        $providers = ProviderProfile::whereNull('verified_at')
-        ->where('status', 'pending')->with(['serviceType:id,name', 'profile.user'])->latest()->paginate(10);
+        $providers = ProviderProfile::with(['serviceType', 'profile.user'])
+            ->where('status', 'pending')
+            ->whereNull('verified_at')
+            ->latest()
+            ->paginate(10)
+            ->through(function ($provider) {
+                return [
+                    'id' => $provider->id,
+                    'name' => $provider->profile->user->name,
+                    'service_type' => $provider->serviceType->name,
+                    'service_type_id' => $provider->serviceType->id,
+                    'experience' => $provider->experience,
+                    'created_at' => $provider->created_at
+                ];
+            });
 
-        // dd($providers);
+        // dd(
+        //     $providers,
+        //     ProviderProfile::with(['serviceType'])
+        //         // ->where('status', 'pending')
+        //         ->whereNull('verified_at')
+        //         ->get()
+        // );
 
         return Inertia::render('Users/Admin/ServiceProviderApplication/Index', compact(['providers']));
     }
