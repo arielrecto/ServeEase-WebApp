@@ -168,11 +168,12 @@ class ServiceController extends Controller
         $services = Service::where('user_id', $provider_id)
             ->get();
 
-
+        $initialService = Service::where('id', $request->input('query')['service_id'])->first();
 
         return Inertia::render('Users/Customer/Services/BulkForm', [
             'provider' => $provider,
-            'services' => $services
+            'services' => $services,
+            'initialService' => $initialService
         ]);
     }
 
