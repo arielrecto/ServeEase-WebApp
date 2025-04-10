@@ -46,7 +46,7 @@ class BookingController extends Controller
                     'provider' => $availService->service->user->name,
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
-                    'reference_number' => $availService->serviceCart->reference_number,
+                    'reference_number' => $availService?->serviceCart?->reference_number,
                     'cart_id' => $availService->service_cart_id,
                     'created_at' => $availService->created_at
                 ];
@@ -109,7 +109,7 @@ class BookingController extends Controller
                 '=',
                 Auth::user()->id
             )
-                ->whereIn('status', ['in_progress', 'confirmed'])
+                ->whereIn('status', ['in_progress'])
                 ->exists()
         ) {
             return back()->with('message_error', 'You currently have an ongoing booking!');
