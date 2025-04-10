@@ -22,7 +22,7 @@ const props = defineProps({
         <Header :canLogin="canLogin" :canRegister="canRegister" />
 
         <!-- Main Content -->
-        <main class="container h-screen px-4 py-12 mx-auto sm:px-6 lg:px-8">
+        <main class="container min-h-screen px-4 py-12 mx-auto sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto">
                 <!-- Page Title -->
                 <h1 class="mb-8 text-3xl font-bold text-gray-900">
