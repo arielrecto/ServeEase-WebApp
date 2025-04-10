@@ -100,20 +100,21 @@ class BookingController extends Controller
 
     public function updateStatus(Request $request, AvailService $availService)
     {
-        if (
-            ($request->status === 'confirmed' ||
-                $request->status === 'in_progress') &&
-            AvailService::whereRelation(
-                'service',
-                'user_id',
-                '=',
-                Auth::user()->id
-            )
-                ->whereIn('status', ['in_progress'])
-                ->exists()
-        ) {
-            return back()->with('message_error', 'You currently have an ongoing booking!');
-        }
+        // if (
+        //     ($request->status === 'confirmed' ||
+        //         $request->status === 'in_progress') &&
+        //     AvailService::whereRelation(
+        //         'service',
+        //         'user_id',
+        //         '=',
+        //         Auth::user()->id
+        //     )
+        //         ->whereIn('status', ['in_progress'])
+        //         ->where('service_cart_id', $availService->service_cart_id)
+        //         ->first()?->service_cart_id !== $availService->service_cart_id
+        // ) {
+        //     return back()->with('message_error', 'You already have an ongoing booking!');
+        // }
 
         $availService->update([
             'status' => $request->status
