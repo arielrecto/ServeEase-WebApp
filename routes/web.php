@@ -132,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('/{favorite}', 'add')->name('add');
             });
             Route::resource('favorites', FavoriteController::class)->except(['show', 'create', 'edit', 'update']);
+            Route::get('/booking/archive', [BookingController::class, 'showArchive'])->name('booking.archive');
             Route::resource('booking', BookingController::class);
             Route::resource('services', CustomerServiceController::class)->only('show');
             Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);

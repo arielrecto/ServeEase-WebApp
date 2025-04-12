@@ -91,7 +91,9 @@ class ServiceController extends Controller
     {
         $service = Service::with(['user'])->where('id', $id)->first();
 
-
+        if (!$service) {
+            abort(404);
+        }
 
         return Inertia::render('Users/Customer/Services/Avail', compact(['service']));
     }
@@ -169,6 +171,10 @@ class ServiceController extends Controller
             ->get();
 
         $initialService = Service::where('id', $request->input('query')['service_id'])->first();
+
+        if (!$initialService) {
+            abort(404);
+        }
 
         return Inertia::render('Users/Customer/Services/BulkForm', [
             'provider' => $provider,

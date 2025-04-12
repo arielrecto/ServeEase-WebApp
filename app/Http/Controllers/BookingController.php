@@ -96,6 +96,42 @@ class BookingController extends Controller
         return Inertia::render('Users/Customer/Booking/Detail', compact(['availService', 'service']));
     }
 
+    public function showArchive()
+    {
+        $availServices = AvailService::with(['service.user.profile.providerProfile'])
+            ->where('status', 'completed')
+            ->where('user_id', Auth::user()->id)
+            ->latest()
+            ->paginate(20)
+            ->through(function ($availService) {
+                return [
+                    'id' => $availService->id,
+                    'service_id' => $availService->service->id,
+                    'name' => $availService->service->name,
+                    'provider' => $availService->service->user->name,
+                    'status' => $availService->status,
+                    'total_price' => $availService->total_price,
+                    'created_at' => $availService->created_at
+                ];
+            });
+
+        $weekStartDate = Carbon::now()->startOfWeek()->format('Y-m-d H:i');
+        $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
+
+        $latestBookingsCount = AvailService::whereUserId(Auth::user()->id)
+            ->whereBetween('created_at', [$weekStartDate, $weekEndDate])
+            ->count();
+        $pendingBookingsCount = AvailService::whereUserId(Auth::user()->id)
+            ->whereStatus('pending')
+            ->count();
+        $finishedBookingsCount = AvailService::whereUserId(Auth::user()->id)
+            ->whereStatus('completed')
+            ->count();
+        $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
+
+        return Inertia::render('Users/Customer/Booking/Archive', compact(['availServices', 'latestBookingsCount', 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
