@@ -58,10 +58,11 @@ const icon = computed(() => {
         case "approve":
             return "fa-solid fa-thumbs-up";
             break;
-        case "reject":
-            return "fa-solid fa-thumbs-down";
+        case "cart":
+            return "fa-solid fa-shopping-cart"; // Added cart icon
             break;
         default:
+            return "ri-more-2-fill";
             break;
     }
 });
