@@ -14,12 +14,6 @@ const isServiceProvider = computed(() => page.props.auth.isServiceProvider);
 
 const menuItems = [
     {
-        id: 1,
-        title: "Favorites",
-        url: route("customer.favorites.index"),
-        icon: "ri-star-line",
-    },
-    {
         id: 2,
         title: "Service Types",
         url: route("types.index"),
@@ -55,6 +49,7 @@ const services = computed(() => page.props.services);
 </script>
 
 <template>
+
     <Head title="Home" />
 
     <AuthenticatedLayout>
@@ -66,51 +61,27 @@ const services = computed(() => page.props.services);
 
         <div class="py-12">
             <div class="flex flex-col gap-5 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div
-                    class="flex flex-wrap items-start justify-center gap-x-8 gap-y-10"
-                >
+                <div class="flex flex-wrap items-start justify-center gap-x-8 gap-y-10">
                     <template v-for="item in menuItems" :key="item.id">
-                        <GoTo
-                            v-if="item.id < 5"
-                            :title="item.title"
-                            :icon="item.icon"
-                            :url="item.url"
-                        />
-                        <GoTo
-                            v-if="
-                                item.id === 5 &&
-                                isServiceProvider &&
-                                isVerifiedProvider
-                            "
-                            :title="item.title"
-                            :icon="item.icon"
-                            :url="item.url"
-                        />
-                        <GoTo
-                            v-if="item.id === 6 && !isVerifiedProvider"
-                            :title="item.title"
-                            :icon="item.icon"
-                            :url="item.url"
-                        />
+                        <GoTo v-if="item.id < 5" :title="item.title" :icon="item.icon" :url="item.url" />
+                        <GoTo v-if="
+                            item.id === 5 &&
+                            isServiceProvider &&
+                            isVerifiedProvider
+                        " :title="item.title" :icon="item.icon" :url="item.url" />
+                        <GoTo v-if="item.id === 6 && !isVerifiedProvider" :title="item.title" :icon="item.icon"
+                            :url="item.url" />
                     </template>
                 </div>
                 <div v-if="services?.length > 0">
                     <section class="px-5 md:px-20">
-                        <div
-                            ref="dataContainer"
-                            class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]"
-                        >
-                            <UserServiceCard
-                                v-for="service in services"
-                                :service="service"
-                            />
+                        <div ref="dataContainer"
+                            class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]">
+                            <UserServiceCard v-for="service in services" :service="service" />
                         </div>
                     </section>
                 </div>
-                <div
-                    v-else
-                    class="flex items-center justify-center h-64 mx-auto"
-                >
+                <div v-else class="flex items-center justify-center h-64 mx-auto">
                     <p class="text-xl text-center text-gray-500">
                         Services are coming soon!
                     </p>
