@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Models\Remark;
 use App\Models\Service;
 use App\Models\FeedBack;
+use App\Models\ServiceCart;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +20,9 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $filter = $request->filter;
-        $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
+
+
+        $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile', 'serviceCart'])
             ->whereUserId(Auth::user()->id)
             ->when($filter, function ($query) use ($filter) {
                 if ($filter === "completed") {
@@ -38,9 +42,14 @@ class BookingController extends Controller
                     'provider' => $availService->service->user->name,
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
+                    'service_cart_id' => $availService->serviceCart?->id ?? null,
                     'created_at' => $availService->created_at
                 ];
             });
+
+
+
+
 
         $weekStartDate = Carbon::now()->startOfWeek()->format('Y-m-d H:i');
         $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
@@ -154,5 +163,58 @@ class BookingController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function showCart($id)
+    {
+        $serviceCart = ServiceCart::with([
+            'availServices.service',
+            'availServices.availServiceRemarks.user',
+            'remarks.user'
+        ])->findOrFail($id);
+
+        $availServices = $serviceCart->availServices()
+            ->with(['service', 'availServiceRemarks.user'])
+            ->get()
+            ->map(function ($availService) {
+                return [
+                    'id' => $availService->id,
+                    'name' => $availService->service->name,
+                    'total_price' => $availService->total_price,
+                    'status' => $availService->status,
+                    'start_date' => $availService->start_date,
+                    'end_date' => $availService->end_date,
+                    'availServiceRemarks' => $availService->availServiceRemarks
+                ];
+            });
+
+        return Inertia::render('Users/Customer/Booking/ServiceCartDetail', [
+            'serviceCart' => $serviceCart,
+            'availServices' => $availServices
+        ]);
+    }
+
+    public function reply(Request $request)
+    {
+
+
+        $request->validate([
+            'content' => 'required|string',
+            'remarkable_id' => 'required',
+            'remarkable_type' => 'required|in:ServiceCart,AvailService',
+        ]);
+
+        $remark = new Remark([
+            'content' => $request->content,
+            'user_id' => auth()->id(),
+        ]);
+
+        $remarkable = $request->remarkable_type === 'ServiceCart'
+            ? ServiceCart::find($request->remarkable_id)
+            : AvailService::find($request->remarkable_id);
+
+        $remarkable->remarks()->save($remark);
+
+        return back();
     }
 }

@@ -146,8 +146,8 @@ const submit = () => {
                                     :class="`block w-full mt-1 ${
                                         service.price_type === 'hr'
                                             ? 'hidden'
-                                            : ''
-                                    }`"
+                                            : ''}`"
+                                    :disabled="service.price_type === 'fixed rate'"
                                     autofocus
                                     required
                                 />
@@ -168,7 +168,7 @@ const submit = () => {
                             </div>
                         </div>
                         <div>
-                            <InputLabel for="name" value="total" />
+                            <InputLabel for="name" value="Bid" />
 
                             <TextInput
                                 id="name"

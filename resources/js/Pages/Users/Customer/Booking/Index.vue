@@ -201,6 +201,12 @@ console.log(props.availServices);
                                                     actionType="edit"
                                                     :href="'#'"
                                                 />
+                                                <ActionButton
+                                                    v-if="availService.service_cart_id"
+                                                    type="link"
+                                                    actionType="cart"
+                                                    :href="route('customer.booking.cart.show', availService.service_cart_id)"
+                                                />
                                             </div>
                                         </td>
                                     </tr>

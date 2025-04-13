@@ -37,4 +37,8 @@ class ServiceCart extends Model
         return strtoupper($value);
     }
 
+    public function remarks()
+    {
+        return $this->morphMany(Remark::class, 'remarkable');
+    }
 }

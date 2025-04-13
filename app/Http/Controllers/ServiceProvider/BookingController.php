@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\ServiceProvider;
 
 use Inertia\Inertia;
+use App\Models\Remark;
 use App\Models\Service;
 use App\Models\FeedBack;
+use App\Models\ServiceCart;
 use App\Models\AvailService;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -13,7 +15,6 @@ use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\GenerateNotificationAction;
-use App\Models\ServiceCart;
 
 class BookingController extends Controller
 {
@@ -154,13 +155,17 @@ class BookingController extends Controller
 
     public function showCart(string $serviceCartId)
     {
-
-        $serviceCart = ServiceCart::with(['user', 'availServices.service'])
-            ->where('id', $serviceCartId)
-            ->first();
+        $serviceCart = ServiceCart::with([
+            'user',
+            'availServices.service',
+            'availServices.availServiceRemarks.user',
+            'remarks.user'
+        ])
+        ->where('id', $serviceCartId)
+        ->first();
 
         $availServices = $serviceCart->availServices()
-            ->with(['service'])
+            ->with(['service', 'availServiceRemarks.user'])
             ->get()
             ->map(function ($availService) {
                 return [
@@ -170,7 +175,8 @@ class BookingController extends Controller
                     'status' => $availService->status,
                     'start_date' => $availService->start_date,
                     'end_date' => $availService->end_date,
-                    'remarks' => $availService->remarks,
+                    'availServiceRemarks' => $availService->availServiceRemarks,
+                    'remarks' => $availService->remarks
                 ];
             });
 
@@ -224,5 +230,27 @@ class BookingController extends Controller
         }
 
         return back()->with('message_success', 'All services have been rejected');
+    }
+
+    public function reply(Request $request)
+    {
+        $request->validate([
+            'content' => 'required|string',
+            'remarkable_id' => 'required',
+            'remarkable_type' => 'required|in:ServiceCart,AvailService',
+        ]);
+
+        $remark = new Remark([
+            'content' => $request->content,
+            'user_id' => auth()->id(),
+        ]);
+
+        $remarkable = $request->remarkable_type === 'ServiceCart'
+            ? ServiceCart::findOrFail($request->remarkable_id)
+            : AvailService::findOrFail($request->remarkable_id);
+
+        $remarkable->remarks()->save($remark);
+
+        return back();
     }
 }

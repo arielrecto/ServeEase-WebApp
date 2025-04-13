@@ -15,6 +15,7 @@ use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\GenerateNotificationAction;
+use App\Models\Remark;
 
 class ServiceController extends Controller
 {
@@ -186,6 +187,7 @@ class ServiceController extends Controller
     public function bulkAvail(Request $request)
     {
 
+
         $request->validate([
             'services' => ['required', 'array', 'min:1'],
             'start_date' => ['required', 'date'],
@@ -200,7 +202,15 @@ class ServiceController extends Controller
         $serviceChart = ServiceCart::create([
             'user_id' => Auth::user()->id,
             'reference_number' => strtoupper(uniqid('REF-')),
-            'total_amount' => $request->total_price
+            'total_amount' => $request->total_amount
+        ]);
+
+
+        Remark::create([
+            'content' => $request->remark,
+            'user_id' => Auth::user()->id,
+            'remarkable_id' => $serviceChart->id,
+            'remarkable_type' => ServiceCart::class
         ]);
 
 
@@ -218,6 +228,10 @@ class ServiceController extends Controller
                     $total_price *= $total_hours;
                 }
 
+                if(count($request->serviceDetails) > 0){
+                    $total_price = $request->serviceDetails[$service->id]['bargain_price'];
+                }
+
                 // Create avail service record
                 $availService = AvailService::create([
                     'start_date' => $request->start_date,
@@ -228,6 +242,13 @@ class ServiceController extends Controller
                     'total_hours' => $total_hours,
                     'user_id' => Auth::user()->id,
                     'service_cart_id' => $serviceChart->id,
+                ]);
+
+                Remark::create([
+                    'content' => $request->serviceDetails[$service->id]['remark'],
+                    'user_id' => Auth::user()->id,
+                    'remarkable_id' => $availService->id,
+                    'remarkable_type' => AvailService::class
                 ]);
 
                 // Create notification for service provider

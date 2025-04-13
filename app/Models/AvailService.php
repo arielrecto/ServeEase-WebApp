@@ -55,4 +55,8 @@ class AvailService extends Model
     {
         return $this->belongsTo(ServiceCart::class);
     }
+
+    public function availServiceRemarks(){
+        return $this->morphMany(Remark::class, 'remarkable');
+    }
 }

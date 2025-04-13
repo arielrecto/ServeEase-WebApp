@@ -51,7 +51,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
         'services' => App\Models\ServiceType::orderBy('name')->take(6)->get(),
-        'totalServices' => App\Models\ServiceType::all()->count(),
+        'totalServices' => App\Models.ServiceType::all()->count(),
         // 'pages' => $pages,
     ]);
 });
@@ -122,6 +122,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('bulk-forms/store', [CustomerServiceController::class, 'bulkAvail'])->name('bulk-avail');
             });
             Route::prefix('booking')->controller(BookingController::class)->as('booking.')->group(function () {
+                Route::get('/cart/{id}', 'showCart')->name('cart.show');
+                Route::post('/reply', 'reply')->name('reply');
                 Route::get('/{availService}/detail', 'detail')->name('detail');
             });
             Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {
@@ -153,6 +155,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
                 Route::get('/{availService}/confirm', [ServiceProviderBookingController::class, 'confirm'])->name('confirm');
                 Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
+                Route::post('/reply', [ServiceProviderBookingController::class, 'reply'])->name('reply');
             });
         });
 

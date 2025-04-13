@@ -16,15 +16,24 @@ const form = ref({
     services: [],
     start_date: '',
     end_date: '',
-    remark: ''
+    remark: '',
+    total_amount : '',
+    serviceDetails: {} // Store details for each service (bargain price and remarks)
 });
 
-// Get the service_id from URL query parameters
-const currentUrl = window.location.href;
-const urlParams = new URL(currentUrl);
-const serviceId = urlParams.searchParams.get('query[service_id]');
-
+// Initialize serviceDetails with default values
 onMounted(() => {
+    props.services.forEach(service => {
+        form.value.serviceDetails[service.id] = {
+            is_bargain: false,
+            bargain_price: service.price,
+            remark: ''
+        };
+    });
+
+    const currentUrl = window.location.href;
+    const urlParams = new URL(currentUrl);
+    const serviceId = urlParams.searchParams.get('query[service_id]');
     if (serviceId) {
         selectedServices.value = [parseInt(serviceId)];
         form.value.services = [parseInt(serviceId)];
@@ -37,24 +46,28 @@ const submit = () => {
         start_date: form.value.start_date,
         end_date: form.value.end_date,
         remark: form.value.remark,
-        total_price: selectedServices.value.reduce((total, serviceId) => {
-            const service = props.services.find(s => s.id === serviceId);
-            return total + (service ? service.price : 0);
-        }, 0)
+        total_amount : form.value.total_amount,
+        serviceDetails: form.value.serviceDetails
     });
 };
 
 // Add computed property for total price
-const totalPrice = computed(() => {
+form.value.total_amount = computed(() => {
     return selectedServices.value.reduce((total, serviceId) => {
-        const service = props.services.find(s => s.id === serviceId);
-        return total + (service ? service.price : 0);
+        const serviceDetail = form.value.serviceDetails[serviceId];
+        return total + (serviceDetail ? serviceDetail.bargain_price : 0);
     }, 0);
 });
+
+// Function to enable bargain price editing
+const enableBargain = (serviceId) => {
+    const serviceDetail = form.value.serviceDetails[serviceId];
+    serviceDetail.is_bargain = true;
+    serviceDetail.remark = `I would like to bargain the price to ₱${serviceDetail.bargain_price}.`;
+};
 </script>
 
 <template>
-
     <Head title="Bulk Service Availing" />
 
     <AuthenticatedLayout>
@@ -70,26 +83,6 @@ const totalPrice = computed(() => {
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white rounded-lg shadow-xl">
-                    <!-- Progress Steps -->
-                    <!-- <div class="px-8 py-4 border-b">
-                        <div class="flex items-center justify-between max-w-2xl mx-auto">
-                            <div class="flex flex-col items-center">
-                                <div class="flex items-center justify-center w-10 h-10 font-bold text-white rounded-full bg-primary">1</div>
-                                <span class="mt-2 text-sm">Select Services</span>
-                            </div>
-                            <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>
-                            <div class="flex flex-col items-center">
-                                <div class="flex items-center justify-center w-10 h-10 font-bold bg-gray-200 rounded-full">2</div>
-                                <span class="mt-2 text-sm">Book Schedule</span>
-                            </div>
-                            <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>
-                            <div class="flex flex-col items-center">
-                                <div class="flex items-center justify-center w-10 h-10 font-bold bg-gray-200 rounded-full">3</div>
-                                <span class="mt-2 text-sm">Confirmation</span>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <form @submit.prevent="submit" class="p-8">
                         <!-- Services Selection -->
                         <div class="mb-8">
@@ -148,13 +141,41 @@ const totalPrice = computed(() => {
                             <h3 class="mb-4 text-xl font-semibold">Order Summary</h3>
                             <div class="space-y-4">
                                 <div v-for="serviceId in selectedServices" :key="serviceId"
-                                    class="flex justify-between py-2 border-b">
-                                    <span>{{services.find(s => s.id === serviceId)?.name}}</span>
-                                    <span>₱{{services.find(s => s.id === serviceId)?.price}}</span>
+                                    class="flex flex-col py-2 border-b">
+                                    <div class="flex justify-between items-center">
+                                        <span>{{ services.find(s => s.id === serviceId)?.name }}</span>
+                                        <span>
+                                            <input
+                                                v-if="form.serviceDetails[serviceId]?.is_bargain"
+                                                type="number"
+                                                v-model="form.serviceDetails[serviceId].bargain_price"
+                                                class="w-24 border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                                @input="form.serviceDetails[serviceId].remark = `I would like to bargain the price to ₱${form.serviceDetails[serviceId].bargain_price}.`"
+                                            />
+                                            <span v-else>
+                                                ₱{{ form.serviceDetails[serviceId]?.bargain_price }}
+                                            </span>
+                                            <button
+                                                v-if="!form.serviceDetails[serviceId]?.is_bargain"
+                                                type="button"
+                                                @click="enableBargain(serviceId)"
+                                                class="ml-2 text-sm text-blue-500 hover:underline"
+                                            >
+                                                Bargain Price
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <textarea
+                                        v-if="form.serviceDetails[serviceId]?.is_bargain"
+                                        v-model="form.serviceDetails[serviceId].remark"
+                                        class="w-full mt-2 border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                        rows="2"
+                                        placeholder="Add a remark for this service"
+                                    ></textarea>
                                 </div>
                                 <div class="flex justify-between pt-4 text-lg font-bold">
                                     <span>Total Amount</span>
-                                    <span class="text-primary">₱{{ totalPrice }}</span>
+                                    <span class="text-primary">₱{{ form.total_amount }}</span>
                                 </div>
                             </div>
                         </div>

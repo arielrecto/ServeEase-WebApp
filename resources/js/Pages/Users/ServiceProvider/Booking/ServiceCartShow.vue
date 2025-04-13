@@ -1,6 +1,7 @@
 <script setup>
 import { Link, router } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
@@ -8,6 +9,12 @@ import StatusBadge from "@/Components/StatusBadge.vue";
 const props = defineProps({
     serviceCart: Object,
     availServices: Array
+});
+
+const form = useForm({
+    content: '',
+    remarkable_id: props.serviceCart?.id,
+    remarkable_type: 'ServiceCart'
 });
 
 const hasPendingServices = computed(() => {
@@ -24,6 +31,13 @@ const rejectAll = () => {
     if (confirm('Are you sure you want to reject all services in this cart?')) {
         router.post(route('service-provider.booking.cart.reject-all', props.serviceCart.id));
     }
+};
+
+const submitReply = () => {
+    form.post(route('service-provider.booking.reply'), {
+        preserveScroll: true,
+        onSuccess: () => form.reset()
+    });
 };
 </script>
 
@@ -56,6 +70,39 @@ const rejectAll = () => {
                             </div>
                         </div>
 
+                        <!-- Service Cart Remarks -->
+                        <div v-if="serviceCart.remarks?.length" class="mt-4">
+                            <h3 class="text-lg font-semibold mb-2">Cart Remarks</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div v-for="remark in serviceCart.remarks" :key="remark.id" class="mb-4 last:mb-0">
+                                    <p class="text-gray-700">{{ remark.content }}</p>
+                                    <p class="text-sm text-gray-500">By: {{ remark.user?.name }} - {{ new Date(remark.created_at).toLocaleDateString() }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reply Form -->
+                        <div class="mt-4">
+                            <h3 class="text-lg font-semibold mb-2">Reply to Customer</h3>
+                            <form @submit.prevent="submitReply" class="space-y-3">
+                                <textarea
+                                    v-model="form.content"
+                                    rows="3"
+                                    class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                    placeholder="Type your reply here..."
+                                ></textarea>
+                                <div class="flex justify-end">
+                                    <button
+                                        type="submit"
+                                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                        :disabled="form.processing || !form.content"
+                                    >
+                                        Send Reply
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
                         <!-- Bulk Actions -->
                         <div v-if="hasPendingServices" class="flex justify-end gap-4 mt-4">
                             <button
@@ -83,7 +130,19 @@ const rejectAll = () => {
                                     <div>
                                         <h4 class="font-semibold">{{ service.name }}</h4>
                                         <p class="text-sm text-gray-600">₱{{ service.total_price }}</p>
-                                        <p class="text-sm text-gray-500 mt-2">{{ service.remarks }}</p>
+
+                                        <!-- Service Remarks -->
+                                        <div v-if="service.availServiceRemarks?.length" class="mt-3">
+                                            <h5 class="text-sm font-medium text-gray-700 mb-1">Service Remarks:</h5>
+                                            <div class="bg-gray-50 rounded p-3">
+                                                <div v-for="remark in service.availServiceRemarks" :key="remark.id" class="mb-2">
+                                                    <p class="text-sm text-gray-700">{{ remark.content }}</p>
+                                                    <p class="text-xs text-gray-500">
+                                                        By: {{ remark.user?.name }} - {{ new Date(remark.created_at).toLocaleDateString() }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <StatusBadge :status="service.status" />
                                 </div>
