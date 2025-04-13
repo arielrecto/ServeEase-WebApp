@@ -119,6 +119,7 @@ onMounted(async () => {
 </script>
 
 <template>
+
     <Head title="Search a service" />
 
     <AuthenticatedLayout>
@@ -135,20 +136,15 @@ onMounted(async () => {
             <div class="mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8">
                 <section class="px-20 space-y-4">
                     <div class="space-y-5">
-                        <SearchForm
-                            @submitted="
-                                async (query) => {
-                                    form.search = query;
-                                    await fetchServices();
-                                }
-                            "
-                            placeholder="Search a keyword"
-                        />
+                        <SearchForm @submitted="
+                            async (query) => {
+                                form.search = query;
+                                await fetchServices();
+                            }
+                        " placeholder="Search a keyword" />
                         <div class="flex items-center w-full">
                             <hr class="flex-1 border-gray-300" />
-                            <div
-                                class="mx-5 text-xs font-semibold text-gray-700"
-                            >
+                            <div class="mx-5 text-xs font-semibold text-gray-700">
                                 OR
                             </div>
                             <hr class="flex-1 border-gray-300" />
@@ -156,40 +152,21 @@ onMounted(async () => {
                         <form @submit.prevent="submit" method="get">
                             <div class="flex items-end w-full gap-4">
                                 <div class="w-full">
-                                    <InputLabel
-                                        for="name"
-                                        value="Select a service"
-                                    />
-                                    <ComboBox
-                                        :items="services"
-                                        identifier="name"
-                                        valueName="id"
-                                        keyName="id"
+                                    <InputLabel for="name" value="Select a service" />
+                                    <ComboBox :items="services" identifier="name" valueName="id" keyName="id"
                                         @update:model-value="
                                             (value) =>
-                                                (form.service =
-                                                    value.toLowerCase())
-                                        "
-                                        :isRequired="true"
-                                        :class="`block w-full bg-white`"
-                                    />
+                                                (form.service = value)
+                                        " @reset-value="form.service = ''" :isRequired="false"
+                                        :class="`block w-full bg-white`" />
                                 </div>
                                 <div class="w-full">
-                                    <InputLabel
-                                        for="name"
-                                        value="Select a barangay"
-                                    />
-                                    <ComboBox
-                                        :items="brgys"
-                                        identifier="name"
-                                        valueName="id"
-                                        keyName="id"
+                                    <InputLabel for="name" value="Select a barangay" />
+                                    <ComboBox :items="brgys" identifier="name" valueName="id" keyName="id"
                                         @update:model-value="
                                             (value) => (form.brgy = value)
-                                        "
-                                        :isRequired="true"
-                                        :class="`block w-full bg-white`"
-                                    />
+                                        " @reset-value="form.brgy = ''" :isRequired="false"
+                                        :class="`block w-full bg-white`" />
                                 </div>
                                 <div>
                                     <PrimaryButton>Go</PrimaryButton>
@@ -198,24 +175,13 @@ onMounted(async () => {
                         </form>
                     </div>
 
-                    <div
-                        v-if="userServices.length > 0"
-                        class="flex flex-wrap items-center justify-center gap-4"
-                    >
+                    <div v-if="userServices.length > 0" class="flex flex-wrap items-center justify-center gap-4">
                         <div class="flex items-center flex-1 gap-x-2">
                             <InputLabel for="byRating" value="Rating" />
 
-                            <SelectInput
-                                id="byRating"
-                                @update-value="fetchServices"
-                                class="block w-full mt-1"
-                                v-model="form.byRating"
-                                required
-                            >
-                                <option
-                                    v-for="item in ratingFilterOptions"
-                                    :value="item"
-                                >
+                            <SelectInput id="byRating" @update-value="fetchServices" class="block w-full mt-1"
+                                v-model="form.byRating" required>
+                                <option v-for="item in ratingFilterOptions" :value="item">
                                     {{ item }}
                                 </option>
                             </SelectInput>
@@ -223,22 +189,11 @@ onMounted(async () => {
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
                         <div class="flex items-center flex-1 gap-x-2">
-                            <InputLabel
-                                for="byTransaction"
-                                value="Popularity"
-                            />
+                            <InputLabel for="byTransaction" value="Popularity" />
 
-                            <SelectInput
-                                id="byTransaction"
-                                @update-value="fetchServices"
-                                class="block w-full mt-1"
-                                v-model="form.byTransaction"
-                                required
-                            >
-                                <option
-                                    v-for="item in transactionFilterOptions"
-                                    :value="item"
-                                >
+                            <SelectInput id="byTransaction" @update-value="fetchServices" class="block w-full mt-1"
+                                v-model="form.byTransaction" required>
+                                <option v-for="item in transactionFilterOptions" :value="item">
                                     {{ item }}
                                 </option>
                             </SelectInput>
@@ -248,17 +203,9 @@ onMounted(async () => {
                         <div class="flex items-center flex-1 gap-x-2">
                             <InputLabel for="byPrice" value="Price" />
 
-                            <SelectInput
-                                id="byPrice"
-                                @update-value="fetchServices"
-                                class="block w-full mt-1"
-                                v-model="form.byPrice"
-                                required
-                            >
-                                <option
-                                    v-for="item in priceFilterOptions"
-                                    :value="item"
-                                >
+                            <SelectInput id="byPrice" @update-value="fetchServices" class="block w-full mt-1"
+                                v-model="form.byPrice" required>
+                                <option v-for="item in priceFilterOptions" :value="item">
                                     {{ item }}
                                 </option>
                             </SelectInput>
@@ -269,14 +216,9 @@ onMounted(async () => {
                 </section>
 
                 <section class="px-20">
-                    <div
-                        ref="dataContainer"
-                        class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]"
-                    >
-                        <UserServiceCard
-                            v-for="item in userServices"
-                            :service="item"
-                        />
+                    <div ref="dataContainer"
+                        class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]">
+                        <UserServiceCard v-for="item in userServices" :service="item" />
                     </div>
                 </section>
             </div>

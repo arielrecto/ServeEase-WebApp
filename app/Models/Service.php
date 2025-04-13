@@ -105,4 +105,11 @@ class Service extends Model
     {
         return $this->thumbnail ?? '/assets/images/default_thumbnail.png';
     }
+
+    public function scopeOrderByAvgRate($query, $direction = 'desc')
+    {
+        return $query->get()->sortBy(function ($service) {
+            return $service->avg_rate;
+        }, SORT_REGULAR, $direction === 'desc')->values();
+    }
 }

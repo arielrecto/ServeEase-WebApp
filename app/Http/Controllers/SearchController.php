@@ -45,9 +45,10 @@ class SearchController extends Controller
             })
             ->when($price, function ($q) use ($price) {
                 if ($price === 'High') {
-                    $q->orderBy('price', 'DESC');
+                    $q->orderByAvgRate();
                 } else if ($price === 'Low') {
-                    $q->orderBy('price', 'ASC');
+                    // $q->orderBy('price', 'ASC');
+                    $q->orderByAvgRate('asc');
                 }
             })
             ->when($transactions, function ($q) use ($transactions) {
@@ -55,18 +56,18 @@ class SearchController extends Controller
 
                 $q->withCount('availService')->orderBy('avail_service_count', $transactionsOrder);
             })
-            // ->when($rating, function ($q) use ($rating) {
-            //     if ($rating === 'Highest') {
-            //         $q->sortBy(function ($service) {
-            //             return $service->avg_rate;
-            //         });
-            //     }
-            //     if ($rating === 'Lowest') {
-            //         $q->sortByDesc(function ($service) {
-            //             return $service->avg_rate;
-            //         });
-            //     }
-            // })
+            ->when($rating, function ($q) use ($rating) {
+                if ($rating === 'Highest') {
+                    // $q->sortBy(function ($service) {
+                    //     return $service->avg_rate;
+                    // });
+                }
+                if ($rating === 'Lowest') {
+                    // $q->sortByDesc(function ($service) {
+                    //     return $service->avg_rate;
+                    // });
+                }
+            })
             ->offset($more)
             ->limit(15)
             ->get();
