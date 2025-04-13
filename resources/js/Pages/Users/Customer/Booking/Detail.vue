@@ -32,11 +32,6 @@ const state = reactive({
 const back = () => {
     window.history.back();
 };
-
-const query = usePage().url.split('?')[1];
-
-const params = new URLSearchParams(query);
-const archive = params.get('archive') ?? 0;
 </script>
 
 <template>
@@ -82,7 +77,7 @@ const archive = params.get('archive') ?? 0;
                                                 <div class="overflow-y-auto max-h-48">
                                                     <span class="">{{
                                                         service.description
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
                                             <div v-if="
@@ -92,7 +87,7 @@ const archive = params.get('archive') ?? 0;
                                                 <div class="overflow-y-auto max-h-48">
                                                     <span class="">{{
                                                         service.terms_and_conditions
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col mt-20 gap-y-3">
@@ -151,7 +146,7 @@ const archive = params.get('archive') ?? 0;
                                                         ₱
                                                         <span class="text-xl text-primary">{{
                                                             availService.total_price.toLocaleString()
-                                                        }}</span>
+                                                            }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="space-y-1">
@@ -173,7 +168,7 @@ const archive = params.get('archive') ?? 0;
                                                     <div class="font-bold">
                                                         <span class="text-xl text-primary">{{
                                                             availService.total_hours.toLocaleString()
-                                                        }}</span>
+                                                            }}</span>
                                                     </div>
                                                 </template>
                                                 <template v-else>
@@ -202,13 +197,13 @@ const archive = params.get('archive') ?? 0;
                                                 <div class="font-bold">
                                                     ₱<span class="text-xl text-primary">{{
                                                         availService.service.price.toLocaleString()
-                                                    }}
+                                                        }}
                                                         *
                                                     </span>
 
                                                     <span class="text-xl text-primary">{{
                                                         availService.service.price_type.toLocaleString()
-                                                    }}</span>
+                                                        }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex gap-x-12">
@@ -266,7 +261,7 @@ const archive = params.get('archive') ?? 0;
                                                 </ModalLinkDialog>
                                             </div>
 
-                                            <div v-if="archive" class="relative">
+                                            <div v-if="availService.status === 'completed'" class="relative">
                                                 <div v-if="state.availServiceBtnShown"
                                                     @click="state.availServiceBtnShown = false"
                                                     class="fixed inset-0 z-40">
