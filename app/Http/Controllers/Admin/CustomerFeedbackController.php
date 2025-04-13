@@ -15,19 +15,26 @@ class CustomerFeedbackController extends Controller
     public function index(Request $request)
     {
         $rating = $request->rate;
+        $search = $request->searchQuery;
         $feedbacks = FeedBack::with(['availService', 'availService.service', 'availService.service.user'])
             ->latest()
             ->when($rating, function ($query) use ($rating) {
                 $query->whereRate((int) $rating);
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('user.profile', function ($query) use ($search) {
+                    $query->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
             })
             ->paginate(20)
             ->through(function ($feedback) {
                 return [
                     'id' => $feedback->id,
                     'rate' => $feedback->rate,
-                    'customer' => $feedback->user->name,
+                    'customer' => "{$feedback->user->profile->first_name} {$feedback->user->profile->last_name}",
                     'service' => $feedback->availService->service->name,
-                    'provider' => $feedback->availService->service->user->name,
+                    'provider' => "{$feedback->availService->service->user->profile->first_name} {$feedback->availService->service->user->profile->last_name}",
                     'created_at' => $feedback->created_at
                 ];
             });

@@ -48,6 +48,7 @@ const filter = () => {
 </script>
 
 <template>
+
     <Head title="Reviews" />
 
     <AuthenticatedLayout>
@@ -56,32 +57,17 @@ const filter = () => {
                 Reviews
             </h2>
             <div class="flex items-center gap-x-4">
-                <SearchForm
-                    @submitted="
-                        (query) => {
-                            searchForm.searchQuery = query;
-                            search();
-                        }
-                    "
-                    placeholder="Search user"
-                />
-                <form
-                    @submit.prevent="filter"
-                    class="flex items-center gap-x-2"
-                >
-                    <SelectInput
-                        v-model="text"
-                        class="mt-1 text-black"
-                        required
-                        @update:modelValue="
-                            ($payload) => (filterForm.rate = $payload)
-                        "
-                    >
-                        <option
-                            v-for="rating in ratingOptions"
-                            :key="rating"
-                            :value="rating"
-                        >
+                <SearchForm @submitted="
+                    (query) => {
+                        searchForm.searchQuery = query;
+                        search();
+                    }
+                " placeholder="Search feedback by customer name" />
+                <form @submit.prevent="filter" class="flex items-center gap-x-2">
+                    <SelectInput v-model="text" class="mt-1 text-black" required @update:modelValue="
+                        ($payload) => (filterForm.rate = $payload)
+                    ">
+                        <option v-for="rating in ratingOptions" :key="rating" :value="rating">
                             {{ rating }}
                         </option>
                     </SelectInput>
@@ -115,39 +101,24 @@ const filter = () => {
                                         </td>
                                         <td>
                                             <div class="flex gap-x-4">
-                                                <ActionButton
-                                                    type="modal"
-                                                    modalSlideoverEnabled
-                                                    actionType="view"
-                                                    :href="
-                                                        route(
-                                                            'admin.feedbacks.show',
-                                                            feedback.id
-                                                        )
-                                                    "
-                                                />
+                                                <ActionButton type="modal" modalSlideoverEnabled actionType="view"
+                                                    :href="route(
+                                                        'admin.feedbacks.show',
+                                                        feedback.id
+                                                    )
+                                                        " />
 
-                                                <ActionButton
-                                                    type="link"
-                                                    actionType="edit"
-                                                    :href="
-                                                        route(
-                                                            'admin.feedbacks.edit',
-                                                            feedback.id
-                                                        )
-                                                    "
-                                                />
+                                                <ActionButton type="link" actionType="edit" :href="route(
+                                                    'admin.feedbacks.edit',
+                                                    feedback.id
+                                                )
+                                                    " />
 
-                                                <ActionButton
-                                                    type="modal"
-                                                    actionType="delete"
-                                                    :href="
-                                                        route(
-                                                            'admin.feedbacks.delete',
-                                                            feedback.id
-                                                        )
-                                                    "
-                                                />
+                                                <ActionButton type="modal" actionType="delete" :href="route(
+                                                    'admin.feedbacks.delete',
+                                                    feedback.id
+                                                )
+                                                    " />
                                             </div>
                                         </td>
                                     </tr>
