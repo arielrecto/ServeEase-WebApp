@@ -51,7 +51,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
         'services' => App\Models\ServiceType::orderBy('name')->take(6)->get(),
-        'totalServices' => App\Models.ServiceType::all()->count(),
+        'totalServices' => App\Models\ServiceType::all()->count(),
         // 'pages' => $pages,
     ]);
 });
