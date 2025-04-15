@@ -100,7 +100,7 @@ console.log(props.availServices);
                     <div class="flex-1">
                         <Link
                             :href="
-                                route('customer.booking.index', {
+                                route('customer.booking.archive', {
                                     filter: 'completed',
                                 })
                             "
