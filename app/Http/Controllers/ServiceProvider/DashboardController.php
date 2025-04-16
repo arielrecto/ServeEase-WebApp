@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\ServiceProvider;
 
+use App\Models\Transaction;
+use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Service;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
+use App\Models\PaymentAccount;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -54,23 +56,12 @@ class DashboardController extends Controller
                 'bookingStatus' => $this->getBookingStatusChartData()
             ],
             'services' => $services,
-            'availServicePending' => $availServicePending
+            'availServicePending' => $availServicePending,
+            'paymentAccounts' => PaymentAccount::where('user_id', Auth::user()->id)->get(),
+            'paymentTransactions' => Transaction::where('paid_to', Auth::user()->id)->get(),
         ]);
     }
 
-    // public function index()
-    // {
-    //     $user = Auth::user();
-
-    //     $services = Service::where('user_id', $user->id)->get();
-
-    //     $availServicePending = AvailService::where('status', 'pending')
-    //     ->whereHas('service', function($q) use($user) {
-    //         $q->where('user_id', $user->id);
-    //     })->get();
-
-    //     return Inertia::render('Users/ServiceProvider/Dashboard', compact(['services', 'availServicePending']));
-    // }
 
     private function getMonthlyRevenueChartData()
     {

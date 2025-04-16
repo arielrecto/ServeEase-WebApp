@@ -131,4 +131,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Remark::class);
     }
+
+    public function paymentAccounts()
+    {
+        return $this->hasMany(PaymentAccount::class);
+    }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'paid_by')
+            ->orWhere('paid_to', $this->id);
+    }
 }

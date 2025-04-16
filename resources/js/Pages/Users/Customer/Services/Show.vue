@@ -83,11 +83,11 @@ const events = computed(() => {
                                 class="btn btn-secondary">
                             Add to Bulk Service
                             </Link>
-                            <!-- <Link :href="route(
+                            <Link :href="route(
                                 'customer.services.avail.create',
                                 service.id
                             )
-                                " class="btn btn-primary">Avail</Link> -->
+                                " class="btn btn-primary">Avail</Link>
                         </div>
                     </div>
                 </div>

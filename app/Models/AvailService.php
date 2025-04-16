@@ -59,4 +59,9 @@ class AvailService extends Model
     public function availServiceRemarks(){
         return $this->morphMany(Remark::class, 'remarkable');
     }
+
+    public function transactions()
+    {
+        return $this->morphMany(Transaction::class, 'transactionable');
+    }
 }
