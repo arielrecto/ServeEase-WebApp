@@ -33,9 +33,6 @@ class UserController extends Controller
 
         $users = User::with(['roles', 'profile'])
             ->has('profile')
-            // ->whereHas("roles", function ($q) {
-            //     $q->whereIn("name", ["customer", "service provider"]);
-            // })
             ->when($userRole, function ($q) use ($userRole) {
                 if ($userRole === 'customers') {
                     $q->has('profile')
@@ -51,14 +48,14 @@ class UserController extends Controller
                 }
             })
             ->when($searchQuery, function ($q) use ($searchQuery) {
-                $q->where('name', 'like', '%' . $searchQuery . '%');
+                $q->whereRelation('profile', 'first_name', 'LIKE', "%{$searchQuery}%")
+                    ->orWhereRelation('profile', 'last_name', 'LIKE', "%{$searchQuery}%");
             })
-            ->orderBy('name', 'ASC')
             ->paginate(20)
             ->through(function ($user) {
                 return [
                     'id' => $user->id,
-                    'name' => $user->name,
+                    'name' => $user->profile->full_name,
                     'is_suspended' => $user->is_suspended,
                     'created_at' => $user->created_at
                 ];
