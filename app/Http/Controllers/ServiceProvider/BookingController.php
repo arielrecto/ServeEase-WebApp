@@ -22,7 +22,7 @@ class BookingController extends Controller
     {
 
         $filter = $request->filter;
-        $availServices = AvailService::with(['service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile'])
+        $availServices = AvailService::with(['user.profile', 'service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile'])
             ->whereHas('service', function ($q) {
                 $q->where('user_id', Auth::user()->id);
             })
@@ -45,6 +45,7 @@ class BookingController extends Controller
                     'start_date' => $availService->start_date,
                     'end_date' => $availService->end_date,
                     'provider' => $availService->service->user->name,
+                    'customer' => "{$availService->user->profile->first_name} {$availService->user->profile->last_name}",
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
                     'reference_number' => $availService?->serviceCart?->reference_number,
@@ -161,8 +162,8 @@ class BookingController extends Controller
             'availServices.availServiceRemarks.user',
             'remarks.user'
         ])
-        ->where('id', $serviceCartId)
-        ->first();
+            ->where('id', $serviceCartId)
+            ->first();
 
         $availServices = $serviceCart->availServices()
             ->with(['service', 'availServiceRemarks.user'])
