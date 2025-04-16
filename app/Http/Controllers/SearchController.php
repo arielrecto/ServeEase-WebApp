@@ -26,7 +26,7 @@ class SearchController extends Controller
         $transactions = $request->byTransaction;
 
         // TODO: Add filter by rating & no. of transactions
-        $services = Service::with(['user'])
+        $services = Service::with(['user.profile', 'serviceType'])
             ->withCount(['availService as avail_service_count'])
             ->when($request->search, function ($q) use ($request) {
                 $rating = null;
@@ -45,10 +45,9 @@ class SearchController extends Controller
             })
             ->when($price, function ($q) use ($price) {
                 if ($price === 'High') {
-                    $q->orderByAvgRate();
+                    $q->orderBy('price', 'DESC');
                 } else if ($price === 'Low') {
-                    // $q->orderBy('price', 'ASC');
-                    $q->orderByAvgRate('asc');
+                    $q->orderBy('price', 'ASC');
                 }
             })
             ->when($transactions, function ($q) use ($transactions) {
@@ -56,33 +55,16 @@ class SearchController extends Controller
 
                 $q->withCount('availService')->orderBy('avail_service_count', $transactionsOrder);
             })
-            ->when($rating, function ($q) use ($rating) {
-                if ($rating === 'Highest') {
-                    // $q->sortBy(function ($service) {
-                    //     return $service->avg_rate;
-                    // });
-                }
-                if ($rating === 'Lowest') {
-                    // $q->sortByDesc(function ($service) {
-                    //     return $service->avg_rate;
-                    // });
-                }
-            })
             ->offset($more)
             ->limit(15)
             ->get();
-        // ->values();
 
-        // if ($rating === 'Highest') {
-        //     $services->sortBy(function ($service) {
-        //         return $service->avg_rate;
-        //     });
-        // }
-        // if ($rating === 'Lowest') {
-        //     $services->sortByDesc(function ($service) {
-        //         return $service->avg_rate;
-        //     });
-        // }
+        // Used to sort models by the accessor 'avg_rate'
+        if ($rating) {
+            $services = $services->sortBy(function ($service) use ($rating) {
+                return $rating === 'Highest' ? -$service->avg_rate : $service->avg_rate;
+            })->values();
+        }
 
         return response()->json(['services' => $services], 200);
     }

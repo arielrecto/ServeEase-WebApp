@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -47,6 +48,16 @@ class Service extends Model
     }
 
     /**
+     * Get the serviceType that owns the Service
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function serviceType(): BelongsTo
+    {
+        return $this->belongsTo(ServiceType::class);
+    }
+
+    /**
      * The users that belong to the Service
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -72,21 +83,25 @@ class Service extends Model
     }
 
     // ACCESSORS
-    public function getAvgRateAttribute()
+    public function avgRate(): Attribute
     {
-        $groupedTotalRatings = $this->getGroupedRatings();
+        return Attribute::make(
+            get: function () {
+                $groupedTotalRatings = $this->getGroupedRatings();
 
-        $totalRatings = array_sum($groupedTotalRatings);
+                $totalRatings = array_sum($groupedTotalRatings);
 
-        // if there are no ratings, return 0
-        if ($totalRatings === 0) {
-            return 0;
-        }
+                // if there are no ratings, return 0
+                if ($totalRatings === 0) {
+                    return 0;
+                }
 
-        $avgRate = number_format($totalRatings / 15, 1);
+                $avgRate = number_format($totalRatings / 15, 1);
 
-        // Return the formatted average rating
-        return "{$avgRate}";
+                // Return the formatted average rating
+                return "{$avgRate}";
+            }
+        );
     }
 
     public function getIsAddedToFavoritesAttribute()
