@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Sex;
+use App\Models\AvailService;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Enums\UserRoles;
@@ -105,9 +106,16 @@ class UserController extends Controller
     }
 
 
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        $user = User::with(['profile', 'roles'])->where('id', $user->id)->firstOrFail();
+        $availServices = AvailService::with(['service', 'service.user.profile'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->toArray();
+
+        return Inertia::render('Users/Admin/Users/Show', compact(['user', 'availServices']));
     }
 
     public function edit(User $user)

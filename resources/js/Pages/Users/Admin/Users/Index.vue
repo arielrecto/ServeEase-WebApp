@@ -27,6 +27,7 @@ const search = () => {
 </script>
 
 <template>
+
     <Head title="Users" />
 
     <AuthenticatedLayout>
@@ -35,15 +36,12 @@ const search = () => {
                 Users
             </h2>
             <div class="w-72">
-                <SearchForm
-                    @submitted="
-                        (query) => {
-                            searchForm.searchQuery = query;
-                            search();
-                        }
-                    "
-                    placeholder="Search user"
-                />
+                <SearchForm @submitted="
+                    (query) => {
+                        searchForm.searchQuery = query;
+                        search();
+                    }
+                " placeholder="Search user" />
             </div>
         </template>
 
@@ -51,57 +49,49 @@ const search = () => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="flex justify-center mb-5 gap-x-5">
                     <div class="flex-1">
-                        <Link
-                            :href="route('admin.users.index')"
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
-                        >
-                            <div>
-                                <span>
-                                    <i class="fa-solid fa-user"></i>
-                                    Total Users
-                                </span>
-                            </div>
-                            <div class="text-2xl font-black text-primary">
-                                {{ userCount }}
-                            </div>
+                        <Link :href="route('admin.users.index')"
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
+                        <div>
+                            <span>
+                                <i class="fa-solid fa-user"></i>
+                                Total Users
+                            </span>
+                        </div>
+                        <div class="text-2xl font-black text-primary">
+                            {{ userCount }}
+                        </div>
                         </Link>
                     </div>
                     <div class="flex-1">
-                        <Link
-                            :href="
-                                route('admin.users.index', { role: 'customer' })
+                        <Link :href="route('admin.users.index', { role: 'customer' })
                             "
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
-                        >
-                            <div>
-                                <span>
-                                    <i class="fa-solid fa-user"></i>
-                                    Customers
-                                </span>
-                            </div>
-                            <div class="text-2xl font-black text-primary">
-                                {{ customerCount }}
-                            </div>
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
+                        <div>
+                            <span>
+                                <i class="fa-solid fa-user"></i>
+                                Customers
+                            </span>
+                        </div>
+                        <div class="text-2xl font-black text-primary">
+                            {{ customerCount }}
+                        </div>
                         </Link>
                     </div>
                     <div class="flex-1">
-                        <Link
-                            :href="
-                                route('admin.users.index', {
-                                    role: 'providers',
-                                })
+                        <Link :href="route('admin.users.index', {
+                            role: 'providers',
+                        })
                             "
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
-                        >
-                            <div>
-                                <span>
-                                    <i class="fa-solid fa-user-tie"></i>
-                                    Service Providers
-                                </span>
-                            </div>
-                            <div class="text-2xl font-black text-primary">
-                                {{ providerCount }}
-                            </div>
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
+                        <div>
+                            <span>
+                                <i class="fa-solid fa-user-tie"></i>
+                                Service Providers
+                            </span>
+                        </div>
+                        <div class="text-2xl font-black text-primary">
+                            {{ providerCount }}
+                        </div>
                         </Link>
                     </div>
                 </div>
@@ -125,47 +115,29 @@ const search = () => {
                                         </td>
                                         <td>
                                             <div class="flex gap-x-4">
-                                                <ActionButton
-                                                    type="link"
-                                                    actionType="view"
-                                                    href="#"
-                                                />
+                                                <ActionButton type="link" actionType="view"
+                                                    :href="route('admin.users.show', user.id)" />
 
-                                                <ActionButton
-                                                    type="link"
-                                                    actionType="edit"
-                                                    :href="
-                                                        route(
-                                                            'admin.users.edit',
-                                                            user.id
-                                                        )
-                                                    "
-                                                />
+                                                <ActionButton type="link" actionType="edit" :href="route(
+                                                    'admin.users.edit',
+                                                    user.id
+                                                )
+                                                    " />
 
                                                 <!-- TODO: Add activate & deactivate -->
-                                                <ActionButton
-                                                    v-if="!user.is_suspended"
-                                                    type="modal"
-                                                    actionType="reject"
-                                                    :href="
-                                                        route(
-                                                            'admin.users.confirm',
-                                                            user.id
-                                                        ) + '?action=deactivate'
-                                                    "
-                                                />
+                                                <ActionButton v-if="!user.is_suspended" type="modal" actionType="reject"
+                                                    :href="route(
+                                                        'admin.users.confirm',
+                                                        user.id
+                                                    ) + '?action=deactivate'
+                                                        " />
 
-                                                <ActionButton
-                                                    v-if="user.is_suspended"
-                                                    type="modal"
-                                                    actionType="approve"
-                                                    :href="
-                                                        route(
-                                                            'admin.users.confirm',
-                                                            user.id
-                                                        ) + '?action=activate'
-                                                    "
-                                                />
+                                                <ActionButton v-if="user.is_suspended" type="modal" actionType="approve"
+                                                    :href="route(
+                                                        'admin.users.confirm',
+                                                        user.id
+                                                    ) + '?action=activate'
+                                                        " />
                                             </div>
                                         </td>
                                     </tr>

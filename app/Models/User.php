@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\ProviderProfile;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -26,6 +27,8 @@ class User extends Authenticatable
         'password',
         'is_suspended',
     ];
+
+    protected $appends = ['user_status'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -140,5 +143,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class, 'paid_by')
             ->orWhere('paid_to', $this->id);
+    }
+
+    public function userStatus(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->is_suspended ? 'Suspended' : 'Active',
+        );
     }
 }

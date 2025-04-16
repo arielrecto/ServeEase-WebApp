@@ -48,13 +48,4 @@ class Profile extends Model
             : "{$this->first_name} {$this->last_name}"
         );
     }
-
-    public function getFullNameAttribute()
-    {
-        if (!$this?->first_name || !$this?->last_name) {
-            return "Unknown";
-        }
-
-        return "{$this->first_name} {$this->last_name}";
-    }
 }
