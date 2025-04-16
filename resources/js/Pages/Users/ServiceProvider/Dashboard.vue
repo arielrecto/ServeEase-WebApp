@@ -43,6 +43,8 @@ const props = defineProps({
     stats: Object,
     recentBookings: Array,
     chartData: Object,
+    paymentAccounts: Array, // Add this prop
+    paymentTransactions : Array,
 });
 
 const headers = ref(["Name", "Date Joined", "Action"]);
@@ -167,6 +169,38 @@ onBeforeUnmount(() => {
                             </div>
                             <div class="text-2xl font-black text-primary">
                                 {{ availServicePending.length ?? 0 }}
+                            </div>
+                        </Link>
+                    </div>
+                    <div class="flex-1">
+                        <Link
+                            :href="route('service-provider.payment-accounts.index')"
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
+                        >
+                            <div>
+                                <span>
+                                    <i class="fi fi-rr-wallet"></i>
+                                    Payment Accounts
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ paymentAccounts?.length ?? 0 }}
+                            </div>
+                        </Link>
+                    </div>
+                    <div class="flex-1">
+                        <Link
+                            :href="route('service-provider.transactions.index')"
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
+                        >
+                            <div>
+                                <span>
+                                    <i class="fi fi-rr-receipt"></i>
+                                    Transactions
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ paymentTransactions?.length ?? 0 }}
                             </div>
                         </Link>
                     </div>

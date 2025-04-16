@@ -20,7 +20,9 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Customer\FavoriteController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
 use App\Http\Controllers\Customer\CustomerFeedbackController;
+use App\Http\Controllers\ServiceProvider\PaymentAccountController;
 use App\Http\Controllers\Admin\ServiceProviderApplicationController;
+use App\Http\Controllers\ServiceProvider\PaymentTransactionController;
 use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
 use App\Http\Controllers\Admin\ServiceTypeController as ADServiceTypeController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
@@ -125,6 +127,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/cart/{id}', 'showCart')->name('cart.show');
                 Route::post('/reply', 'reply')->name('reply');
                 Route::get('/{availService}/detail', 'detail')->name('detail');
+                Route::get('/payment/{availService}',  'showPayment')->name('payment');
+                Route::post('/pay', 'pay')->name('pay');
             });
             Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {
                 Route::get('/{feedback}/delete', 'delete')->name('delete');
@@ -157,8 +161,13 @@ Route::middleware(['auth'])->group(function () {
                 Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
                 Route::post('/reply', [ServiceProviderBookingController::class, 'reply'])->name('reply');
             });
-        });
+            Route::resource('payment-accounts', PaymentAccountController::class);
 
+            Route::prefix('transactions')->as('transactions.')->controller(PaymentTransactionController::class)->group(function () {
+                Route::get('', 'index')->name('index');
+                Route::post('/{transaction}/update-status', 'updateStatus')->name('update-status');
+            });
+        });
 
 
         Route::prefix('service-types')->as('types.')->controller(ServiceTypeController::class)->group(function () {
