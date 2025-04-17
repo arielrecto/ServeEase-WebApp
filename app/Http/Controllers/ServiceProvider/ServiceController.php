@@ -166,7 +166,11 @@ class ServiceController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $service = Service::findOrFail($id);
+        $serviceTypes = ServiceType::get();
+        $barangays = Barangay::get();
+
+        return Inertia::render('Users/ServiceProvider/Services/Edit', compact(['service', 'serviceTypes', 'barangays']));
     }
 
     /**
@@ -174,14 +178,27 @@ class ServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $service = Service::find($id);
+        $service = Service::findOrFail($id);
 
-        $service->update([
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'user_id' => $request->user()->id,
+        $fields = $request->validate([
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'price_type' => 'required',
+            'description' => 'required',
+            'terms_and_conditions' => 'required',
+            'barangay_id' => 'required|exists:barangays,id',
+            'thumbnail' => 'nullable|sometimes|file|mimes:png,jpg,jpeg|max:5000',
         ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $imageName = 'thumbnail-' . uniqid() . '.' . $request->thumbnail->extension();
+            $dir = $request->thumbnail->storeAs('/service_thumbnails', $imageName, 'public');
+            $fields['thumbnail'] = asset('/storage/' . $dir);
+        }
+
+        $service->update($fields);
+
+        return to_route('service-provider.services.index')->with('message_success', 'Service updated successfully.');
     }
 
     /**
