@@ -335,13 +335,11 @@ const paymentStatus = computed(() => {
                                             Message Provider
                                             </Link>
 
-                                            <Link
-                                                v-if="availService.status === 'pending'"
+                                            <Link v-if="availService.status === 'completed'"
                                                 :href="route('customer.booking.payment', availService.id)"
-                                                class="flex items-center justify-center w-full gap-2 py-2 text-sm text-white uppercase rounded-lg bg-primary hover:bg-primary/90"
-                                            >
-                                                <i class="fa-solid fa-credit-card"></i>
-                                                Make Payment
+                                                class="flex items-center justify-center w-full gap-2 py-2 text-sm text-white uppercase rounded-lg bg-primary hover:bg-primary/90">
+                                            <i class="fa-solid fa-credit-card"></i>
+                                            Make Payment
                                             </Link>
                                         </div>
                                     </div>
@@ -350,12 +348,12 @@ const paymentStatus = computed(() => {
                                 <TabPanel value="1">
                                     <div class="space-y-6">
                                         <!-- Payment Progress Section -->
-                                        <div class="p-4 bg-gray-50 rounded-lg">
+                                        <div class="p-4 rounded-lg bg-gray-50">
                                             <div class="flex items-center justify-between mb-4">
                                                 <h3 class="text-lg font-medium">Payment Summary</h3>
                                                 <!-- <StatusBadge :status="paymentStatus" /> -->
                                             </div>
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                                                 <div>
                                                     <p class="text-sm text-gray-600">Total Amount</p>
                                                     <p class="text-xl font-bold text-gray-900">
@@ -370,7 +368,8 @@ const paymentStatus = computed(() => {
                                                 </div>
                                                 <div>
                                                     <p class="text-sm text-gray-600">Remaining Balance</p>
-                                                    <p class="text-xl font-bold" :class="remainingBalance > 0 ? 'text-yellow-600' : 'text-green-600'">
+                                                    <p class="text-xl font-bold"
+                                                        :class="remainingBalance > 0 ? 'text-yellow-600' : 'text-green-600'">
                                                         {{ formatCurrency(remainingBalance) }}
                                                     </p>
                                                 </div>
@@ -381,16 +380,17 @@ const paymentStatus = computed(() => {
                                         <div class="space-y-4">
                                             <h3 class="text-lg font-medium">Transaction History</h3>
 
-                                            <div v-if="availService.transactions?.length" class="divide-y divide-gray-200">
+                                            <div v-if="availService.transactions?.length"
+                                                class="divide-y divide-gray-200">
                                                 <div v-for="transaction in availService.transactions"
                                                     :key="transaction.id"
-                                                    class="p-4 hover:bg-gray-50 transition-colors"
-                                                >
-                                                    <div class="flex justify-between items-start">
+                                                    class="p-4 transition-colors hover:bg-gray-50">
+                                                    <div class="flex items-start justify-between">
                                                         <div class="space-y-1">
                                                             <div class="flex items-center gap-x-2">
                                                                 <span class="font-medium capitalize">
-                                                                    {{ transaction.transaction_type === 'deposit' ? 'Partial Payment' : 'Full Payment' }}
+                                                                    {{ transaction.transaction_type === 'deposit' ?
+                                                                        'Partial Payment' : 'Full Payment' }}
                                                                 </span>
                                                                 <span :class="[
                                                                     'px-2 py-0.5 text-xs rounded-full',
@@ -403,30 +403,33 @@ const paymentStatus = computed(() => {
                                                                 Reference: {{ transaction.reference_number }}
                                                             </p>
                                                             <p class="text-sm text-gray-500">
-                                                                Paid via: {{ transaction.payment_account?.account_type }}
+                                                                Paid via: {{ transaction.payment_account?.account_type
+                                                                }}
                                                             </p>
                                                             <p class="text-xs text-gray-500">
-                                                                {{ moment(transaction.created_at).format('MMM DD, YYYY h:mm A') }}
+                                                                {{ moment(transaction.created_at).format('MMM DD, YYYY
+                                                                h: mm A')
+                                                                }}
                                                             </p>
                                                         </div>
                                                         <div class="text-right">
-                                                            <p class="font-medium text-primary text-lg">
+                                                            <p class="text-lg font-medium text-primary">
                                                                 {{ formatCurrency(transaction.amount) }}
                                                             </p>
                                                         </div>
                                                     </div>
 
                                                     <!-- Proof of Payment -->
-                                                    <div v-if="transaction.attachments?.length" class="mt-3 pt-3 border-t">
-                                                        <p class="text-xs text-gray-600 mb-2">Attachments:</p>
-                                                        <div class="flex gap-2 flex-wrap">
+                                                    <div v-if="transaction.attachments?.length"
+                                                        class="pt-3 mt-3 border-t">
+                                                        <p class="mb-2 text-xs text-gray-600">Attachments:</p>
+                                                        <div class="flex flex-wrap gap-2">
                                                             <a v-for="attachment in transaction.attachments"
                                                                 :key="attachment.id"
                                                                 :href="'/storage/' + attachment.file_path"
                                                                 target="_blank"
-                                                                class="inline-flex items-center gap-x-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-                                                            >
-                                                                <i class="fa-solid fa-file-image text-gray-500"></i>
+                                                                class="inline-flex items-center px-2 py-1 text-xs transition-colors bg-gray-100 rounded gap-x-1 hover:bg-gray-200">
+                                                                <i class="text-gray-500 fa-solid fa-file-image"></i>
                                                                 {{ attachment.file_name }}
                                                             </a>
                                                         </div>
@@ -435,19 +438,17 @@ const paymentStatus = computed(() => {
                                             </div>
 
                                             <!-- Empty State -->
-                                            <div v-else class="text-center py-12 bg-gray-50 rounded-lg">
-                                                <i class="fa-solid fa-receipt text-4xl text-gray-400 mb-3"></i>
+                                            <div v-else class="py-12 text-center rounded-lg bg-gray-50">
+                                                <i class="mb-3 text-4xl text-gray-400 fa-solid fa-receipt"></i>
                                                 <h4 class="font-medium text-gray-900">No Payment Records</h4>
-                                                <p class="text-sm text-gray-600 mt-1">
+                                                <p class="mt-1 text-sm text-gray-600">
                                                     No payments have been made for this service yet.
                                                 </p>
-                                                <Link
-                                                    v-if="availService.status === 'pending'"
+                                                <Link v-if="availService.status === 'pending'"
                                                     :href="route('customer.booking.payment', availService.id)"
-                                                    class="mt-4 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90"
-                                                >
-                                                    <i class="fa-solid fa-credit-card mr-2"></i>
-                                                    Make Payment
+                                                    class="inline-flex items-center px-4 py-2 mt-4 text-sm font-medium text-white rounded-lg bg-primary hover:bg-primary/90">
+                                                <i class="mr-2 fa-solid fa-credit-card"></i>
+                                                Make Payment
                                                 </Link>
                                             </div>
                                         </div>
