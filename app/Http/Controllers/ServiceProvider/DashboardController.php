@@ -17,7 +17,7 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
-        $user =  User::where('id', Auth::user()->id)->first();
+        $user = User::where('id', Auth::user()->id)->first();
 
         $stats = [
             'totalBookings' => AvailService::whereHas('service', function ($query) use ($user) {
@@ -29,9 +29,9 @@ class DashboardController extends Controller
             'completedBookings' => AvailService::whereHas('service', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })->where('status', 'completed')->count(),
-            'totalRevenue' => AvailService::whereHas('service', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })->where('status', 'completed')->sum('amount'),
+            'totalRevenue' => Transaction::where('paid_to', Auth::id())
+                ->where('status', 'approved')
+                ->sum('amount'),
         ];
 
         $recentBookings = AvailService::with(['user', 'service'])->whereHas('service', function ($query) use ($user) {
@@ -43,9 +43,9 @@ class DashboardController extends Controller
 
         $services = Service::where('user_id', $user->id)->get();
         $availServicePending = AvailService::where('status', 'pending')
-        ->whereHas('service', function($q) use($user) {
-            $q->where('user_id', $user->id);
-        })->get();
+            ->whereHas('service', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->get();
         $chartData = $this->getMonthlyRevenueChartData();
 
         return inertia('Users/ServiceProvider/Dashboard', [
@@ -111,12 +111,12 @@ class DashboardController extends Controller
         $statusDistribution = AvailService::whereHas('service', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })
-        ->selectRaw('status, count(*) as count')
-        ->groupBy('status')
-        ->get()
-        ->mapWithKeys(function($item) {
-            return [$item->status => $item->count];
-        });
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->status => $item->count];
+            });
 
         // Default values for all possible statuses
         $labels = ['pending', 'completed', 'cancelled'];
