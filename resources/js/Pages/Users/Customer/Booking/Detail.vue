@@ -114,7 +114,7 @@ const paymentStatus = computed(() => {
                                                 <div class="overflow-y-auto max-h-48">
                                                     <span class="">{{
                                                         service.description
-                                                    }}</span>
+                                                        }}</span>
                                                 </div>
                                             </div>
                                             <div v-if="
@@ -124,7 +124,7 @@ const paymentStatus = computed(() => {
                                                 <div class="overflow-y-auto max-h-48">
                                                     <span class="">{{
                                                         service.terms_and_conditions
-                                                    }}</span>
+                                                        }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col mt-20 gap-y-3">
@@ -183,7 +183,7 @@ const paymentStatus = computed(() => {
                                                         ₱
                                                         <span class="text-xl text-primary">{{
                                                             availService.total_price.toLocaleString()
-                                                            }}</span>
+                                                        }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="space-y-1">
@@ -205,7 +205,7 @@ const paymentStatus = computed(() => {
                                                     <div class="font-bold">
                                                         <span class="text-xl text-primary">{{
                                                             availService.total_hours.toLocaleString()
-                                                            }}</span>
+                                                        }}</span>
                                                     </div>
                                                 </template>
                                                 <template v-else>
@@ -234,13 +234,13 @@ const paymentStatus = computed(() => {
                                                 <div class="font-bold">
                                                     ₱<span class="text-xl text-primary">{{
                                                         availService.service.price.toLocaleString()
-                                                        }}
+                                                    }}
                                                         *
                                                     </span>
 
                                                     <span class="text-xl text-primary">{{
                                                         availService.service.price_type.toLocaleString()
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex gap-x-12">
@@ -407,8 +407,8 @@ const paymentStatus = computed(() => {
                                                                 }}
                                                             </p>
                                                             <p class="text-xs text-gray-500">
-                                                                {{ moment(transaction.created_at).format('MMM DD, YYYY
-                                                                h: mm A')
+                                                                {{
+                                                                    moment(transaction.created_at).format('MMM DD, YYYY h:mm A')
                                                                 }}
                                                             </p>
                                                         </div>
