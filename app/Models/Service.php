@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Service extends Model
 {
@@ -25,11 +26,21 @@ class Service extends Model
         'user_id'
     ];
 
-    protected $appends = ['avg_rate', 'is_added_to_favorites', 'service_thumbnail'];
+    protected $appends = ['avg_rate', 'is_added_to_favorites', 'service_thumbnail', 'total_review_count'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all of the feedbacks for the Service
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function feedbacks(): HasManyThrough
+    {
+        return $this->hasManyThrough(FeedBack::class, AvailService::class, 'service_id', 'avail_service_id');
     }
 
     public function availService()
@@ -100,6 +111,15 @@ class Service extends Model
 
                 // Return the formatted average rating
                 return "{$avgRate}";
+            }
+        );
+    }
+
+    public function totalReviewCount(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return $this->availService()->whereHas('feedback')->count();
             }
         );
     }

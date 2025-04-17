@@ -94,25 +94,26 @@ class ProfileController extends Controller
 
         $user = Auth::user();
         $profile = $user->profile;
-        $service = Service::with(['user', 'availService'])
+        $services = Service::with(['feedbacks'])
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
                     $query->whereStatus('completed');
                 }
             ])
-            ->whereUserId($user->id)
-            ->first();
+            ->where('user_id', $user->id)
+            ->get();
         $providerProfile = $user->profile->providerProfile;
-        $feedbackCount = FeedBack::when($service, function ($query) use ($service) {
-            $query->whereHas('availService', function ($query) use ($service) {
-                $query->whereServiceId($service->id);
-            });
-        })->count();
+        $feedbacks = FeedBack::with(['user.profile'])
+            ->whereHas('availService', function ($query) use ($services) {
+                $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
+            })
+            ->get();
 
-        // dd($service, $feedbackCount);
+        $finishedBookingCount = $services->sum('finished_bookings_count');
+        $totalBookingCount = $services->sum('bookings_count');
 
-        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
+        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'services', 'feedbacks', 'finishedBookingCount', 'totalBookingCount']));
     }
 
 
