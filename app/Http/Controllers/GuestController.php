@@ -34,9 +34,9 @@ class GuestController extends Controller
     {
         $canLogin = Route::has('login');
         $canRegister = Route::has('register');
-        $services = ServiceType::orderBy('name')->get();
+        $services = ServiceType::orderBy('name')->whereNot('id', $id)->take(4)->get();
         $service = ServiceType::findOrFail($id);
-        return Inertia::render('Guest/Show', compact(['service', 'canLogin', 'canRegister']));
+        return Inertia::render('Guest/Show', compact(['service', 'services', 'canLogin', 'canRegister']));
     }
 
     public function showPageContent(string $slug)
