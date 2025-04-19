@@ -11,6 +11,7 @@ import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 const props = defineProps({
     service: Object,
     availServices: Array,
+    ongoingBookingsCount: Number
 });
 
 const events = computed(() => {
@@ -18,7 +19,7 @@ const events = computed(() => {
 
     return [
         ...props.availServices.map((item) => ({
-            title: `${item.name} | status : ${item.status}`,
+            title: ``,
             start: item.start_date,
             end: moment(item.end_date).add(1, "day").format("YYYY-MM-DD"),
         })),
@@ -42,61 +43,128 @@ const events = computed(() => {
         <div class="py-12">
             <div class="grid grid-cols-1 gap-5 mx-auto max-w-7xl sm:px-6 lg:px-8 md:grid-cols-3">
                 <div class="flex flex-col col-span-2 gap-5">
-                    <div class="flex flex-col gap-5 p-5 bg-white rounded-lg shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <h1 class="w-full py-2 text-4xl font-bold capitalize border-b text-primary">
-                                {{ service.name }}
-                            </h1>
-
-                            <!-- <AddToFavorites :service="service" /> -->
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <!-- Service Header -->
+                        <div class="p-6 border-b">
+                            <div class="flex items-center justify-between mb-4">
+                                <h1 class="text-3xl font-bold text-primary">
+                                    {{ service.name }}
+                                </h1>
+                                <!-- <AddToFavorites :service="service" /> -->
+                            </div>
+                            <div class="flex items-center justify-between text-gray-600">
+                                <div class="flex items-center gap-2">
+                                    <i class="ri-user-line"></i>
+                                    <span>{{ service.user.profile.full_name }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 font-semibold text-primary">
+                                    <i class="ri-money-dollar-circle-line"></i>
+                                    <span>₱{{ service.price }} / {{ service.price_type }}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex justify-center">
-                            <img :src="service.service_thumbnail" alt="" srcset=""
-                                class="object-center w-1/2 aspect-auto" />
+                        <!-- Service Image -->
+                        <div class="px-6 py-8 border-b">
+                            <img :src="service.service_thumbnail" :alt="service.name"
+                                class="object-cover w-full max-w-2xl mx-auto rounded-lg shadow-md" />
                         </div>
 
-                        <div class="flex flex-col gap-2 py-10 border-t">
-                            <div class="flex justify-between">
-                                <h1 class="text-xl font-bold capitalize">
-                                    Provider : {{ service.user.name }}
-                                </h1>
-                                <h1 class="text-xl font-bold capitalize">
-                                    Rate : ₱ {{ service.price }} /
-                                    {{ service.price_type }}
-                                </h1>
+                        <!-- Service Details -->
+                        <div class="p-6 space-y-6">
+                            <div class="space-y-3">
+                                <h2 class="text-xl font-semibold">Description</h2>
+                                <p class="p-4 text-gray-700 rounded-lg bg-gray-50">
+                                    {{ service.description }}
+                                </p>
                             </div>
 
-                            <h1>Description</h1>
-                            <p class="p-2 min-h-32 bg-gray-50">
-                                {{ service.description }}
-                            </p>
-                            <h1>Terms & Conditions</h1>
-                            <p class="p-2 min-h-32 bg-gray-50">
-                                {{ service.term_and_condition }}
-                            </p>
+                            <div class="space-y-3">
+                                <h2 class="text-xl font-semibold">Terms & Conditions</h2>
+                                <p class="p-4 text-gray-700 rounded-lg bg-gray-50">
+                                    {{ service.term_and_condition }}
+                                </p>
+                            </div>
                         </div>
 
-                        <div class="flex justify-end gap-2">
-                            <Link
-                                :href="route('customer.services.bulk-form', { provider_id: service.user.id, query: { service_id: service.id } })"
-                                class="btn btn-secondary">
+                        <!-- Action Buttons -->
+                        <div class="flex justify-end gap-3 p-6 rounded-b-lg bg-gray-50">
+                            <Link :href="route('customer.services.bulk-form', {
+                                provider_id: service.user.id,
+                                query: { service_id: service.id }
+                            })" class="btn btn-secondary">
+                            <i class="mr-2 ri-add-line"></i>
                             Add to Bulk Service
                             </Link>
-                            <Link :href="route(
-                                'customer.services.avail.create',
-                                service.id
-                            )
-                                " class="btn btn-primary">Avail</Link>
+                            <Link :href="route('customer.services.avail.create', service.id)" class="btn btn-primary">
+                            <i class="mr-2 ri-shopping-cart-line"></i>
+                            Avail Now
+                            </Link>
                         </div>
                     </div>
                 </div>
-                <div class="p-5 bg-white rounded-lg shadow-lg h-max">
-                    <h2 class="mb-4">
-                        {{ service.user.profile.first_name }}'s upcoming
-                        bookings
-                    </h2>
-                    <Calendar :events="events" />
+                <div class="space-y-4">
+                    <div class="p-5 bg-white rounded-lg shadow-lg h-max">
+                        <h2 class="mb-4">
+                            {{ service.user.profile.first_name }}'s upcoming
+                            bookings
+                        </h2>
+                        <Calendar :events="events" />
+                    </div>
+
+                    <div class="flex-1">
+                        <div class="flex flex-col w-full p-6 bg-white rounded-lg shadow-lg">
+                            <div>
+                                <span>
+                                    <i class="ri-run-fill"></i>
+                                    {{ service.user.profile.first_name }}'s Ongoing Bookings
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ ongoingBookingsCount }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col p-6 bg-white rounded-lg shadow-lg gap-y-1">
+                        <div class="flex items-start gap-x-4">
+                            <div class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square">
+                                <img :src="service.user
+                                    .profile
+                                    .user_avatar
+                                    " class="object-cover w-full h-full" />
+                            </div>
+                            <div class="flex flex-col space-y-1">
+                                <span class="text-xl">{{
+                                    service.user.profile
+                                        .full_name
+                                }}</span>
+                                <span class="text-sm italic text-gray-600">{{
+                                    service.user
+                                        .profile
+                                        .provider_profile
+                                        .contact
+                                }}</span>
+                                <span class="text-sm italic text-gray-600">Experience:
+                                    {{
+                                        service.user
+                                            .profile
+                                            .provider_profile
+                                            .experience
+                                    }} {{ service.user.profile.provider_profile.experience_duration }}</span>
+                                <Link :href="route(
+                                    'profile.showProviderProfile',
+                                    service
+                                        .user
+                                        .profile
+                                        .provider_profile
+                                        .id
+                                )
+                                    " class="underline text-primary">Go to
+                                Profile</Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

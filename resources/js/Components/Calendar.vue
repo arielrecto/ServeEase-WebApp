@@ -27,7 +27,11 @@ watch(
 </script>
 
 <template>
-    <div class="h-full w-full min-h-96">
-        <FullCalendar :options="calendarOptions" />
+    <div class="w-full h-full min-h-96">
+        <FullCalendar :options="calendarOptions">
+            <template v-slot:eventContent="arg">
+                <b>{{ arg.timeText }}</b> <i>{{ arg.event.title }}</i>
+            </template>
+        </FullCalendar>
     </div>
 </template>

@@ -48,9 +48,9 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        $service = Service::with(['user', 'user.profile'])->where('id', $id)->first();
+        $service = Service::with(['user.profile.providerProfile'])->where('id', $id)->first();
 
-        $availServices = AvailService::with(['service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
+        $availServices = AvailService::with(['user.profile', 'service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
             ->whereRelation(
                 'service',
                 'user_id',
@@ -61,7 +61,15 @@ class ServiceController extends Controller
             ->get()
             ->toArray();
 
-        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices']));
+        $ongoingBookingsCount = AvailService::with(['service.user.profile'])
+            ->whereRelation(
+                'service',
+                'user_id',
+                $service->user->id
+            )
+            ->count();
+
+        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices', 'ongoingBookingsCount']));
     }
 
     /**
@@ -228,7 +236,7 @@ class ServiceController extends Controller
                     $total_price *= $total_hours;
                 }
 
-                if(count($request->serviceDetails) > 0){
+                if (count($request->serviceDetails) > 0) {
                     $total_price = $request->serviceDetails[$service->id]['bargain_price'];
                 }
 
