@@ -146,7 +146,7 @@ onMounted(() => {
                         </p>
 
                         <section class="max-w-xl">
-                            <form @submit.prevent="submit" class="mt-6 space-y-6">
+                            <form @submit.prevent="submit" enctype="multipart/form-data" class="mt-6 space-y-6">
                                 <h2 class="font-bold">Provider Information</h2>
                                 <div>
                                     <InputLabel for="service" value="Select the service that you offer" />
@@ -264,7 +264,7 @@ onMounted(() => {
                             </form>
                         </section>
 
-                        <div v-if="providerProfile !== null"
+                        <div v-if="providerProfile.status === 'pending'"
                             class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm">
                             <div class="h-auto p-4 bg-white rounded-md">
                                 Application sent! Please wait for the approval.

@@ -48,13 +48,13 @@ class ServiceProviderController extends Controller
         ]);
 
         $validIdImageName = 'valid-id-' . uniqid() . '.' . $request->valid_id_image->extension();
-        $validIdImage = $request->valid_id_image->storeAs('/provider/valid-id', $validIdImageName, 'public');
+        $validIdImage = $request->file('valid_id_image')->storeAs('provider/valid-id', $validIdImageName, 'public');
 
         $proofDocumentImageName = 'proof-document-' . uniqid() . '.' . $request->proof_document_image->extension();
-        $proofDocumentImage = $request->proof_document_image->storeAs('/provider/proof-document', $proofDocumentImageName, 'public');
+        $proofDocumentImage = $request->file('proof_document_image')->storeAs('provider/proof-document', $proofDocumentImageName, 'public');
 
         $citizenshipDocumentImageName = 'certificate-' . uniqid() . '.' . $request->citizenship_document_image->extension();
-        $citizenshipDocumentImage = $request->citizenship_document_image->storeAs('/provider/certificate', $citizenshipDocumentImageName, 'public');
+        $citizenshipDocumentImage = $request->file('citizenship_document_image')->storeAs('provider/certificate', $citizenshipDocumentImageName, 'public');
 
         ProviderProfile::create([
             'service_type_id' => $request->service,
