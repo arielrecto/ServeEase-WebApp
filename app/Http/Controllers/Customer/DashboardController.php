@@ -13,7 +13,7 @@ class DashboardController extends Controller
     public function dashboard()
     {
 
-        $services = Service::with(['user'])->withCount('availService as avail_service_count')->where('user_id', '!=', Auth::user()->id)->latest()->get();
+        $services = Service::with(['user.profile'])->withCount('availService as avail_service_count')->where('user_id', '!=', Auth::user()->id)->latest()->get();
 
         return Inertia::render('Users/Customer/Dashboard', compact(['services']));
     }
