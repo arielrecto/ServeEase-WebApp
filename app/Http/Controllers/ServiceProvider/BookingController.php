@@ -33,6 +33,9 @@ class BookingController extends Controller
                 if ($filter === "pending") {
                     $query->whereStatus("pending");
                 }
+                if ($filter === "in_progress") {
+                    $query->whereStatus("in_progress");
+                }
             })
             ->whereNot('status', 'rejected')
             ->latest()
@@ -64,6 +67,8 @@ class BookingController extends Controller
         $latestBookingsCount = $query
             ->whereBetween('created_at', [$weekStartDate, $weekEndDate])
             ->count();
+        $ongoingBookingsCount = $query->whereStatus("in_progress")
+            ->count();
         $pendingBookingsCount = $query
             ->whereStatus('pending')
             ->count();
@@ -73,7 +78,7 @@ class BookingController extends Controller
         $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
 
 
-        return Inertia::render('Users/ServiceProvider/Booking/Index', compact(['availServices', 'latestBookingsCount', 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
+        return Inertia::render('Users/ServiceProvider/Booking/Index', compact(['availServices', 'latestBookingsCount', "ongoingBookingsCount", 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
     }
 
     public function detail(AvailService $availService)

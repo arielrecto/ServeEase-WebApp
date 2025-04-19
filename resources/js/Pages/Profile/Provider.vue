@@ -88,7 +88,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                         providerProfile?.experience_duration }} Experience
                                 </div>
                                 <div class="text-sm text-gray-600">
-                                    <i class="ri-tools-line"></i> {{ providerProfile?.serviceType?.name }}
+                                    <i class="ri-tools-line"></i> {{ providerProfile?.service_type?.name }}
                                 </div>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                                 <i class="text-yellow-500 ri-star-fill"></i>
                                                 <span class="ml-1">{{ service.avg_rate }}</span>
                                                 <span class="ml-2 text-sm text-gray-500">({{ service.total_review_count
-                                                }}
+                                                    }}
                                                     reviews)</span>
                                             </div>
                                             <Link :href="route('service-provider.services.edit', service.id)"
