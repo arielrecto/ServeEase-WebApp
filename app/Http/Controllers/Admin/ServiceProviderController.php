@@ -23,7 +23,7 @@ class ServiceProviderController extends Controller
     {
         $search = $request->search;
         $providers = ProviderProfile::whereNotNull('verified_at')
-            ->with(['profile.user'])
+            ->with(['profile.user', 'serviceType'])
             ->latest()
             ->when($search, function ($query) use ($search) {
                 $query->with([
@@ -36,8 +36,9 @@ class ServiceProviderController extends Controller
             ->through(function ($provider) {
                 return [
                     'id' => $provider->id,
-                    'name' => $provider->profile->user->name,
-                    'service' => ucwords($provider->service_type),
+                    'user' => $provider->profile->user,
+                    'name' => $provider->profile->full_name,
+                    'service' => ucwords($provider->serviceType->name),
                     'experience' => $provider->experience
                 ];
             });
@@ -50,33 +51,28 @@ class ServiceProviderController extends Controller
      */
     public function show(string $id)
     {
-        $providerProfile = ProviderProfile::with('serviceType:id,name')->where('id', $id)->first();
-        // dd($providerProfile->profile);
-        $user = $providerProfile->profile->user;
-        $profile = $providerProfile->profile;
-        $service = null;
-        $bookingsCount = 0;
-        $finishedBookingsCount = 0;
-        $feedbackCount = 0;
+        $user = User::findOrFail($id);
+        $profile = $user->profile;
+        $services = Service::with(['feedbacks'])
+            ->withCount([
+                'availService as bookings_count',
+                'availService as finished_bookings_count' => function ($query) {
+                    $query->whereStatus('completed');
+                }
+            ])
+            ->where('user_id', $user->id)
+            ->get();
+        $providerProfile = ProviderProfile::with('serviceType')->where('profile_id', $user->profile->id)->firstOrFail();
+        $feedbacks = FeedBack::with(['user.profile'])
+            ->whereHas('availService', function ($query) use ($services) {
+                $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
+            })
+            ->get();
 
-        if ($user->services()->exists()) {
-            $service = Service::with(['user', 'availService'])
-                ->withCount([
-                    'availService as bookings_count',
-                    'availService as finished_bookings_count' => function ($query) {
-                        $query->whereStatus('completed');
-                    }
-                ])
-                ->whereUserId($user->id)
-                ->first();
+        $finishedBookingCount = $services->sum('finished_bookings_count');
+        $totalBookingCount = $services->sum('bookings_count');
 
-            $availServices = AvailService::whereServiceId($service->id);
-            $bookingsCount = $availServices->count();
-            $finishedBookingsCount = $availServices->whereStatus("completed")->count();
-            $feedbackCount = FeedBack::whereRelation('availService', 'service_id', $service->id)->count();
-        }
-
-        return Inertia::render('Users/Admin/ServiceProviders/Show', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'bookingsCount', 'finishedBookingsCount', 'service']));
+        return Inertia::render('Users/Admin/ServiceProviders/Show', compact(['user', 'profile', 'providerProfile', 'services', 'feedbacks', 'finishedBookingCount', 'totalBookingCount']));
     }
 
     /**

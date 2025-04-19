@@ -31,44 +31,6 @@ const props = defineProps([
 
 const { setIsLoading } = useLoader();
 
-// Dummy data for services
-// const services = ref([
-//     {
-//         id: 1,
-//         name: "Home Cleaning Service",
-//         rating: 4.5,
-//         reviewCount: 28,
-//         thumbnail: "/assets/images/default-service.jpg"
-//     },
-//     {
-//         id: 2,
-//         name: "Garden Maintenance",
-//         rating: 4.8,
-//         reviewCount: 15,
-//         thumbnail: "/assets/images/default-service.jpg"
-//     }
-// ]);
-
-// Dummy data for reviews
-// const reviews = ref([
-//     {
-//         id: 1,
-//         serviceName: "Home Cleaning Service",
-//         rating: 5,
-//         comment: "Excellent service, very thorough and professional",
-//         date: "2025-04-15",
-//         reviewer: "John Doe"
-//     },
-//     {
-//         id: 2,
-//         serviceName: "Garden Maintenance",
-//         rating: 4,
-//         comment: "Good work, but could be more detailed",
-//         date: "2025-04-14",
-//         reviewer: "Jane Smith"
-//     }
-// ]);
-
 // Filter state
 const reviewFilter = ref({
     rating: null,
@@ -165,7 +127,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                         <TabPanels class="p-6">
                             <!-- Services Tab -->
                             <TabPanel value="0">
-                                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                <div v-if="services.length > 0" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     <div v-for="service in services" :key="service.id"
                                         class="overflow-hidden bg-white rounded-lg shadow">
                                         <img :src="service.service_thumbnail" :alt="service.name"
@@ -186,48 +148,68 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                         </div>
                                     </div>
                                 </div>
+                                <div v-else class="flex flex-col items-center justify-center py-12 text-center">
+                                    <i class="mb-4 text-4xl text-gray-400 ri-service-line"></i>
+                                    <h3 class="mb-2 text-lg font-medium text-gray-900">No Services Added Yet</h3>
+                                    <p class="mb-4 text-sm text-gray-500">Get started by adding your first service</p>
+                                    <Link v-if="user.id === authUser.id"
+                                        :href="route('service-provider.services.create')"
+                                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded-md bg-primary hover:bg-primary/90">
+                                    <i class="mr-2 ri-add-line"></i>
+                                    Add New Service
+                                    </Link>
+                                </div>
                             </TabPanel>
 
                             <!-- Reviews Tab -->
                             <TabPanel value="1">
-                                <!-- Filters -->
-                                <div class="flex gap-4 mb-6">
-                                    <div class="w-48">
-                                        <SelectInput v-model="reviewFilter.rating" class="w-full">
-                                            <option value="">All Ratings</option>
-                                            <option v-for="rating in ratingOptions" :key="rating" :value="rating">
-                                                {{ rating }} Stars
-                                            </option>
-                                        </SelectInput>
+                                <div v-if="props.feedbacks.length > 0">
+                                    <!-- Filters -->
+                                    <div class="flex gap-4 mb-6">
+                                        <div class="w-48">
+                                            <SelectInput v-model="reviewFilter.rating" class="w-full">
+                                                <option value="">All Ratings</option>
+                                                <option v-for="rating in ratingOptions" :key="rating" :value="rating">
+                                                    {{ rating }} Stars
+                                                </option>
+                                            </SelectInput>
+                                        </div>
+                                        <div class="w-64">
+                                            <SelectInput v-model="reviewFilter.serviceName" class="w-full">
+                                                <option value="">All Services</option>
+                                                <option v-for="service in services" :key="service.id"
+                                                    :value="service.name">
+                                                    {{ service.name }}
+                                                </option>
+                                            </SelectInput>
+                                        </div>
                                     </div>
-                                    <div class="w-64">
-                                        <SelectInput v-model="reviewFilter.serviceName" class="w-full">
-                                            <option value="">All Services</option>
-                                            <option v-for="service in services" :key="service.id" :value="service.name">
-                                                {{ service.name }}
-                                            </option>
-                                        </SelectInput>
+
+                                    <!-- Reviews List -->
+                                    <div class="space-y-4">
+                                        <div v-for="review in filteredReviews" :key="review.id"
+                                            class="p-4 rounded-lg bg-gray-50">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="font-medium">{{ review.user.profile.full_name }}</div>
+                                                <div class="text-sm text-gray-500">
+                                                    {{ moment(review.created_at).format('MMM D, YYYY') }}
+                                                </div>
+                                            </div>
+                                            <div class="mb-2 text-sm text-gray-600">{{ review.serviceName }}</div>
+                                            <div class="flex items-center mb-3">
+                                                <div class="flex text-yellow-500">
+                                                    <i v-for="star in review.rate" :key="star" class="ri-star-fill"></i>
+                                                </div>
+                                            </div>
+                                            <p class="text-gray-700">{{ review.content }}</p>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Reviews List -->
-                                <div class="space-y-4">
-                                    <div v-for="review in filteredReviews" :key="review.id"
-                                        class="p-4 rounded-lg bg-gray-50">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="font-medium">{{ review.user.profile.full_name }}</div>
-                                            <div class="text-sm text-gray-500">
-                                                {{ moment(review.created_at).format('MMM D, YYYY') }}
-                                            </div>
-                                        </div>
-                                        <div class="mb-2 text-sm text-gray-600">{{ review.serviceName }}</div>
-                                        <div class="flex items-center mb-3">
-                                            <div class="flex text-yellow-500">
-                                                <i v-for="star in review.rate" :key="star" class="ri-star-fill"></i>
-                                            </div>
-                                        </div>
-                                        <p class="text-gray-700">{{ review.content }}</p>
-                                    </div>
+                                <div v-else class="flex flex-col items-center justify-center py-12 text-center">
+                                    <i class="mb-4 text-4xl text-gray-400 ri-star-smile-line"></i>
+                                    <h3 class="mb-2 text-lg font-medium text-gray-900">No Reviews Yet</h3>
+                                    <p class="text-sm text-gray-500">Reviews will appear here once customers leave
+                                        feedback</p>
                                 </div>
                             </TabPanel>
                         </TabPanels>

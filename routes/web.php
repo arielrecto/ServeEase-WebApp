@@ -23,6 +23,7 @@ use App\Http\Controllers\Customer\CustomerFeedbackController;
 use App\Http\Controllers\ServiceProvider\PaymentAccountController;
 use App\Http\Controllers\Admin\ServiceProviderApplicationController;
 use App\Http\Controllers\ServiceProvider\PaymentTransactionController;
+use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use App\Http\Controllers\Admin\ServiceProviderController as AdminSPController;
 use App\Http\Controllers\Admin\ServiceTypeController as ADServiceTypeController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
@@ -99,6 +100,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete/{id}', 'delete')->name('delete');
         });
         Route::resource('applications', ServiceProviderApplicationController::class)->except(["create", "store", "edit", "update"]);
+        Route::get('/services/delete/{id}', [AdminServiceController::class, 'delete'])->name('services.delete');
+        Route::resource('services', AdminServiceController::class)->except(["create", "store", "index"]);
         Route::resource('service-types', ADServiceTypeController::class)->except('update');
         Route::post('/service-types/{id}', [ADServiceTypeController::class, 'update'])->name('service-types.update');
 
@@ -127,7 +130,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/cart/{id}', 'showCart')->name('cart.show');
                 Route::post('/reply', 'reply')->name('reply');
                 Route::get('/{availService}/detail', 'detail')->name('detail');
-                Route::get('/payment/{availService}',  'showPayment')->name('payment');
+                Route::get('/payment/{availService}', 'showPayment')->name('payment');
                 Route::post('/pay', 'pay')->name('pay');
             });
             Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {
