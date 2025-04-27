@@ -53,14 +53,26 @@ class DashboardController extends Controller
         $monthlyData = array_fill(0, 12, 0);
 
         foreach ($services as $service) {
-            $monthIndex = (int)$service->month - 1; // Cast to int for correct indexing
+            $monthIndex = (int) $service->month - 1; // Cast to int for correct indexing
             $monthlyData[$monthIndex] = $service->count;
         }
 
         return [
             'id' => 'monthly-services',
-            'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            'labels' => [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec'
+            ],
             'datasets' => [
                 [
                     'label' => 'Monthly Services',
@@ -81,7 +93,13 @@ class DashboardController extends Controller
 
         $labels = [];
         $data = [];
-        $colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+        $colors = [
+            '#EF4444',
+            '#10B981',
+            '#FACC15',
+            '#F97316',
+            '#3B82F6'
+        ];
 
         foreach ($statuses as $index => $status) {
             $labels[] = ucfirst(str_replace('_', ' ', $status->status));
