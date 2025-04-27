@@ -264,7 +264,7 @@ onMounted(() => {
                             </form>
                         </section>
 
-                        <div v-if="providerProfile.status === 'pending'"
+                        <div v-if="providerProfile?.status === 'pending'"
                             class="absolute top-0 left-0 flex items-start justify-center w-full h-full pt-24 backdrop-blur-sm">
                             <div class="h-auto p-4 bg-white rounded-md">
                                 Application sent! Please wait for the approval.
@@ -288,8 +288,8 @@ onMounted(() => {
                                 </span>
                             </div>
 
-                            <div v-if="providerProfile.status === 'pending'" class="p-4 border rounded-lg"
-                                :class="remarkClass(providerProfile.status)">
+                            <div v-if="providerProfile?.status === 'pending'" class="p-4 border rounded-lg"
+                                :class="remarkClass(providerProfile?.status)">
                                 <div class="flex items-center justify-center">
                                     Waiting for approval...
                                 </div>
@@ -300,7 +300,7 @@ onMounted(() => {
                                 <h3 class="mb-4 text-lg font-semibold">Application Remarks</h3>
                                 <div class="space-y-4">
                                     <div v-for="remark in providerProfile.remarks" :key="remark.id"
-                                        class="p-4 border rounded-lg" :class="remarkClass(providerProfile.status)">
+                                        class="p-4 border rounded-lg" :class="remarkClass(providerProfile?.status)">
                                         <div class="flex items-start justify-between mb-2">
                                             <div class="space-y-1">
                                                 <p class="font-medium">{{ remark.content }}</p>
