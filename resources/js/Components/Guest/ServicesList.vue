@@ -53,12 +53,9 @@ const servicesOffered = ref([
 
         <div v-if="services.length > 0">
             <div class="grid items-center grid-cols-1 gap-10 mb-4 overflow-y-auto sm:grid-cols-3">
-                <article v-for="(service, index) in services" :key="service.id" class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
-                    <img
-                        alt=""
-                        :src="service.service_thumbnail"
-                        class="object-cover w-full h-56"
-                    />
+                <article v-for="(service, index) in services" :key="service.id"
+                    class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg">
+                    <img alt="" :src="service.thumbnail" class="object-cover w-full h-56" />
                     <div class="p-4 bg-white sm:p-6">
                         <h3 class="mt-0.5 text-lg text-gray-900">{{ service.name }}</h3>
 
@@ -66,21 +63,21 @@ const servicesOffered = ref([
                             {{ service.description }}
                         </p>
 
-                        <Link :href="route('guest.show', service.id)" class="flex items-center text-primary gap-x-1"><span class="hover:underline decoration-2 underline-offset-4 ">Learn More</span><i class="ri-arrow-right-line"></i></Link>
+                        <Link :href="route('guest.show', service.id)" class="flex items-center text-primary gap-x-1">
+                        <span class="hover:underline decoration-2 underline-offset-4 ">Learn More</span><i
+                            class="ri-arrow-right-line"></i></Link>
                     </div>
                 </article>
             </div>
 
             <div class="mx-auto text-center">
-                <Link
-                    v-if="totalServices > 6"
-                    href="/services"
-                    class="uppercase bg-white btn text-primary"
-                >
-                    More Services
+                <Link v-if="totalServices > 6" href="/services" class="uppercase bg-white btn text-primary">
+                More Services
                 </Link>
             </div>
         </div>
-        <div v-else class="flex items-center justify-center h-64 mx-auto"><p class="text-xl text-center text-gray-500">Services are coming soon!</p></div>
+        <div v-else class="flex items-center justify-center h-64 mx-auto">
+            <p class="text-xl text-center text-gray-500">Services are coming soon!</p>
+        </div>
     </section>
 </template>

@@ -19,8 +19,7 @@ defineProps(["service", 'services', "canLogin", "canRegister"]);
                 <div class="col-span-2 space-y-6">
                     <div class="overflow-hidden bg-white rounded-lg shadow-sm">
                         <div class="aspect-video">
-                            <img :src="service.service_thumbnail" :alt="service.name"
-                                class="object-cover w-full h-full" />
+                            <img :src="service.thumbnail" :alt="service.name" class="object-cover w-full h-full" />
                         </div>
                         <div class="p-6 space-y-4">
                             <h1 class="text-3xl font-bold text-gray-900">
