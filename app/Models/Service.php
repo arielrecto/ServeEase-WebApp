@@ -100,14 +100,19 @@ class Service extends Model
             get: function () {
                 $groupedTotalRatings = $this->getGroupedRatings();
 
+                // Get the sum of ratings
+                $ratingSum = array_sum(array_map(function ($item) use ($groupedTotalRatings) {
+                    return $groupedTotalRatings[$item] * ($item + 1);
+                }, array_keys($groupedTotalRatings)));
+
                 $totalRatings = array_sum($groupedTotalRatings);
 
                 // if there are no ratings, return 0
-                if ($totalRatings === 0) {
+                if ($ratingSum === 0) {
                     return 0;
                 }
 
-                $avgRate = number_format($totalRatings / 15, 1);
+                $avgRate = number_format($ratingSum / $totalRatings, 1);
 
                 // Return the formatted average rating
                 return "{$avgRate}";
