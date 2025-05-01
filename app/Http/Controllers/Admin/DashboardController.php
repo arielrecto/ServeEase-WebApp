@@ -87,23 +87,46 @@ class DashboardController extends Controller
 
     protected function getServiceStatusDistribution()
     {
-        $statuses = AvailService::select('status', \DB::raw('COUNT(*) as count'))
-            ->groupBy('status')
-            ->get();
+        $allStatuses = ['completed', 'in_progress', 'pending', 'cancelled', 'confirmed', 'rejected'];
+
+        // $statuses = AvailService::select('status', DB::raw('COUNT(*) as count'))
+        //     ->whereIn('status', $allStatuses)
+        //     ->groupBy('status')
+        //     ->get();
+
+        $statuses = [];
+
+        // Add missing statuses with count 0
+        foreach ($allStatuses as $status) {
+            $bookings = AvailService::where('status', $status)->count();
+
+            $statuses[] = [
+                'status' => $status,
+                'count' => $bookings
+            ];
+
+            // if (!$statuses->contains('status', $status)) {
+            //     $statuses->push((object) [
+            //         'status' => $status,
+            //         'count' => 0
+            //     ]);
+            // }
+        }
 
         $labels = [];
         $data = [];
         $colors = [
-            '#EF4444',
-            '#10B981',
-            '#FACC15',
-            '#F97316',
-            '#3B82F6'
+            '#10B981', // Green
+            '#3B82F6',  // Blue
+            '#FACC15', // Yellow
+            '#6B7280', // Gray
+            '#F97316', // Orange
+            '#EF4444', // Red
         ];
 
         foreach ($statuses as $index => $status) {
-            $labels[] = ucfirst(str_replace('_', ' ', $status->status));
-            $data[] = $status->count;
+            $labels[] = ucfirst(str_replace('_', ' ', $status['status']));
+            $data[] = $status['count'];
         }
 
         return [

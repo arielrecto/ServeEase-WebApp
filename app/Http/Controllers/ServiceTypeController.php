@@ -18,9 +18,14 @@ class ServiceTypeController extends Controller
         return Inertia::render('Users/Customer/ServiceTypes/Index', compact(['serviceTypes']));
     }
 
-    public function show(ServiceType $serviceType)
+    public function show(Request $request, ServiceType $serviceType)
     {
-        $services = Service::where('service_type_id', $serviceType->id)
+        $services = Service::with(['user.profile.providerProfile'])
+            ->withCount(['availService as avail_service_count'])
+            ->when($request->searchQuery, function ($query) use ($request, $serviceType) {
+                $query->where('name', 'like', '%' . $request->searchQuery . '%')->where('service_type_id', $serviceType->id);
+            })
+            ->where('service_type_id', $serviceType->id)
             ->get();
 
         return Inertia::render('Users/Customer/ServiceTypes/Show', compact(['serviceType', 'services']));

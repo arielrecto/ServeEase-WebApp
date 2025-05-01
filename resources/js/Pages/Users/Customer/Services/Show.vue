@@ -82,7 +82,7 @@ const events = computed(() => {
                             <div class="space-y-3">
                                 <h2 class="text-xl font-semibold">Terms & Conditions</h2>
                                 <p class="p-4 text-gray-700 rounded-lg bg-gray-50">
-                                    {{ service.term_and_condition }}
+                                    {{ service.terms_and_conditions }}
                                 </p>
                             </div>
                         </div>
