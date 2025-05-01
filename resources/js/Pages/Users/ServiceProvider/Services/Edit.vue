@@ -36,7 +36,9 @@ const priceTypes = [
 ];
 
 const submit = () => {
-    form.put(route('service-provider.services.update', props.service.id));
+    form.post(route('service-provider.services.update', props.service.id), {
+        method: "_put"
+    });
 };
 </script>
 

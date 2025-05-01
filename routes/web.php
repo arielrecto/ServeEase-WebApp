@@ -150,7 +150,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('service-provider')->as('service-provider.')->group(function () {
             Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
-            Route::resource('services', ServiceController::class);
+            Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
+            Route::resource('services', ServiceController::class)->except('update');
             Route::prefix('booking')->as('booking.')->group(function () {
                 Route::get('/{serviceCartId}/cart', [ServiceProviderBookingController::class, 'showCart'])->name('cart.show');
                 Route::post('cart/{serviceCart}/approve-all', [ServiceProviderBookingController::class, 'approveAll'])
