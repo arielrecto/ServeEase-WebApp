@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Customer\FavoriteController;
 use App\Http\Controllers\ServiceProvider\ServiceController;
 use App\Http\Controllers\Customer\CustomerFeedbackController;
+use App\Http\Controllers\ServiceProvider\PersonalEventController;
 use App\Http\Controllers\ServiceProvider\PaymentAccountController;
 use App\Http\Controllers\Admin\ServiceProviderApplicationController;
 use App\Http\Controllers\ServiceProvider\PaymentTransactionController;
@@ -171,6 +172,8 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('', 'index')->name('index');
                 Route::post('/{transaction}/update-status', 'updateStatus')->name('update-status');
             });
+
+            Route::resource('personal-events', PersonalEventController::class)->except(['show']);
         });
 
 

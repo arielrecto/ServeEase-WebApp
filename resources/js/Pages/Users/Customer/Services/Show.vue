@@ -11,7 +11,8 @@ import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 const props = defineProps({
     service: Object,
     availServices: Array,
-    ongoingBookingsCount: Number
+    ongoingBookingsCount: Number,
+    personalEvents : Array
 });
 
 const events = computed(() => {
@@ -109,7 +110,7 @@ const events = computed(() => {
                             {{ service.user.profile.first_name }}'s upcoming
                             bookings
                         </h2>
-                        <Calendar :events="events" />
+                        <Calendar :events="[...events, ...personalEvents]" />
                     </div>
 
                     <div class="flex-1">
