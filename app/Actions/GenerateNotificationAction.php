@@ -4,7 +4,7 @@ namespace App\Actions;
 
 class GenerateNotificationAction
 {
-    public static function handle($notificationType, $action = '', $user = null)
+    public static function handle($notificationType, $action = '', $user = null, array $data = [])
     {
         switch ($notificationType) {
             case 'application':
@@ -22,7 +22,7 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'booking-rejected') {
-                    return "The service that you booked with {$user->name} has been declined.";
+                    return "The service that you booked with {$user->name} has been declined. Reason: {$data['remark']}";
                 }
 
                 if ($action === 'booking-started') {

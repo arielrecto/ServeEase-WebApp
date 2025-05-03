@@ -87,4 +87,9 @@ class AvailService extends Model
     {
         return $this->morphMany(Attachment::class, 'attachable');
     }
+
+    public function remarks()
+    {
+        return $this->morphMany(Remark::class, 'remarkable');
+    }
 }

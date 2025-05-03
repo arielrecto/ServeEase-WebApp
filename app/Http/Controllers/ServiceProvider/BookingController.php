@@ -143,6 +143,13 @@ class BookingController extends Controller
             'status' => $request->status
         ]);
 
+        if ($request->status === 'rejected') {
+            $availService->remarks()->create([
+                'user_id' => Auth::id(),
+                'content' => $request->remark
+            ]);
+        }
+
         $message = '';
 
         switch ($availService->status) {
@@ -150,7 +157,7 @@ class BookingController extends Controller
                 $message = GenerateNotificationAction::handle('booking', 'booking-confirmed', $availService->service->user);
                 break;
             case 'rejected':
-                $message = GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user);
+                $message = GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user, ['remark' => $request->remark]);
                 break;
             case 'cancelled':
                 $message = GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->service->user);

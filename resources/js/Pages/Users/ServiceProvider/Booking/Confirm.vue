@@ -10,6 +10,7 @@ const props = defineProps({
 
 const form = useForm({
     status: props.status,
+    remark: "",
 });
 
 const submit = () => {
@@ -50,6 +51,19 @@ const modalRef = ref(null);
         </h2>
 
         <p>{{ dialogText }}</p>
+
+        <div v-if="status === 'rejected'">
+            <label class="block text-sm font-medium text-gray-700">
+                Reason for Rejection
+            </label>
+            <textarea
+                v-model="form.remark"
+                rows="4"
+                class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:border-primary focus:ring-primary"
+                placeholder="Please provide a reason for rejection..."
+                required
+            ></textarea>
+        </div>
 
         <form @submit.prevent="submit">
             <div class="flex justify-end">
