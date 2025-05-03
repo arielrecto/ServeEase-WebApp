@@ -18,11 +18,18 @@ class FeedBack extends Model
     ];
 
 
-    public function availService(){
+    public function availService()
+    {
         return $this->belongsTo(AvailService::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 }

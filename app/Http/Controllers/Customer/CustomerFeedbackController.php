@@ -54,12 +54,26 @@ class CustomerFeedbackController extends Controller
             'content' => ['required', 'string']
         ]);
 
-        FeedBack::create([
+        $feedback = FeedBack::create([
             'user_id' => $request->user()->id,
             'rate' => $safe['rate'],
             'content' => $safe['content'],
             'avail_service_id' => $safe['availServiceId']
         ]);
+
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('feedback-attachments', 'public');
+
+                $feedback->attachments()->create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType()
+                ]);
+            }
+        }
 
         return back()->with('message_success', 'Feedback submitted successfully');
     }

@@ -16,15 +16,52 @@ const form = useForm({
     availServiceId: props?.availService?.id,
     rate: 0,
     content: null,
+    attachments: [],
 });
 
 const modalRef = ref(null);
-
 const ratingOptions = [1, 2, 3, 4, 5];
+const fileUrls = ref(new Map()); // Store file URLs
+
+const handleFileUpload = (e) => {
+    const newFiles = Array.from(e.target.files);
+    form.attachments = [...form.attachments, ...newFiles];
+
+    // Create URLs for new files
+    newFiles.forEach((file) => {
+        fileUrls.value.set(file, URL.createObjectURL(file));
+    });
+};
+
+const removeFile = (index) => {
+    const file = form.attachments[index];
+    if (fileUrls.value.has(file)) {
+        URL.revokeObjectURL(fileUrls.value.get(file));
+        fileUrls.value.delete(file);
+    }
+    form.attachments.splice(index, 1);
+};
+
+const viewFile = (file) => {
+    let url = fileUrls.value.get(file);
+    if (!url) {
+        url = URL.createObjectURL(file);
+        fileUrls.value.set(file, url);
+    }
+    window.open(url, "_blank");
+};
+
+const getFileIcon = (mimeType) => {
+    if (mimeType.startsWith("image/")) return "fa-image";
+    return "fa-file";
+};
 
 const submit = () => {
     form.post(route("customer.feedbacks.store"), {
         onSuccess: () => {
+            // Clean up URLs before resetting form
+            fileUrls.value.forEach((url) => URL.revokeObjectURL(url));
+            fileUrls.value.clear();
             form.reset();
             modalRef.value.close();
         },
@@ -63,6 +100,57 @@ const submit = () => {
                     placeholder="Tell us your experience with the service"
                 ></textarea>
                 <InputError class="mt-2" :message="form.errors.content" />
+            </div>
+
+            <div>
+                <InputLabel :value="'Attachments'" />
+                <input
+                    type="file"
+                    multiple
+                    accept="image/png, image/jpeg"
+                    @change="handleFileUpload"
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary"
+                />
+                <InputError class="mt-2" :message="form.errors.attachments" />
+            </div>
+
+            <div>
+                <div class="flex flex-wrap gap-4">
+                    <div
+                        v-for="(file, index) in form.attachments"
+                        :key="index"
+                        class="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg group hover:bg-gray-200"
+                    >
+                        <i
+                            :class="[
+                                'fa-solid',
+                                getFileIcon(file.type),
+                                'text-gray-500 group-hover:text-gray-700',
+                            ]"
+                        ></i>
+                        <span class="truncate max-w-[150px]">{{
+                            file.name
+                        }}</span>
+                        <div class="flex gap-2 ml-2">
+                            <a
+                                href="#"
+                                @click.prevent="viewFile(file)"
+                                class="text-primary hover:text-primary/80"
+                                title="View file"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <button
+                                type="button"
+                                @click="removeFile(index)"
+                                class="text-red-500 hover:text-red-600"
+                                title="Remove file"
+                            >
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="flex items-center gap-4">
