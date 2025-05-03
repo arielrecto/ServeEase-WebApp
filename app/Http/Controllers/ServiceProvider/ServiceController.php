@@ -58,6 +58,7 @@ class ServiceController extends Controller
             'service_type_id' => $request->serviceType,
             'is_approved' => false,
             'barangay_id' => $request->barangay,
+            'is_quantifiable' => $request->is_quantifiable,
             'user_id' => $request->user()->id,
             'thumbnail' => asset('/storage/' . $dir),
         ]);

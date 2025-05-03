@@ -50,6 +50,7 @@ class ServiceController extends Controller
     {
         $service = Service::with(['user.profile.providerProfile'])->where('id', $id)->first();
 
+
         $availServices = AvailService::with(['user.profile', 'service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
             ->whereRelation(
                 'service',
@@ -99,7 +100,6 @@ class ServiceController extends Controller
     public function availCreate(string $id)
     {
         $service = Service::with(['user'])->where('id', $id)->first();
-
         if (!$service) {
             abort(404);
         }
@@ -109,13 +109,13 @@ class ServiceController extends Controller
 
     public function availStore(Request $request)
     {
-
         $request->validate([
             'startDate' => 'required|date',
             'endDate' => 'required|date',
             'remark' => 'required|string',
             'total' => 'required|numeric',
-            'service' => 'required|exists:services,id'
+            'service' => 'required|exists:services,id',
+            'attachments.*' => 'nullable|file|max:10240', // 10MB max per file
         ]);
 
         $service = Service::find($request->service);
@@ -124,15 +124,11 @@ class ServiceController extends Controller
             return back()->with(['message_error' => 'You cannot avail your own service']);
         }
 
-
-
         $total_hours = Carbon::parse($request->startDate)->diffInDays(Carbon::parse($request->endDate)) * 8;
-
 
         if ($service->price_type == 'hr') {
             $total_hours = $request->hours;
         }
-
 
         $availService = AvailService::create([
             'start_date' => $request->startDate,
@@ -141,8 +137,24 @@ class ServiceController extends Controller
             'total_price' => $request->total,
             'service_id' => $request->service,
             'total_hours' => $total_hours,
-            'user_id' => Auth::user()->id
+            'user_id' => Auth::user()->id,
+            'quantity' => $request->quantity ?? 1,
         ]);
+
+        // Handle file uploads
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments/avail-services', 'public');
+                
+                $availService->attachments()->create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ]);
+            }
+        }
 
         $notification = Notification::create([
             'user_id' => $availService->service->user->id,
@@ -153,7 +165,8 @@ class ServiceController extends Controller
 
         broadcast(new NotificationSent($notification))->toOthers();
 
-        return to_route('customer.services.show', ['service' => $request->service])->with(['message_success']);
+        return to_route('customer.services.show', ['service' => $request->service])
+            ->with(['message_success' => 'Service booked successfully']);
     }
 
     public function getFeedbackByService(Request $request, Service $service)

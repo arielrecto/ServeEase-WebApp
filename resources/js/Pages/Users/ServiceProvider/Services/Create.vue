@@ -21,6 +21,7 @@ const form = useForm({
     serviceType: null,
     barangay: null,
     thumbnail: null,
+    is_quantifiable: false, // Add this
 });
 
 const submit = () => {
@@ -77,6 +78,24 @@ const submit = () => {
                                         autofocus required />
 
                                     <InputError class="mt-2" :message="form.errors.name" />
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- Quantifiable Checkbox -->
+                                    <div class="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="is_quantifiable"
+                                            v-model="form.is_quantifiable"
+                                            class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                        />
+                                        <label for="is_quantifiable" class="ml-2 text-sm text-gray-700">
+                                           Is Quantifiable
+                                        </label>
+                                    </div>
+
+                                    <!-- Quantity Input (shown only when is_quantifiable is true) -->
+                
                                 </div>
 
                                 <div>

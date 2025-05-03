@@ -102,7 +102,7 @@ class BookingController extends Controller
     public function detail(AvailService $availService)
     {
 
-        $availService->load([ 'transactions.attachments', 'transactions.paymentAccount']);
+        $availService->load([ 'transactions.attachments', 'transactions.paymentAccount', 'attachments']);
 
         $service = Service::with(['user', 'user.profile', 'user.profile.providerProfile'])
             ->where('id', $availService->service->id)

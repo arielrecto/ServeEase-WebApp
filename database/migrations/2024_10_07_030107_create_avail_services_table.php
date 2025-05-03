@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->string('total_hours')->nullable();
+            $table->integer('quantity')->default(1);
             $table->longText('remarks');
             $table->float('total_price');
             $table->foreignId('service_cart_id')->nullable()->constrained('service_carts')->onDelete('cascade');

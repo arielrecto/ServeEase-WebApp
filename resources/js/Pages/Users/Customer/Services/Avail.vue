@@ -18,42 +18,66 @@ const form = useForm({
     total: null,
     service: props.service.id,
     remark: null,
+    quantity: 1,
+    attachments: [], // Add this
 });
 
+const quantity = ref(1);
+
+const incrementQuantity = () => {
+    console.log(quantity);
+    quantity.value++;
+    updateTotal();
+};
+
+const decrementQuantity = () => {
+    if (quantity.value > 1) {
+        quantity.value--;
+        updateTotal();
+    }
+};
+
+const updateTotal = () => {
+    if (props.service.price_type === "hr" && form.hours) {
+        form.total = props.service.price * form.hours * quantity.value;
+    } else if (props.service.price_type === "fixed rate") {
+        form.total = props.service.price * quantity.value;
+    } else if (form.startDate && form.endDate) {
+        const days = moment(form.endDate).diff(form.startDate, "days");
+        form.total = props.service.price * (days || 1) * quantity.value;
+    }
+};
+
+watch(() => quantity.value, () => {
+    updateTotal
+    form.quantity = quantity.value;
+});
 watch(
     () => form.startDate,
     (value) => {
         if (value) {
             form.endDate = value;
-
             form.total = props.service.price;
         }
-
         console.log(props.service.price_type);
     }
 );
-
 watch(
     () => form.endDate,
     (value) => {
         if (value) {
             if (props.service.price_type === "hr") return;
-
             if (moment(form.endDate).diff(form.startDate, "days") <= 0) {
                 form.total = props.service.price;
-
                 return;
             }
-
             form.total =
                 props.service.price *
                 moment(form.endDate).diff(form.startDate, "days");
         }
     }
 );
-
-
-watch (
+watch(
     () => form.hours,
     (value) => {
         if (value) {
@@ -61,158 +85,326 @@ watch (
         }
     }
 );
+watch(() => form.hours, updateTotal);
+watch(() => form.endDate, updateTotal);
 
 const submit = () => {
     form.post(route("customer.services.avail.store"), {
         onFinish: () => form.reset(),
     });
 };
+
+// Add these functions
+const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    form.attachments = [...form.attachments, ...files];
+};
+
+const removeFile = (index) => {
+    form.attachments.splice(index, 1);
+};
+
+const getFileIcon = (file) => {
+    if (file.type.startsWith('image/')) return 'fa-image';
+    if (file.type.includes('pdf')) return 'fa-file-pdf';
+    return 'fa-file';
+};
 </script>
 
 <template>
-    <Head title="Home" />
+    <Head :title="`Avail ${service.name}`" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Home
-            </h2>
+            <div class="flex items-center gap-x-4">
+                <button @click="$router.back()" class="btn btn-ghost">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                    Avail Service
+                </h2>
+            </div>
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 flex flex-col gap-5">
-                <div class="bg-white rounded-lg p-5 shadow-lg flex gap-5">
-                    <div
-                        class="bg-gray-50 rounded-lg p-5 shadow-lg flex flex-col gap-2 w-1/3"
-                    >
-                        <h1
-                            class="text-4xl font-bold text-primary capitalize border-b w-full py-2"
-                        >
-                            {{ service.name }}
-                        </h1>
-                        <div class="flex justify-center">
-                            <img
-                                :src="service.service_thumbnail"
-                                alt=""
-                                srcset=""
-                                class="w-1/2 aspect-auto object-center"
-                            />
-                        </div>
-
-                        <div class="flex flex-col gap-2 border-t py-10">
-                            <div class="flex justify-between">
-                                <h1 class="text-xl font-bold capitalize">
-                                    Provider : {{ service.user.name }}
-                                </h1>
-                                <h1 class="text-xl font-bold capitalize">
-                                    Rate : ₱ {{ service.price }} /
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <!-- Service Header -->
+                    <div class="relative h-48 bg-gray-900">
+                        <img
+                            :src="service.service_thumbnail"
+                            class="w-full h-full object-cover opacity-75"
+                            alt="Service thumbnail"
+                        />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <h1 class="text-3xl font-bold capitalize">
+                                {{ service.name }}
+                            </h1>
+                            <div class="flex items-center gap-x-4 mt-2">
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-circle mr-2"></i>
+                                    {{ service.user.name }}
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-tag mr-2"></i>
+                                    ₱{{ service.price }} /
                                     {{ service.price_type }}
-                                </h1>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <form
-                        @submit.prevent="submit"
-                        class="grow flex flex-col gap-2"
-                    >
-                        <div class="grid grid-cols-2 grid-flow-row gap-2">
-                            <div>
-                                <InputLabel for="name" value="Start Date" />
 
-                                <TextInput
-                                    id="name"
-                                    type="date"
-                                    class="block w-full mt-1"
-                                    v-model="form.startDate"
-                                    autofocus
-                                    required
-                                />
+                    <div class="p-6 lg:p-8">
+                        <form
+                            @submit.prevent="submit"
+                            class="flex gap-2 flex-col"
+                        >
+                            <!-- Scheduling Section -->
+                            <div class="space-y-6">
+                                <div class="bg-gray-50 p-4 rounded-lg border">
+                                    <h3
+                                        class="text-lg font-medium mb-4 flex items-center"
+                                    >
+                                        <i
+                                            class="fas fa-calendar mr-2 text-primary"
+                                        ></i>
+                                        Schedule Details
+                                    </h3>
 
-                                <InputError class="mt-2" />
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <InputLabel
+                                                for="startDate"
+                                                value="Start Date"
+                                            />
+                                            <TextInput
+                                                id="startDate"
+                                                type="date"
+                                                v-model="form.startDate"
+                                                class="mt-1 block w-full"
+                                                required
+                                            />
+                                            <InputError
+                                                :message="form.errors.startDate"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <InputLabel
+                                                :value="
+                                                    service.price_type === 'hr'
+                                                        ? 'Hours'
+                                                        : 'End Date'
+                                                "
+                                            />
+                                            <TextInput
+                                                v-if="
+                                                    service.price_type !== 'hr'
+                                                "
+                                                type="date"
+                                                v-model="form.endDate"
+                                                class="mt-1 block w-full"
+                                                :disabled="
+                                                    service.price_type ===
+                                                    'fixed rate'
+                                                "
+                                                required
+                                            />
+                                            <TextInput
+                                                v-else
+                                                type="number"
+                                                v-model="form.hours"
+                                                class="mt-1 block w-full"
+                                                min="1"
+                                                required
+                                            />
+                                            <InputError
+                                                :message="
+                                                    form.errors.endDate ||
+                                                    form.errors.hours
+                                                "
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quantity Section -->
+                                <div
+                                    v-if="service.is_quantifiable"
+                                    class="bg-gray-50 p-4 rounded-lg border"
+                                >
+                                    <h3
+                                        class="text-lg font-medium mb-4 flex items-center"
+                                    >
+                                        <i
+                                            class="fas fa-cubes mr-2 text-primary"
+                                        ></i>
+                                        Quantity
+                                    </h3>
+
+                                    <div
+                                        class="flex items-center justify-center gap-x-6"
+                                    >
+                                        <button
+                                            type="button"
+                                            @click="decrementQuantity"
+                                            class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                            :disabled="quantity <= 1"
+                                        >
+                                            <i
+                                                class="fas fa-minus text-gray-600"
+                                            ></i>
+                                        </button>
+
+                                        <div
+                                            class="flex flex-col items-center min-w-[80px]"
+                                        >
+                                            <span
+                                                class="text-2xl font-medium"
+                                                >{{ quantity }}</span
+                                            >
+                                            <!-- <span class="text-sm text-gray-500">
+                                                Available: {{ service.quantity }}
+                                            </span> -->
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            @click="incrementQuantity"
+                                            class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                        >
+                                            <i
+                                                class="fas fa-plus text-gray-600"
+                                            ></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+
                             <div>
-                                <InputLabel
-                                    for="name"
-                                    :value="` ${
-                                        service.price_type === 'hr'
-                                            ? 'Hours'
-                                            : 'End  Date'
-                                    }`"
-                                />
-                                <TextInput
-                                    id="name"
-                                    type="date"
-                                    v-model="form.endDate"
-                                    :class="`block w-full mt-1 ${
-                                        service.price_type === 'hr'
-                                            ? 'hidden'
-                                            : ''}`"
-                                    :disabled="service.price_type === 'fixed rate'"
-                                    autofocus
-                                    required
-                                />
-
-                                <TextInput
-                                    id="name"
-                                    type="number"
-                                    v-model="form.hours"
-                                    :class="`block w-full mt-1 ${
-                                        service.price_type !== 'hr'
-                                            ? 'hidden'
-                                            : ''
-                                    }`"
-
-                                />
-
-                                <InputError class="mt-2" />
+                                <InputLabel value="Total Amount" />
+                                <div class="mt-1 relative">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                    >
+                                        <span class="text-gray-500">₱</span>
+                                    </div>
+                                    <TextInput
+                                        v-model="form.total"
+                                        type="number"
+                                        class="pl-8 block w-full"
+                                        readonly
+                                    />
+                                </div>
+                                <p
+                                    v-if="service.is_quantifiable"
+                                    class="mt-1 text-sm text-gray-500"
+                                >
+                                    ₱{{ (form.total / quantity).toFixed(2) }} ×
+                                    {{ quantity }}
+                                    {{ quantity > 1 ? "units" : "unit" }}
+                                </p>
                             </div>
-                        </div>
-                        <div>
-                            <InputLabel for="name" value="Bid" />
 
-                            <TextInput
-                                id="name"
-                                type="number"
-                                v-model="form.total"
-                                class="block w-full mt-1"
-                                autofocus
-                                required
-                            />
+                            <!-- Add Remark Field -->
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h3 class="text-lg font-medium mb-4 flex items-center">
+                                    <i class="fas fa-comment-alt mr-2 text-primary"></i>
+                                    Additional Notes
+                                </h3>
+                                
+                                <div>
+                                    <textarea
+                                        v-model="form.remark"
+                                        rows="4"
+                                        class="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+                                        placeholder="Add any special instructions or requirements..."
+                                    ></textarea>
+                                    <p class="mt-1 text-sm text-gray-500">
+                                        Optional: Include any specific requirements or notes for the service provider
+                                    </p>
+                                    <InputError :message="form.errors.remark" class="mt-1" />
+                                </div>
+                            </div>
 
-                            <InputError class="mt-2" />
-                        </div>
+                            <!-- Add this before the submit button -->
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h3 class="text-lg font-medium mb-4 flex items-center">
+                                    <i class="fas fa-paperclip mr-2 text-primary"></i>
+                                    Attachments
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-center w-full">
+                                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                                <p class="mb-2 text-sm text-gray-500">
+                                                    <span class="font-semibold">Click to upload</span> or drag and drop
+                                                </p>
+                                                <p class="text-xs text-gray-500">Any file type (MAX. 10MB)</p>
+                                            </div>
+                                            <input 
+                                                type="file" 
+                                                class="hidden" 
+                                                multiple
+                                                @change="handleFileUpload"
+                                            />
+                                        </label>
+                                    </div>
 
-                        <div>
-                            <InputLabel for="description" value="Remark" />
+                                    <!-- File Preview -->
+                                    <div v-if="form.attachments.length" class="grid grid-cols-2 gap-4">
+                                        <div v-for="(file, index) in form.attachments" 
+                                            :key="index"
+                                            class="relative flex items-center p-2 bg-white rounded-lg border"
+                                        >
+                                            <i :class="['fas', getFileIcon(file), 'text-gray-400 mr-3']"></i>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    {{ file.name }}
+                                                </p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ (file.size / 1024 / 1024).toFixed(2) }} MB
+                                                </p>
+                                            </div>
+                                            <button 
+                                                type="button"
+                                                @click="removeFile(index)"
+                                                class="ml-2 text-gray-400 hover:text-red-500"
+                                            >
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
 
-                            <textarea
-                                id="description"
-                                v-model="form.remark"
-                                class="block h-32 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary resize-none"
-                                required
-                            ></textarea>
+                                    <InputError :message="form.errors.attachments" class="mt-2" />
+                                </div>
+                            </div>
 
-                            <!-- <TextInput id="description" type="text" class="block w-full mt-1" v-model="form.description"
-                                        required /> -->
-
-                            <InputError class="mt-2" />
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button class="btn btn-primary">Avail</button>
-                        </div>
-                    </form>
+                            <div class="space-y-6">
+                                <div class="flex justify-end">
+                                    <button
+                                        type="submit"
+                                        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-x-2"
+                                        :disabled="form.processing"
+                                    >
+                                        <i class="fas fa-check"></i>
+                                        {{
+                                            form.processing
+                                                ? "Processing..."
+                                                : "Confirm Booking"
+                                        }}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
-
-<!-- <template>
-    <h1>
-        Customer dashboard
-    </h1>
-
-
-    <Link href="/logout" method="POST">Log out</Link>
-</template> -->

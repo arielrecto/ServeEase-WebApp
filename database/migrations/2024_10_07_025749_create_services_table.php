@@ -23,6 +23,8 @@ return new class extends Migration {
             $table->longText('description');
             $table->longText('terms_and_conditions')->nullable();
             $table->boolean('is_approved');
+            $table->boolean('is_quantifiable')->default(false);
+            $table->integer('quantity')->default(1);
             $table->foreignIdFor(ServiceType::class)
                 ->constrained()
                 ->cascadeOnDelete();

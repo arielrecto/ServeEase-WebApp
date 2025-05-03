@@ -239,7 +239,7 @@ onBeforeUnmount(() => {
                             Total Revenue
                         </h3>
                         <p class="mt-2 text-3xl font-semibold text-purple-600">
-                            ${{ stats.totalRevenue.toLocaleString() }}
+                            ₱{{ stats.totalRevenue.toLocaleString() }}
                         </p>
                     </div>
                 </div>

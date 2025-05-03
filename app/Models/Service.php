@@ -21,6 +21,8 @@ class Service extends Model
         'description',
         'terms_and_conditions',
         'is_approved',
+        'is_quantifiable',
+        'quantity',
         'service_type_id',
         'barangay_id',
         'user_id'

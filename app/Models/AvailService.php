@@ -18,6 +18,7 @@ class AvailService extends Model
         'start_date',
         'end_date',
         'remarks',
+        'quantity',
         'total_price',
         'service_cart_id',
     ];
@@ -63,5 +64,10 @@ class AvailService extends Model
     public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 }

@@ -85,7 +85,7 @@ class BookingController extends Controller
     {
 
 
-        $availService = AvailService::with(['service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile'])
+        $availService = AvailService::with(['service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile', 'attachments'])
             ->where('id', $availService->id)
             ->first();
 
