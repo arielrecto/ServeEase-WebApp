@@ -69,7 +69,7 @@ class ServiceProviderApplicationController extends Controller
     public function show(string $id)
     {
         $providerProfile = ProviderProfile::where('id', $id)
-            ->with(['profile', 'serviceType:id,name', 'profile.user.services'])->first();
+            ->with(['profile', 'serviceType:id,name', 'profile.user.services', 'attachments'])->first();
 
         return Inertia::render('Users/Admin/ServiceProviderApplication/Show', compact(['providerProfile']));
     }

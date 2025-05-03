@@ -28,6 +28,7 @@ const form = useForm({
     citizenship_document_type: null,
     citizenship_document_image: null,
     proof_document_image: null,
+    additional_documents: [],
 });
 
 const experienceDurationOptions = [
@@ -49,19 +50,28 @@ const citizenshipDocumentTypes = [
 ];
 
 const submit = () => {
-    if (props.providerProfile === null) {
-        console.log('create');
+    // Convert files to FormData
+    const formData = new FormData();
+    Object.keys(form).forEach(key => {
+        if (key === 'additional_documents') {
+            Array.from(form.additional_documents).forEach(file => {
+                formData.append('additional_documents[]', file);
+            });
+        } else {
+            formData.append(key, form[key]);
+        }
+    });
 
+    if (props.providerProfile === null) {
         form.post(route("customer.service-provider.store"), {
+            forceFormData: true,
             onFinish: () => form.reset(),
         });
-
         return;
     }
 
-    console.log('update');
-
     form.post(route("customer.service-provider.update", props.providerProfile?.id), {
+        forceFormData: true,
         _method: 'put',
         onFinish: () => form.reset(),
     });
@@ -258,6 +268,62 @@ onMounted(() => {
 
                                     <InputError class="mt-2" :message="form.errors.proof_document_image
                                         " />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="additional_documents"
+                                        value="Additional Supporting Documents (Optional)"
+                                    />
+                                    <p class="text-sm text-gray-500 mb-2">
+                                        Upload any additional documents that might support your application (PDF, Images, Documents)
+                                    </p>
+
+                                    <div class="flex flex-col space-y-4">
+                                        <div class="flex items-center justify-center w-full">
+                                            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                                    <p class="mb-2 text-sm text-gray-500">
+                                                        <span class="font-semibold">Click to upload</span> or drag and drop
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">Any file type (MAX. 10MB per file)</p>
+                                                </div>
+                                                <input
+                                                    id="additional_documents"
+                                                    type="file"
+                                                    class="hidden"
+                                                    multiple
+                                                    @change="e => form.additional_documents = [...e.target.files]"
+                                                />
+                                            </label>
+                                        </div>
+
+                                        <!-- File Preview -->
+                                        <div v-if="form.additional_documents.length" class="grid grid-cols-1 gap-2">
+                                            <div v-for="(file, index) in form.additional_documents"
+                                                :key="index"
+                                                class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                                            >
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-file text-gray-400"></i>
+                                                    <span class="text-sm truncate max-w-xs">{{ file.name }}</span>
+                                                    <span class="text-xs text-gray-500">
+                                                        {{ (file.size / 1024).toFixed(1) }} KB
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    @click="form.additional_documents.splice(index, 1)"
+                                                    class="text-gray-400 hover:text-red-500"
+                                                >
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <InputError class="mt-2" :message="form.errors.additional_documents" />
                                 </div>
 
                                 <PrimaryButton :disabled="form.processing">Submit</PrimaryButton>

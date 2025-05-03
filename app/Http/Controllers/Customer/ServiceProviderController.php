@@ -34,7 +34,6 @@ class ServiceProviderController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
             'service' => 'required',
             'experience' => 'required',
@@ -45,6 +44,7 @@ class ServiceProviderController extends Controller
             'valid_id_image' => 'required|mimes:png,jpg',
             'proof_document_image' => 'required|mimes:png,jpg',
             'citizenship_document_image' => 'required|mimes:png,jpg',
+            'additional_documents.*' => 'nullable|file|max:10240', // 10MB max per file
         ]);
 
         $validIdImageName = 'valid-id-' . uniqid() . '.' . $request->valid_id_image->extension();
@@ -56,7 +56,8 @@ class ServiceProviderController extends Controller
         $citizenshipDocumentImageName = 'certificate-' . uniqid() . '.' . $request->citizenship_document_image->extension();
         $citizenshipDocumentImage = $request->file('citizenship_document_image')->storeAs('provider/certificate', $citizenshipDocumentImageName, 'public');
 
-        ProviderProfile::create([
+        // Create provider profile
+        $providerProfile = ProviderProfile::create([
             'service_type_id' => $request->service,
             'experience' => $request->experience,
             'experience_duration' => $request->experience_duration,
@@ -67,12 +68,25 @@ class ServiceProviderController extends Controller
             'citizenship_document_image' => asset('/storage/' . $citizenshipDocumentImage),
             'proof_document_image' => asset('/storage/' . $proofDocumentImage),
             'profile_id' => $request->user()->profile->id,
-            // 'verified_at' => now()
         ]);
 
+        // Handle additional documents
+        if ($request->hasFile('additional_documents')) {
+            foreach ($request->file('additional_documents') as $file) {
+                $fileName = 'additional-' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('provider/additional-documents', $fileName, 'public');
+
+                $providerProfile->attachments()->create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $filePath,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ]);
+            }
+        }
 
         return to_route('customer.dashboard')->with('message_success', 'Application submitted successfully.');
-
     }
 
     public function update(Request $request, ProviderProfile $providerProfile)
@@ -88,6 +102,7 @@ class ServiceProviderController extends Controller
             'valid_id_image' => 'required|mimes:png,jpg',
             'proof_document_image' => 'required|mimes:png,jpg',
             'citizenship_document_image' => 'required|mimes:png,jpg',
+            'additional_documents.*' => 'nullable|file|max:10240',
         ]);
 
         $validIdImageName = 'valid-id-' . uniqid() . '.' . $request->valid_id_image->extension();
@@ -114,6 +129,25 @@ class ServiceProviderController extends Controller
             // 'verified_at' => now()
         ]);
 
+        // Handle additional documents
+        if ($request->hasFile('additional_documents')) {
+            // Delete existing attachments
+            $providerProfile->attachments()->delete();
+
+            // Add new attachments
+            foreach ($request->file('additional_documents') as $file) {
+                $fileName = 'additional-' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('provider/additional-documents', $fileName, 'public');
+
+                $providerProfile->attachments()->create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $filePath,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                ]);
+            }
+        }
 
         return to_route('customer.dashboard')->with('message_success', 'Application updated successfully.');
 

@@ -46,4 +46,9 @@ class ProviderProfile extends Model
     {
         return $this->morphMany(Remark::class, 'remarkable');
     }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
 }
