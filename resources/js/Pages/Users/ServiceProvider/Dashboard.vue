@@ -44,7 +44,7 @@ const props = defineProps({
     recentBookings: Array,
     chartData: Object,
     paymentAccounts: Array, // Add this prop
-    paymentTransactions : Array,
+    paymentTransactions: Array,
 });
 
 const headers = ref(["Name", "Date Joined", "Action"]);
@@ -174,7 +174,9 @@ onBeforeUnmount(() => {
                     </div>
                     <div class="flex-1">
                         <Link
-                            :href="route('service-provider.payment-accounts.index')"
+                            :href="
+                                route('service-provider.payment-accounts.index')
+                            "
                             class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
                         >
                             <div>
@@ -313,7 +315,7 @@ onBeforeUnmount(() => {
                                         </span>
                                     </td>
                                     <td class="p-3 font-medium">
-                                        ${{ booking.total_price.toFixed(2) }}
+                                        ₱{{ booking.total_price.toFixed(2) }}
                                     </td>
                                 </tr>
                                 <tr v-if="recentBookings.length === 0">
