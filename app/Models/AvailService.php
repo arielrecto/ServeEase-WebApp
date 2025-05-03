@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AvailService extends Model
 {
@@ -23,7 +24,7 @@ class AvailService extends Model
         'service_cart_id',
     ];
 
-    protected $appends = ['has_feedback'];
+    protected $appends = ['has_feedback', 'is_fully_paid'];
 
     public function user()
     {
@@ -51,13 +52,29 @@ class AvailService extends Model
         return $this->feedback()->exists();
     }
 
+    protected function isFullyPaid(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amountPaid = Transaction::where('transactionable_type', AvailService::class)
+                    ->where('transactionable_id', $this->id)
+                    ->where('status', 'approved')
+                    ->get()
+                    ->sum();
+
+                return $amountPaid >= $this->total_price;
+            }
+        );
+    }
+
 
     public function serviceCart()
     {
         return $this->belongsTo(ServiceCart::class);
     }
 
-    public function availServiceRemarks(){
+    public function availServiceRemarks()
+    {
         return $this->morphMany(Remark::class, 'remarkable');
     }
 

@@ -170,7 +170,8 @@ console.log(props.availServices);
                                                     v-if="
                                                         availService.status ===
                                                             'completed' &&
-                                                        !availService.has_feedback
+                                                        !availService.has_feedback &&
+                                                        availService.is_fully_paid
                                                     "
                                                     :href="
                                                         route(
@@ -202,10 +203,17 @@ console.log(props.availServices);
                                                     :href="'#'"
                                                 />
                                                 <ActionButton
-                                                    v-if="availService.service_cart_id"
+                                                    v-if="
+                                                        availService.service_cart_id
+                                                    "
                                                     type="link"
                                                     actionType="cart"
-                                                    :href="route('customer.booking.cart.show', availService.service_cart_id)"
+                                                    :href="
+                                                        route(
+                                                            'customer.booking.cart.show',
+                                                            availService.service_cart_id
+                                                        )
+                                                    "
                                                 />
                                             </div>
                                         </td>

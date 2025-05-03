@@ -46,6 +46,7 @@ class BookingController extends Controller
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
                     'service_cart_id' => $availService->serviceCart?->id ?? null,
+                    'is_fully_paid' => $availService->is_fully_paid,
                     'created_at' => $availService->created_at
                 ];
             });
