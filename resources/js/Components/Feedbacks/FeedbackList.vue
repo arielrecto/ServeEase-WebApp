@@ -143,6 +143,30 @@ const fetchFeedbacks = async () => {
                     <div class="overflow-y-auto leading-relaxed max-h-28">
                         {{ feedback.content }}
                     </div>
+
+                    <div
+                        v-if="
+                            feedback.attachments &&
+                            feedback.attachments.length > 0
+                        "
+                        class="flex mt-2 gap-2 overflow-x-auto pb-2"
+                    >
+                        <a
+                            v-for="attachment in feedback.attachments"
+                            :key="attachment.id"
+                            v-if="attachment.mime_type.startsWith('image/')"
+                            :href="`/storage/${attachment.file_path}`"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+                        >
+                            <img
+                                :src="`/storage/${attachment.file_path}`"
+                                :alt="attachment.file_name"
+                                class="w-full h-full object-cover"
+                            />
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

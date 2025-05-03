@@ -68,13 +68,13 @@ const search = () => {
                                         </td>
                                         <td>
                                             <div class="flex gap-x-4">
-                                                <ActionButton
+                                                <!-- <ActionButton
                                                     type="link"
                                                     actionType="view"
                                                     href="#"
-                                                />
+                                                /> -->
 
-                                                <ActionButton
+                                                <!-- <ActionButton
                                                     type="link"
                                                     actionType="edit"
                                                     :href="
@@ -83,7 +83,7 @@ const search = () => {
                                                             feedback.id
                                                         )
                                                     "
-                                                />
+                                                /> -->
 
                                                 <ActionButton
                                                     type="modal"

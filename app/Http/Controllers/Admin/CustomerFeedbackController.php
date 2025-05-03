@@ -16,7 +16,7 @@ class CustomerFeedbackController extends Controller
     {
         $rating = $request->rate;
         $search = $request->searchQuery;
-        $feedbacks = FeedBack::with(['availService', 'availService.service', 'availService.service.user'])
+        $feedbacks = FeedBack::with(['availService', 'availService.service', 'availService.service.user', 'user.profile', 'attachments'])
             ->latest()
             ->when($rating, function ($query) use ($rating) {
                 $query->whereRate((int) $rating);
@@ -35,7 +35,8 @@ class CustomerFeedbackController extends Controller
                     'customer' => "{$feedback->user->profile->first_name} {$feedback->user->profile->last_name}",
                     'service' => $feedback->availService->service->name,
                     'provider' => "{$feedback->availService->service->user->profile->first_name} {$feedback->availService->service->user->profile->last_name}",
-                    'created_at' => $feedback->created_at
+                    'created_at' => $feedback->created_at,
+                    'attachments' => $feedback->attachments
                 ];
             });
 
@@ -48,7 +49,13 @@ class CustomerFeedbackController extends Controller
     public function show(string $id)
     {
         $feedback = Feedback::whereId($id)
-            ->with(["availService", "availService.service", "availService.service.user", "user"])
+            ->with([
+                "availService",
+                "availService.service",
+                "availService.service.user",
+                "user",
+                "attachments"
+            ])
             ->first();
 
         return Inertia::render("Users/Admin/Feedback/Show", compact("feedback"));
