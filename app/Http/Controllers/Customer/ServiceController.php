@@ -4,18 +4,20 @@ namespace App\Http\Controllers\Customer;
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Remark;
 use App\Models\Service;
 use App\Models\FeedBack;
 use App\Models\ServiceCart;
 use App\Models\AvailService;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Models\PersonalEvent;
 use Illuminate\Support\Carbon;
 use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\GenerateNotificationAction;
-use App\Models\Remark;
+use Faker\Provider\ar_EG\Person;
 
 class ServiceController extends Controller
 {
@@ -62,6 +64,21 @@ class ServiceController extends Controller
             ->get()
             ->toArray();
 
+            $personalEvents = PersonalEvent::where('user_id', $service->user->id)
+            ->orderBy('start_date')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->event_name,
+                    'start' => $event->start_date,
+                    'end' => $event->end_date,
+                    'type' => $event->event_type,
+                    'description' => $event->description
+                ];
+            });
+
+
         $ongoingBookingsCount = AvailService::with(['service.user.profile'])
             ->whereRelation(
                 'service',
@@ -70,7 +87,7 @@ class ServiceController extends Controller
             )
             ->count();
 
-        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices', 'ongoingBookingsCount']));
+        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices', 'ongoingBookingsCount', 'personalEvents']));
     }
 
     /**
@@ -104,7 +121,22 @@ class ServiceController extends Controller
             abort(404);
         }
 
-        return Inertia::render('Users/Customer/Services/Avail', compact(['service']));
+
+        $personalEvents = PersonalEvent::where('user_id', $service->user->id)
+            ->orderBy('start_date')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->event_name,
+                    'start' => $event->start_date,
+                    'end' => $event->end_date,
+                    'type' => $event->event_type,
+                    'description' => $event->description
+                ];
+            });
+
+        return Inertia::render('Users/Customer/Services/Avail', compact(['service', 'personalEvents']));
     }
 
     public function availStore(Request $request)
@@ -118,11 +150,20 @@ class ServiceController extends Controller
             'attachments.*' => 'nullable|file|max:10240', // 10MB max per file
         ]);
 
+
+
         $service = Service::find($request->service);
 
         if ($service->user_id == Auth::user()->id) {
             return back()->with(['message_error' => 'You cannot avail your own service']);
         }
+
+        if (PersonalEvent::where('user_id', $service->user->id)
+        ->where('start_date', '<=', $request->endDate)
+        ->where('end_date', '>=', $request->startDate)
+        ->exists()) {
+        return back()->with(['message_error' => 'Service Provider have a personal event during this time']);
+    }
 
         $total_hours = Carbon::parse($request->startDate)->diffInDays(Carbon::parse($request->endDate)) * 8;
 
@@ -145,7 +186,7 @@ class ServiceController extends Controller
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('attachments/avail-services', 'public');
-                
+
                 $availService->attachments()->create([
                     'file_name' => $file->getClientOriginalName(),
                     'file_path' => $path,

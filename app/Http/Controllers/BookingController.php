@@ -13,6 +13,7 @@ use App\Models\Transaction;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
 use App\Models\PaymentAccount;
+use App\Models\PersonalEvent;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
@@ -96,6 +97,7 @@ class BookingController extends Controller
         $service = Service::with(['user', 'user.profile', 'user.profile.providerProfile'])
             ->where('id', $id)
             ->first();
+
 
         return Inertia::render('Users/Customer/Booking/Show', compact(['service']));
     }

@@ -10,6 +10,7 @@ use App\Models\ServiceCart;
 use App\Models\AvailService;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Models\PersonalEvent;
 use Illuminate\Support\Carbon;
 use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
@@ -20,6 +21,21 @@ class BookingController extends Controller
 {
     public function index(Request $request)
     {
+
+        $personalEvents = PersonalEvent::where('user_id', Auth::id())
+            ->orderBy('start_date')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->event_name,
+                    'start' => $event->start_date,
+                    'end' => $event->end_date,
+                    'type' => $event->event_type,
+                    'description' => $event->description
+                ];
+            });
+
 
         $filter = $request->filter;
         $availServices = AvailService::with(['user.profile', 'service', 'service.user', 'serviceCart', 'service.user.profile', 'service.user.profile.providerProfile'])
@@ -78,7 +94,7 @@ class BookingController extends Controller
         $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
 
 
-        return Inertia::render('Users/ServiceProvider/Booking/Index', compact(['availServices', 'latestBookingsCount', "ongoingBookingsCount", 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
+        return Inertia::render('Users/ServiceProvider/Booking/Index', compact(['availServices', 'latestBookingsCount', "ongoingBookingsCount", 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount', 'personalEvents']));
     }
 
     public function detail(AvailService $availService)

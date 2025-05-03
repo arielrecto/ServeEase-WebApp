@@ -36,6 +36,7 @@ const props = defineProps([
     "finishedBookingsCount",
     "ongoingBookingsCount",
     "reviewsCount",
+    "personalEvents"
 ]);
 
 const page = usePage();
@@ -90,7 +91,7 @@ watch(openCalendar, () => {
                     <i class="ri-calendar-2-line"></i>
                 </button>
                 <div class="w-full h-full p-2 mb-5 bg-white shadow-sm sm:rounded-lg" v-if="openCalendar">
-                    <Calendar :events="events" />
+                    <Calendar :events="[...events, ...personalEvents]"  :can_create="true" />
                 </div>
                 <div class="flex flex-col justify-center gap-5 mb-5 md:flex-row">
                     <div class="flex-1">
