@@ -113,6 +113,8 @@ class ProfileController extends Controller
         $finishedBookingCount = $services->sum('finished_bookings_count');
         $totalBookingCount = $services->sum('bookings_count');
 
+        // dd($services);
+
         return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'services', 'feedbacks', 'finishedBookingCount', 'totalBookingCount']));
     }
 
@@ -121,20 +123,28 @@ class ProfileController extends Controller
     {
         $user = User::with(['profile'])->where('id', $providerProfile->profile->user->id)->firstOrFail();
         $profile = $providerProfile->profile;
-        $service = Service::with(['user', 'availService'])
+        $services = Service::with(['feedbacks'])
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
                     $query->whereStatus('completed');
                 }
             ])
-            ->whereUserId($user->id)
-            ->first();
-        $feedbackCount = FeedBack::whereHas('availService', function ($query) use ($service) {
-            $query->whereServiceId($service->id);
-        })->count();
+            ->where('user_id', $user->id)
+            ->get();
 
-        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'service']));
+        $providerProfile = ProviderProfile::with('serviceType')->where('profile_id', $user->profile->id)->firstOrFail();
+        $feedbacks = FeedBack::with(['user.profile'])
+            ->whereHas('availService', function ($query) use ($services) {
+                $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
+            })
+            ->get();
+
+        $finishedBookingCount = $services->sum('finished_bookings_count');
+        $totalBookingCount = $services->sum('bookings_count');
+
+        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'services', 'feedbacks', 'finishedBookingCount', 'totalBookingCount']));
+        // return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'feedbackCount', 'services']));
     }
 
     public function updateProfile(Request $request)
