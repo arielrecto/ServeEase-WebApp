@@ -59,8 +59,7 @@ class AvailService extends Model
                 $amountPaid = Transaction::where('transactionable_type', AvailService::class)
                     ->where('transactionable_id', $this->id)
                     ->where('status', 'approved')
-                    ->get()
-                    ->sum();
+                    ->sum('amount');
 
                 return $amountPaid >= $this->total_price;
             }

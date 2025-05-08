@@ -8,7 +8,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 import FeedbackList from "@/Components/Feedbacks/FeedbackList.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
-import FileView from '@/Components/FileView.vue';
+import FileView from "@/Components/FileView.vue";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -328,22 +328,43 @@ const paymentStatus = computed(() => {
                                                     Quantity
                                                 </div>
                                                 <div class="font-bold">
-                                                    <span class="text-xl text-primary">
-                                                        {{ availService.quantity }}
+                                                    <span
+                                                        class="text-xl text-primary"
+                                                    >
+                                                        {{
+                                                            availService.quantity
+                                                        }}
                                                     </span>
-                                                    <span class="text-sm text-gray-500 ml-1">
-                                                        {{ availService.quantity > 1 ? 'units' : 'unit' }}
+                                                    <span
+                                                        class="ml-1 text-sm text-gray-500"
+                                                    >
+                                                        {{
+                                                            availService.quantity >
+                                                            1
+                                                                ? "units"
+                                                                : "unit"
+                                                        }}
                                                     </span>
                                                 </div>
                                             </div>
 
-                                            <div class="space-y-1" v-if="availService.quantity > 1">
+                                            <div
+                                                class="space-y-1"
+                                                v-if="availService.quantity > 1"
+                                            >
                                                 <div class="text-gray-600">
                                                     Price per unit
                                                 </div>
                                                 <div class="font-bold">
-                                                    ₱<span class="text-xl text-primary">
-                                                        {{ (availService.total_price / availService.quantity).toLocaleString() }}
+                                                    ₱<span
+                                                        class="text-xl text-primary"
+                                                    >
+                                                        {{
+                                                            (
+                                                                availService.total_price /
+                                                                availService.quantity
+                                                            ).toLocaleString()
+                                                        }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -388,14 +409,28 @@ const paymentStatus = computed(() => {
                                                 </div>
                                             </div>
 
-                                            <div class="space-y-1" v-if="availService.attachments?.length">
-                                                <div class="bg-gray-50 p-4 rounded-lg border">
-                                                    <h3 class="text-lg font-medium mb-4 flex items-center">
-                                                        <i class="fas fa-paperclip mr-2 text-primary"></i>
+                                            <div
+                                                class="space-y-1"
+                                                v-if="
+                                                    availService.attachments
+                                                        ?.length
+                                                "
+                                            >
+                                                <div
+                                                    class="p-4 border rounded-lg bg-gray-50"
+                                                >
+                                                    <h3
+                                                        class="flex items-center mb-4 text-lg font-medium"
+                                                    >
+                                                        <i
+                                                            class="mr-2 fas fa-paperclip text-primary"
+                                                        ></i>
                                                         Attachments
                                                     </h3>
 
-                                                    <div class="grid grid-cols-1 gap-3">
+                                                    <div
+                                                        class="grid grid-cols-1 gap-3"
+                                                    >
                                                         <FileView
                                                             v-for="file in availService.attachments"
                                                             :key="file.id"
