@@ -12,6 +12,7 @@ import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import TabPanel from "primevue/tabpanel";
+import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
 
 import { useLoader } from "../../Composables/loader";
 
@@ -39,18 +40,22 @@ const reviewFilter = ref({
 
 const filteredReviews = computed(() => {
     return props.feedbacks.filter((review) => {
+        // Check rating filter
         if (
             reviewFilter.value.rating &&
-            review.rate !== reviewFilter.value.rating
+            parseInt(review.rate) !== parseInt(reviewFilter.value.rating)
         ) {
             return false;
         }
+
+        // Check service name filter
         if (
             reviewFilter.value.serviceName &&
-            review.serviceName !== reviewFilter.value.serviceName
+            review.avail_service.service.name !== reviewFilter.value.serviceName
         ) {
             return false;
         }
+
         return true;
     });
 });
@@ -58,8 +63,17 @@ const filteredReviews = computed(() => {
 const state = reactive({
     tabs: [
         { name: "Services", value: "0" },
-        { name: "Reviews", value: "1" },
+        { name: "Archived Services", value: "1" },
+        { name: "Reviews", value: "2" },
     ],
+});
+
+const archivedServices = computed(() => {
+    return props.services.filter((service) => service.archived_at !== null);
+});
+
+const activeServices = computed(() => {
+    return props.services.filter((service) => service.archived_at === null);
 });
 
 const ratingOptions = [5, 4, 3, 2, 1];
@@ -165,11 +179,11 @@ const ratingOptions = [5, 4, 3, 2, 1];
                             <!-- Services Tab -->
                             <TabPanel value="0">
                                 <div
-                                    v-if="services.length > 0"
+                                    v-if="activeServices.length > 0"
                                     class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
                                 >
                                     <div
-                                        v-for="service in services"
+                                        v-for="service in activeServices"
                                         :key="service.id"
                                         class="overflow-hidden bg-white rounded-lg shadow"
                                     >
@@ -199,24 +213,44 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                                     reviews)</span
                                                 >
                                             </div>
-                                            <Link
-                                                v-if="
-                                                    service.user_id ===
-                                                    $page.props.auth.user.id
-                                                "
-                                                :href="
-                                                    route(
-                                                        'service-provider.services.edit',
-                                                        service.id
-                                                    )
-                                                "
-                                                class="inline-flex items-center text-sm text-primary hover:underline"
-                                            >
-                                                <i
-                                                    class="mr-1 ri-edit-line"
-                                                ></i>
-                                                Edit Service
-                                            </Link>
+                                            <div class="flex gap-2">
+                                                <Link
+                                                    v-if="
+                                                        service.user_id ===
+                                                        $page.props.auth.user.id
+                                                    "
+                                                    :href="
+                                                        route(
+                                                            'service-provider.services.edit',
+                                                            service.id
+                                                        )
+                                                    "
+                                                    class="inline-flex items-center text-sm text-primary hover:underline"
+                                                >
+                                                    <i
+                                                        class="mr-1 ri-edit-line"
+                                                    ></i>
+                                                    Edit Service
+                                                </Link>
+                                                <ModalLinkDialog
+                                                    v-if="
+                                                        service.user_id ===
+                                                        $page.props.auth.user.id
+                                                    "
+                                                    :href="
+                                                        route(
+                                                            'service-provider.services.archive',
+                                                            service.id
+                                                        )
+                                                    "
+                                                    class="inline-flex items-center text-sm text-red-500 hover:underline"
+                                                >
+                                                    <i
+                                                        class="mr-1 ri-archive-line"
+                                                    ></i>
+                                                    Archive Service
+                                                </ModalLinkDialog>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -250,8 +284,66 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                 </div>
                             </TabPanel>
 
-                            <!-- Reviews Tab -->
+                            <!-- Archived Services Tab -->
                             <TabPanel value="1">
+                                <div
+                                    v-if="archivedServices.length > 0"
+                                    class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+                                >
+                                    <div
+                                        v-for="service in archivedServices"
+                                        :key="service.id"
+                                        class="overflow-hidden bg-white rounded-lg shadow"
+                                    >
+                                        <img
+                                            :src="service.service_thumbnail"
+                                            :alt="service.name"
+                                            class="object-cover w-full h-48"
+                                        />
+                                        <div class="p-4">
+                                            <h3
+                                                class="mb-2 text-lg font-semibold"
+                                            >
+                                                {{ service.name }}
+                                            </h3>
+                                            <div class="flex items-center mb-4">
+                                                <i
+                                                    class="text-yellow-500 ri-star-fill"
+                                                ></i>
+                                                <span class="ml-1">{{
+                                                    service.avg_rate
+                                                }}</span>
+                                                <span
+                                                    class="ml-2 text-sm text-gray-500"
+                                                    >({{
+                                                        service.total_review_count
+                                                    }}
+                                                    reviews)</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    v-else
+                                    class="flex flex-col items-center justify-center py-12 text-center"
+                                >
+                                    <i
+                                        class="mb-4 text-4xl text-gray-400 ri-archive-line"
+                                    ></i>
+                                    <h3
+                                        class="mb-2 text-lg font-medium text-gray-900"
+                                    >
+                                        No Archived Services
+                                    </h3>
+                                    <p class="mb-4 text-sm text-gray-500">
+                                        Archived services will appear here
+                                    </p>
+                                </div>
+                            </TabPanel>
+
+                            <!-- Reviews Tab -->
+                            <TabPanel value="2">
                                 <div v-if="props.feedbacks.length > 0">
                                     <!-- Filters -->
                                     <div class="flex gap-4 mb-6">

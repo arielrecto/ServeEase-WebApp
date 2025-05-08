@@ -94,7 +94,8 @@ class ProfileController extends Controller
 
         $user = Auth::user();
         $profile = $user->profile;
-        $services = Service::with(['feedbacks'])
+        $services = Service::withArchived()
+            ->with(['feedbacks'])
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
@@ -103,7 +104,11 @@ class ProfileController extends Controller
             ])
             ->where('user_id', $user->id)
             ->get();
-        $providerProfile = ProviderProfile::with('serviceType')->where('profile_id', $user->profile->id)->firstOrFail();
+
+        $providerProfile = ProviderProfile::with('serviceType')
+            ->where('profile_id', $user->profile->id)
+            ->firstOrFail();
+
         $feedbacks = FeedBack::with(['user.profile', 'availService.service:id,name'])
             ->whereHas('availService', function ($query) use ($services) {
                 $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
@@ -113,9 +118,15 @@ class ProfileController extends Controller
         $finishedBookingCount = $services->sum('finished_bookings_count');
         $totalBookingCount = $services->sum('bookings_count');
 
-        // dd($services);
-
-        return Inertia::render('Profile/Provider', compact(['user', 'profile', 'providerProfile', 'services', 'feedbacks', 'finishedBookingCount', 'totalBookingCount']));
+        return Inertia::render('Profile/Provider', compact([
+            'user',
+            'profile',
+            'providerProfile',
+            'services',
+            'feedbacks',
+            'finishedBookingCount',
+            'totalBookingCount'
+        ]));
     }
 
 
@@ -123,7 +134,8 @@ class ProfileController extends Controller
     {
         $user = User::with(['profile'])->where('id', $providerProfile->profile->user->id)->firstOrFail();
         $profile = $providerProfile->profile;
-        $services = Service::with(['feedbacks'])
+        $services = Service::withArchived()
+            ->with(['feedbacks'])
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
@@ -133,7 +145,8 @@ class ProfileController extends Controller
             ->where('user_id', $user->id)
             ->get();
 
-        $providerProfile = ProviderProfile::with('serviceType')->where('profile_id', $user->profile->id)->firstOrFail();
+        $providerProfile = ProviderProfile::with('serviceType')
+            ->where('profile_id', $user->profile->id)->firstOrFail();
         $feedbacks = FeedBack::with(['user.profile', 'availService.service:id,name'])
             ->whereHas('availService', function ($query) use ($services) {
                 $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());

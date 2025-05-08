@@ -7,7 +7,7 @@ import TableWrapper from "@/Components/Table/TableWrapper.vue";
 import TableHeader from "@/Components/Table/TableHeader.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
-// import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
+import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
 
 import Tabs from "primevue/tabs";
@@ -35,11 +35,9 @@ const props = defineProps([
 const page = usePage();
 
 const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
-
 </script>
 
 <template>
-
     <Head title="My Bookings" />
 
     <AuthenticatedLayout>
@@ -50,65 +48,75 @@ const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
         </template>
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="flex flex-col justify-center gap-5 mb-5 md:flex-row">
+                <div
+                    class="flex flex-col justify-center gap-5 mb-5 md:flex-row"
+                >
                     <div class="flex-1">
-                        <Link :href="route('customer.booking.index')"
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
-                        <div>
-                            <span>
-                                <i class="ri-book-marked-fill"></i>
-                                Bookings this week
-                            </span>
-                        </div>
-                        <div class="text-2xl font-black text-primary">
-                            {{ latestBookingsCount }}
-                        </div>
+                        <Link
+                            :href="route('customer.booking.index')"
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
+                        >
+                            <div>
+                                <span>
+                                    <i class="ri-book-marked-fill"></i>
+                                    Bookings this week
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ latestBookingsCount }}
+                            </div>
                         </Link>
                     </div>
                     <div class="flex-1">
-                        <Link :href="route('customer.booking.index', {
-                            filter: 'pending',
-                        })
+                        <Link
+                            :href="
+                                route('customer.booking.index', {
+                                    filter: 'pending',
+                                })
                             "
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
-                        <div>
-                            <span>
-                                <i class="ri-error-warning-fill"></i>
-                                Pending Bookings
-                            </span>
-                        </div>
-                        <div class="text-2xl font-black text-primary">
-                            {{ pendingBookingsCount }}
-                        </div>
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
+                        >
+                            <div>
+                                <span>
+                                    <i class="ri-error-warning-fill"></i>
+                                    Pending Bookings
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ pendingBookingsCount }}
+                            </div>
                         </Link>
                     </div>
                     <div class="flex-1">
-                        <Link :href="route('customer.booking.archive')
-                            "
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
-                        <div>
-                            <span>
-                                <i class="ri-thumb-up-fill"></i>
-                                Finished Bookings
-                            </span>
-                        </div>
-                        <div class="text-2xl font-black text-primary">
-                            {{ finishedBookingsCount }}
-                        </div>
+                        <Link
+                            :href="route('customer.booking.archive')"
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
+                        >
+                            <div>
+                                <span>
+                                    <i class="ri-thumb-up-fill"></i>
+                                    Finished Bookings
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ finishedBookingsCount }}
+                            </div>
                         </Link>
                     </div>
                     <div class="flex-1">
-                        <Link :href="route('customer.feedbacks.index')"
-                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
-                        <div>
-                            <span>
-                                <i class="ri-star-fill"></i>
-                                Reviews Submitted
-                            </span>
-                        </div>
-                        <div class="text-2xl font-black text-primary">
-                            {{ reviewsCount }}
-                        </div>
+                        <Link
+                            :href="route('customer.feedbacks.index')"
+                            class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg"
+                        >
+                            <div>
+                                <span>
+                                    <i class="ri-star-fill"></i>
+                                    Reviews Submitted
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-primary">
+                                {{ reviewsCount }}
+                            </div>
                         </Link>
                     </div>
                 </div>
@@ -120,8 +128,12 @@ const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
                             </template>
 
                             <template #body>
-                                <template v-if="availServices.data.length !== 0">
-                                    <tr v-for="availService in availServices.data">
+                                <template
+                                    v-if="availServices.data.length !== 0"
+                                >
+                                    <tr
+                                        v-for="availService in availServices.data"
+                                    >
                                         <th>{{ availService.name }}</th>
                                         <td>
                                             {{ availService.provider }}
@@ -132,30 +144,49 @@ const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
                                             }}
                                         </td>
                                         <td>
-                                            <StatusBadge :status="availService.status" />
+                                            <StatusBadge
+                                                :status="availService.status"
+                                            />
                                         </td>
                                         <td>
-                                            <div class="flex items-center gap-x-4">
-                                                <ModalLinkDialog v-if="
-                                                    availService.status ===
-                                                    'completed' &&
-                                                    !availService.has_feedback
-                                                " :href="route(
-                                                    'customer.feedbacks.create'
-                                                ) +
-                                                    `?id=${availService.service_id}`
-                                                    " class="cursor-pointer text-primary">
-                                                    <i class="ri-edit-2-line"></i>
+                                            <div
+                                                class="flex items-center gap-x-4"
+                                            >
+                                                <ModalLinkDialog
+                                                    v-if="
+                                                        availService.status ===
+                                                            'completed' &&
+                                                        !availService.has_feedback &&
+                                                        availService.is_fully_paid
+                                                    "
+                                                    :href="
+                                                        route(
+                                                            'customer.feedbacks.create'
+                                                        ) +
+                                                        `?id=${availService.service_id}`
+                                                    "
+                                                    class="cursor-pointer text-primary"
+                                                >
+                                                    <i
+                                                        class="ri-edit-2-line"
+                                                    ></i>
                                                     Write a review
                                                 </ModalLinkDialog>
 
-                                                <ActionButton type="link" actionType="view" :href="route(
-                                                    'customer.booking.detail', {
-                                                    archive: true,
-                                                    availService: availService.id
-                                                },
-                                                )
-                                                    " />
+                                                <ActionButton
+                                                    type="link"
+                                                    actionType="view"
+                                                    :href="
+                                                        route(
+                                                            'customer.booking.detail',
+                                                            {
+                                                                archive: true,
+                                                                availService:
+                                                                    availService.id,
+                                                            }
+                                                        )
+                                                    "
+                                                />
                                                 <!-- <ActionButton type="link" actionType="edit" :href="'#'" /> -->
                                             </div>
                                         </td>

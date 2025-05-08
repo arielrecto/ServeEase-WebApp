@@ -119,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::resource('users', UserController::class);
 
-        Route::prefix('reports')->as('reports.')->group(function(){
+        Route::prefix('reports')->as('reports.')->group(function () {
             Route::put('approve/{report}', [ReportController::class, 'approve'])->name('approve');
             Route::put('reject/{report}', action: [ReportController::class, 'reject'])->name('reject');
             Route::put('resolve/{report}', [ReportController::class, 'resolve'])->name('resolve');
@@ -162,6 +162,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('service-provider')->as('service-provider.')->group(function () {
             Route::get('dashboard', [ServiceProviderDashboardController::class, 'dashboard'])->name('dashboard');
+            Route::get('/services/{service}/archive', [ServiceController::class, 'showArchiveModal'])->name('services.archive');
+            Route::post('/services/{service}/archive', [ServiceController::class, 'archive'])->name('services.archive.confirm');
+            Route::get('/services/{service}/restore', [ServiceController::class, 'showRestoreModal'])->name('services.restore');
+            Route::post('/services/{service}/restore', [ServiceController::class, 'restore'])->name('services.restore.confirm');
             Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
             Route::resource('services', ServiceController::class)->except('update');
             Route::prefix('booking')->as('booking.')->group(function () {
