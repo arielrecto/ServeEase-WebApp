@@ -16,9 +16,24 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::where('user_id', auth()->id())
+        $services = Service::withArchived()
+            ->where('user_id', auth()->id())
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->through(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'price' => $service->price,
+                    'price_type' => $service->price_type,
+                    'description' => $service->description,
+                    'thumbnail' => $service->service_thumbnail,
+                    'avg_rate' => $service->avg_rate,
+                    'total_review_count' => $service->total_review_count,
+                    'archived_at' => $service->archived_at,
+                    'user_id' => $service->user_id
+                ];
+            });
 
         return Inertia::render('Users/ServiceProvider/Services/Index', compact(['services']));
     }
@@ -145,7 +160,7 @@ class ServiceController extends Controller
                 'datasets' => [
                     [
                         'label' => 'Monthly Sales',
-                        'backgroundColor' => '#f87979',
+                        'backgroundColor' => '#4F46E5',
                         'data' => array_values($monthlySales)
                     ]
                 ]
@@ -154,7 +169,8 @@ class ServiceController extends Controller
                 'labels' => array_keys($ratings),
                 'datasets' => [
                     [
-                        'backgroundColor' => ['#41B883', '#00D8FF', '#E46651', '#DD1B16', '#FD8008'],
+                        'label' => 'Rating Distribution',
+                        'backgroundColor' => ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#6B7280'],
                         'data' => array_values($ratings)
                     ]
                 ]
@@ -210,5 +226,61 @@ class ServiceController extends Controller
         $service = Service::find($id);
 
         $service->delete();
+    }
+
+    /**
+     * Show the archive modal for the specified resource.
+     */
+    public function showArchiveModal(Service $service)
+    {
+        if ($service->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return Inertia::render('Users/ServiceProvider/Services/Archive', compact('service'));
+    }
+
+    /**
+     * Archive the specified resource.
+     */
+    public function archive(Service $service)
+    {
+        if ($service->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $service->update([
+            'archived_at' => now()
+        ]);
+
+        return back()->with(['message_success' => 'Service archived successfully']);
+    }
+
+    /**
+     * Restore the specified resource.
+     */
+    public function restore(Service $service)
+    {
+        if ($service->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $service->update([
+            'archived_at' => null
+        ]);
+
+        return back()->with(['message_success' => 'Service restored successfully']);
+    }
+
+    /**
+     * Show the restore modal for the specified resource.
+     */
+    public function showRestoreModal(Service $service)
+    {
+        if ($service->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return Inertia::render('Users/ServiceProvider/Services/Restore', compact('service'));
     }
 }

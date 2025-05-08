@@ -64,7 +64,7 @@ class ServiceController extends Controller
             ->get()
             ->toArray();
 
-            $personalEvents = PersonalEvent::where('user_id', $service->user->id)
+        $personalEvents = PersonalEvent::where('user_id', $service->user->id)
             ->orderBy('start_date')
             ->get()
             ->map(function ($event) {
@@ -116,11 +116,14 @@ class ServiceController extends Controller
 
     public function availCreate(string $id)
     {
-        $service = Service::with(['user'])->where('id', $id)->first();
+        $service = Service::active()
+            ->with(['user'])
+            ->where('id', $id)
+            ->first();
+
         if (!$service) {
             abort(404);
         }
-
 
         $personalEvents = PersonalEvent::where('user_id', $service->user->id)
             ->orderBy('start_date')
@@ -150,20 +153,24 @@ class ServiceController extends Controller
             'attachments.*' => 'nullable|file|max:10240', // 10MB max per file
         ]);
 
-
-
         $service = Service::find($request->service);
+
+        if (!$service->canBeBooked()) {
+            return back()->with(['message_error' => 'This service is no longer available for booking']);
+        }
 
         if ($service->user_id == Auth::user()->id) {
             return back()->with(['message_error' => 'You cannot avail your own service']);
         }
 
-        if (PersonalEvent::where('user_id', $service->user->id)
-        ->where('start_date', '<=', $request->endDate)
-        ->where('end_date', '>=', $request->startDate)
-        ->exists()) {
-        return back()->with(['message_error' => 'Service Provider have a personal event during this time']);
-    }
+        if (
+            PersonalEvent::where('user_id', $service->user->id)
+                ->where('start_date', '<=', $request->endDate)
+                ->where('end_date', '>=', $request->startDate)
+                ->exists()
+        ) {
+            return back()->with(['message_error' => 'Service Provider have a personal event during this time']);
+        }
 
         $total_hours = Carbon::parse($request->startDate)->diffInDays(Carbon::parse($request->endDate)) * 8;
 
@@ -230,10 +237,13 @@ class ServiceController extends Controller
     public function bulkForm(Request $request, $provider_id)
     {
         $provider = User::findOrFail($provider_id);
-        $services = Service::where('user_id', $provider_id)
+        $services = Service::active()
+            ->where('user_id', $provider_id)
             ->get();
 
-        $initialService = Service::where('id', $request->input('query')['service_id'])->first();
+        $initialService = Service::active()
+            ->where('id', $request->input('query')['service_id'])
+            ->first();
 
         if (!$initialService) {
             abort(404);

@@ -20,10 +20,12 @@ class ServiceTypeController extends Controller
 
     public function show(Request $request, ServiceType $serviceType)
     {
-        $services = Service::with(['user.profile.providerProfile'])
+        $services = Service::active()
+            ->with(['user.profile.providerProfile'])
             ->withCount(['availService as avail_service_count'])
             ->when($request->searchQuery, function ($query) use ($request, $serviceType) {
-                $query->where('name', 'like', '%' . $request->searchQuery . '%')->where('service_type_id', $serviceType->id);
+                $query->where('name', 'like', '%' . $request->searchQuery . '%')
+                    ->where('service_type_id', $serviceType->id);
             })
             ->where('service_type_id', $serviceType->id)
             ->get();

@@ -17,18 +17,46 @@ class Service extends Model
         'name',
         'price',
         'thumbnail',
-        'price_type',
         'description',
+        'price_type',
         'terms_and_conditions',
-        'is_approved',
-        'is_quantifiable',
-        'quantity',
         'service_type_id',
+        'is_approved',
         'barangay_id',
-        'user_id'
+        'user_id',
+        'is_quantifiable',
+        'archived_at'
+    ];
+
+    protected $casts = [
+        'archived_at' => 'datetime'
     ];
 
     protected $appends = ['avg_rate', 'is_added_to_favorites', 'service_thumbnail', 'total_review_count'];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function ($query) {
+            if (!request()->routeIs('service-provider.*')) {
+                $query->whereNull('archived_at');
+            }
+        });
+    }
+
+    public function scopeWithArchived($query)
+    {
+        return $query->withoutGlobalScope('active');
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->withoutGlobalScope('active')->whereNotNull('archived_at');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereNull('archived_at');
+    }
 
     public function user()
     {
@@ -42,12 +70,18 @@ class Service extends Model
      */
     public function feedbacks(): HasManyThrough
     {
-        return $this->hasManyThrough(FeedBack::class, AvailService::class, 'service_id', 'avail_service_id');
+        return $this->hasManyThrough(FeedBack::class, AvailService::class, 'service_id', 'avail_service_id')
+            ->when(!request()->routeIs('service-provider.*'), function ($query) {
+                return $query->whereNull('archived_at');
+            });
     }
 
     public function availService()
     {
-        return $this->hasMany(AvailService::class);
+        return $this->hasMany(AvailService::class)
+            ->when(!request()->routeIs('service-provider.*'), function ($query) {
+                return $query->whereNull('archived_at');
+            });
     }
 
     /**
@@ -78,6 +112,11 @@ class Service extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'service_users');
+    }
+
+    public function canBeBooked()
+    {
+        return is_null($this->archived_at);
     }
 
     protected function getGroupedRatings()

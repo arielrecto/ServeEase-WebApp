@@ -25,8 +25,9 @@ class SearchController extends Controller
         $more = $request->more ?? 0;
         $transactions = $request->byTransaction;
 
-        // TODO: Add filter by rating & no. of transactions
-        $services = Service::with(['user.profile', 'serviceType'])
+        // Query active services only by default (not archived)
+        $services = Service::active()
+            ->with(['user.profile', 'serviceType'])
             ->withCount(['availService as avail_service_count'])
             ->when($request->search, function ($q) use ($request) {
                 $rating = null;
