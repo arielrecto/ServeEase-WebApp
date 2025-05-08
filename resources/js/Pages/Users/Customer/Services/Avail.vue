@@ -48,10 +48,13 @@ const updateTotal = () => {
     }
 };
 
-watch(() => quantity.value, () => {
-    updateTotal
-    form.quantity = quantity.value;
-});
+watch(
+    () => quantity.value,
+    () => {
+        updateTotal;
+        form.quantity = quantity.value;
+    }
+);
 watch(
     () => form.startDate,
     (value) => {
@@ -105,9 +108,9 @@ const removeFile = (index) => {
 };
 
 const getFileIcon = (file) => {
-    if (file.type.startsWith('image/')) return 'fa-image';
-    if (file.type.includes('pdf')) return 'fa-file-pdf';
-    return 'fa-file';
+    if (file.type.startsWith("image/")) return "fa-image";
+    if (file.type.includes("pdf")) return "fa-file-pdf";
+    return "fa-file";
 };
 </script>
 
@@ -128,12 +131,12 @@ const getFileIcon = (file) => {
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="overflow-hidden bg-white rounded-lg shadow-lg">
                     <!-- Service Header -->
                     <div class="relative h-48 bg-gray-900">
                         <img
                             :src="service.service_thumbnail"
-                            class="w-full h-full object-cover opacity-75"
+                            class="object-cover w-full h-full opacity-75"
                             alt="Service thumbnail"
                         />
                         <div
@@ -143,13 +146,13 @@ const getFileIcon = (file) => {
                             <h1 class="text-3xl font-bold capitalize">
                                 {{ service.name }}
                             </h1>
-                            <div class="flex items-center gap-x-4 mt-2">
+                            <div class="flex items-center mt-2 gap-x-4">
                                 <div class="flex items-center">
-                                    <i class="fas fa-user-circle mr-2"></i>
+                                    <i class="mr-2 fas fa-user-circle"></i>
                                     {{ service.user.name }}
                                 </div>
                                 <div class="flex items-center">
-                                    <i class="fas fa-tag mr-2"></i>
+                                    <i class="mr-2 fas fa-tag"></i>
                                     ₱{{ service.price }} /
                                     {{ service.price_type }}
                                 </div>
@@ -160,16 +163,16 @@ const getFileIcon = (file) => {
                     <div class="p-6 lg:p-8">
                         <form
                             @submit.prevent="submit"
-                            class="flex gap-2 flex-col"
+                            class="flex flex-col gap-2"
                         >
                             <!-- Scheduling Section -->
                             <div class="space-y-6">
-                                <div class="bg-gray-50 p-4 rounded-lg border">
+                                <div class="p-4 border rounded-lg bg-gray-50">
                                     <h3
-                                        class="text-lg font-medium mb-4 flex items-center"
+                                        class="flex items-center mb-4 text-lg font-medium"
                                     >
                                         <i
-                                            class="fas fa-calendar mr-2 text-primary"
+                                            class="mr-2 fas fa-calendar text-primary"
                                         ></i>
                                         Schedule Details
                                     </h3>
@@ -183,8 +186,13 @@ const getFileIcon = (file) => {
                                             <TextInput
                                                 id="startDate"
                                                 type="date"
+                                                :min="
+                                                    new Date()
+                                                        .toISOString()
+                                                        .split('T')[0]
+                                                "
                                                 v-model="form.startDate"
-                                                class="mt-1 block w-full"
+                                                class="block w-full mt-1"
                                                 required
                                             />
                                             <InputError
@@ -205,8 +213,9 @@ const getFileIcon = (file) => {
                                                     service.price_type !== 'hr'
                                                 "
                                                 type="date"
+                                                :min="form.startDate"
                                                 v-model="form.endDate"
-                                                class="mt-1 block w-full"
+                                                class="block w-full mt-1"
                                                 :disabled="
                                                     service.price_type ===
                                                     'fixed rate'
@@ -217,7 +226,7 @@ const getFileIcon = (file) => {
                                                 v-else
                                                 type="number"
                                                 v-model="form.hours"
-                                                class="mt-1 block w-full"
+                                                class="block w-full mt-1"
                                                 min="1"
                                                 required
                                             />
@@ -234,13 +243,13 @@ const getFileIcon = (file) => {
                                 <!-- Quantity Section -->
                                 <div
                                     v-if="service.is_quantifiable"
-                                    class="bg-gray-50 p-4 rounded-lg border"
+                                    class="p-4 border rounded-lg bg-gray-50"
                                 >
                                     <h3
-                                        class="text-lg font-medium mb-4 flex items-center"
+                                        class="flex items-center mb-4 text-lg font-medium"
                                     >
                                         <i
-                                            class="fas fa-cubes mr-2 text-primary"
+                                            class="mr-2 fas fa-cubes text-primary"
                                         ></i>
                                         Quantity
                                     </h3>
@@ -251,11 +260,11 @@ const getFileIcon = (file) => {
                                         <button
                                             type="button"
                                             @click="decrementQuantity"
-                                            class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                            class="flex items-center justify-center w-12 h-12 transition-colors bg-gray-100 rounded-full hover:bg-gray-200"
                                             :disabled="quantity <= 1"
                                         >
                                             <i
-                                                class="fas fa-minus text-gray-600"
+                                                class="text-gray-600 fas fa-minus"
                                             ></i>
                                         </button>
 
@@ -274,10 +283,10 @@ const getFileIcon = (file) => {
                                         <button
                                             type="button"
                                             @click="incrementQuantity"
-                                            class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                            class="flex items-center justify-center w-12 h-12 transition-colors bg-gray-100 rounded-full hover:bg-gray-200"
                                         >
                                             <i
-                                                class="fas fa-plus text-gray-600"
+                                                class="text-gray-600 fas fa-plus"
                                             ></i>
                                         </button>
                                     </div>
@@ -286,16 +295,16 @@ const getFileIcon = (file) => {
 
                             <div>
                                 <InputLabel value="Total Amount" />
-                                <div class="mt-1 relative">
+                                <div class="relative mt-1">
                                     <div
-                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
                                     >
                                         <span class="text-gray-500">₱</span>
                                     </div>
                                     <TextInput
                                         v-model="form.total"
                                         type="number"
-                                        class="pl-8 block w-full"
+                                        class="block w-full pl-8"
                                         readonly
                                     />
                                 </div>
@@ -310,46 +319,76 @@ const getFileIcon = (file) => {
                             </div>
 
                             <!-- Add Remark Field -->
-                            <div class="bg-gray-50 p-4 rounded-lg border">
-                                <h3 class="text-lg font-medium mb-4 flex items-center">
-                                    <i class="fas fa-comment-alt mr-2 text-primary"></i>
+                            <div class="p-4 border rounded-lg bg-gray-50">
+                                <h3
+                                    class="flex items-center mb-4 text-lg font-medium"
+                                >
+                                    <i
+                                        class="mr-2 fas fa-comment-alt text-primary"
+                                    ></i>
                                     Additional Notes
                                 </h3>
-                                
+
                                 <div>
                                     <textarea
                                         v-model="form.remark"
                                         rows="4"
-                                        class="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+                                        class="w-full border-gray-300 rounded-lg focus:border-primary focus:ring-primary"
                                         placeholder="Add any special instructions or requirements..."
                                     ></textarea>
                                     <p class="mt-1 text-sm text-gray-500">
-                                        Optional: Include any specific requirements or notes for the service provider
+                                        Optional: Include any specific
+                                        requirements or notes for the service
+                                        provider
                                     </p>
-                                    <InputError :message="form.errors.remark" class="mt-1" />
+                                    <InputError
+                                        :message="form.errors.remark"
+                                        class="mt-1"
+                                    />
                                 </div>
                             </div>
 
                             <!-- Add this before the submit button -->
-                            <div class="bg-gray-50 p-4 rounded-lg border">
-                                <h3 class="text-lg font-medium mb-4 flex items-center">
-                                    <i class="fas fa-paperclip mr-2 text-primary"></i>
+                            <div class="p-4 border rounded-lg bg-gray-50">
+                                <h3
+                                    class="flex items-center mb-4 text-lg font-medium"
+                                >
+                                    <i
+                                        class="mr-2 fas fa-paperclip text-primary"
+                                    ></i>
                                     Attachments
                                 </h3>
-                                
+
                                 <div class="space-y-4">
-                                    <div class="flex items-center justify-center w-full">
-                                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
-                                                <p class="mb-2 text-sm text-gray-500">
-                                                    <span class="font-semibold">Click to upload</span> or drag and drop
+                                    <div
+                                        class="flex items-center justify-center w-full"
+                                    >
+                                        <label
+                                            class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                                        >
+                                            <div
+                                                class="flex flex-col items-center justify-center pt-5 pb-6"
+                                            >
+                                                <i
+                                                    class="mb-2 text-2xl text-gray-400 fas fa-cloud-upload-alt"
+                                                ></i>
+                                                <p
+                                                    class="mb-2 text-sm text-gray-500"
+                                                >
+                                                    <span class="font-semibold"
+                                                        >Click to upload</span
+                                                    >
+                                                    or drag and drop
                                                 </p>
-                                                <p class="text-xs text-gray-500">Any file type (MAX. 10MB)</p>
+                                                <p
+                                                    class="text-xs text-gray-500"
+                                                >
+                                                    Any file type (MAX. 10MB)
+                                                </p>
                                             </div>
-                                            <input 
-                                                type="file" 
-                                                class="hidden" 
+                                            <input
+                                                type="file"
+                                                class="hidden"
                                                 multiple
                                                 @change="handleFileUpload"
                                             />
@@ -357,21 +396,44 @@ const getFileIcon = (file) => {
                                     </div>
 
                                     <!-- File Preview -->
-                                    <div v-if="form.attachments.length" class="grid grid-cols-2 gap-4">
-                                        <div v-for="(file, index) in form.attachments" 
+                                    <div
+                                        v-if="form.attachments.length"
+                                        class="grid grid-cols-2 gap-4"
+                                    >
+                                        <div
+                                            v-for="(
+                                                file, index
+                                            ) in form.attachments"
                                             :key="index"
-                                            class="relative flex items-center p-2 bg-white rounded-lg border"
+                                            class="relative flex items-center p-2 bg-white border rounded-lg"
                                         >
-                                            <i :class="['fas', getFileIcon(file), 'text-gray-400 mr-3']"></i>
+                                            <i
+                                                :class="[
+                                                    'fas',
+                                                    getFileIcon(file),
+                                                    'text-gray-400 mr-3',
+                                                ]"
+                                            ></i>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                <p
+                                                    class="text-sm font-medium text-gray-900 truncate"
+                                                >
                                                     {{ file.name }}
                                                 </p>
-                                                <p class="text-xs text-gray-500">
-                                                    {{ (file.size / 1024 / 1024).toFixed(2) }} MB
+                                                <p
+                                                    class="text-xs text-gray-500"
+                                                >
+                                                    {{
+                                                        (
+                                                            file.size /
+                                                            1024 /
+                                                            1024
+                                                        ).toFixed(2)
+                                                    }}
+                                                    MB
                                                 </p>
                                             </div>
-                                            <button 
+                                            <button
                                                 type="button"
                                                 @click="removeFile(index)"
                                                 class="ml-2 text-gray-400 hover:text-red-500"
@@ -381,7 +443,10 @@ const getFileIcon = (file) => {
                                         </div>
                                     </div>
 
-                                    <InputError :message="form.errors.attachments" class="mt-2" />
+                                    <InputError
+                                        :message="form.errors.attachments"
+                                        class="mt-2"
+                                    />
                                 </div>
                             </div>
 
@@ -389,7 +454,7 @@ const getFileIcon = (file) => {
                                 <div class="flex justify-end">
                                     <button
                                         type="submit"
-                                        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-x-2"
+                                        class="flex items-center px-6 py-3 text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 gap-x-2"
                                         :disabled="form.processing"
                                     >
                                         <i class="fas fa-check"></i>

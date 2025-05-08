@@ -197,11 +197,11 @@ console.log(props.availServices);
                                                         )
                                                     "
                                                 />
-                                                <ActionButton
+                                                <!-- <ActionButton
                                                     type="link"
                                                     actionType="edit"
                                                     :href="'#'"
-                                                />
+                                                /> -->
                                                 <ActionButton
                                                     v-if="
                                                         availService.service_cart_id

@@ -40,6 +40,11 @@ import { Bar, Pie } from "vue-chartjs";
 const options = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            position: "bottom",
+        },
+    },
 };
 
 const data = props.chartData.monthlySales;
@@ -48,6 +53,23 @@ const pieData = props.chartData.ratings;
 const pieOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            position: "right",
+            labels: {
+                padding: 20,
+            },
+        },
+        tooltip: {
+            callbacks: {
+                label: (context) => {
+                    const label = context.label || "";
+                    const value = context.raw || 0;
+                    return ` ${label}: ${value}`;
+                },
+            },
+        },
+    },
 };
 
 ChartJS.register(
@@ -66,10 +88,9 @@ ChartJS.register(
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-y-5">
-                    <div class="overflow-hidden aspect-video">
+                    <div class="overflow-hidden">
                         <img
-                            :src="
-                                service.service_thumbnail"
+                            :src="service.service_thumbnail"
                             alt="Service thumbnail"
                             class="object-cover"
                         />
@@ -94,10 +115,43 @@ ChartJS.register(
                         </div>
                     </div>
                     <div class="w-full h-96">
-                        <Bar :data="data" :options="options" />
+                        <template
+                            v-if="
+                                data.datasets[0].data.some((value) => value > 0)
+                            "
+                        >
+                            <Bar :data="data" :options="options" />
+                        </template>
+                        <template v-else>
+                            <div
+                                class="flex items-center justify-center h-full"
+                            >
+                                <p class="text-gray-500">
+                                    No monthly sales data available
+                                </p>
+                            </div>
+                        </template>
                     </div>
+
                     <div class="w-full h-96">
-                        <Pie :data="pieData" :options="pieOptions" />
+                        <template
+                            v-if="
+                                pieData.datasets[0].data.some(
+                                    (value) => value > 0
+                                )
+                            "
+                        >
+                            <Pie :data="pieData" :options="pieOptions" />
+                        </template>
+                        <template v-else>
+                            <div
+                                class="flex items-center justify-center h-full"
+                            >
+                                <p class="text-gray-500">
+                                    No ratings data available
+                                </p>
+                            </div>
+                        </template>
                     </div>
 
                     <div

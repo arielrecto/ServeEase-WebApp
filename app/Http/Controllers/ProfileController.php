@@ -104,7 +104,7 @@ class ProfileController extends Controller
             ->where('user_id', $user->id)
             ->get();
         $providerProfile = ProviderProfile::with('serviceType')->where('profile_id', $user->profile->id)->firstOrFail();
-        $feedbacks = FeedBack::with(['user.profile'])
+        $feedbacks = FeedBack::with(['user.profile', 'availService.service:id,name'])
             ->whereHas('availService', function ($query) use ($services) {
                 $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
             })
@@ -134,7 +134,7 @@ class ProfileController extends Controller
             ->get();
 
         $providerProfile = ProviderProfile::with('serviceType')->where('profile_id', $user->profile->id)->firstOrFail();
-        $feedbacks = FeedBack::with(['user.profile'])
+        $feedbacks = FeedBack::with(['user.profile', 'availService.service:id,name'])
             ->whereHas('availService', function ($query) use ($services) {
                 $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
             })

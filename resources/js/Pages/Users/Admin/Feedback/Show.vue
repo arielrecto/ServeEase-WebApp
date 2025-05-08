@@ -41,27 +41,33 @@ const modalRef = ref(null);
             </div>
 
             <!-- Add attachments section -->
-            <div
-                v-if="feedback.attachments && feedback.attachments.length > 0"
-                class="space-y-2"
-            >
+            <div v-if="feedback.attachments.length > 0" class="space-y-2">
                 <div>Attachments:</div>
                 <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                    <a
+                    <template
                         v-for="attachment in feedback.attachments"
-                        :key="attachment.id"
-                        v-if="attachment.mime_type.startsWith('image/')"
-                        :href="`/storage/${attachment.file_path}`"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="relative overflow-hidden transition-opacity rounded-lg aspect-square hover:opacity-90"
+                        :key="attachment?.id"
                     >
-                        <img
-                            :src="`/storage/${attachment.file_path}`"
-                            :alt="attachment.file_name"
-                            class="object-cover w-full h-full"
-                        />
-                    </a>
+                        <a
+                            v-if="
+                                attachment?.mime_type
+                                    ?.toLowerCase()
+                                    ?.includes('image')
+                            "
+                            :href="`/storage/${attachment.file_path}`"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="relative overflow-hidden transition-opacity rounded-lg aspect-square hover:opacity-90"
+                        >
+                            <img
+                                :src="`/storage/${attachment.file_path}`"
+                                :alt="
+                                    attachment.file_name || 'Image attachment'
+                                "
+                                class="object-cover w-full h-full"
+                            />
+                        </a>
+                    </template>
                 </div>
             </div>
 
