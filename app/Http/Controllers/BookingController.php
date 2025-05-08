@@ -105,7 +105,7 @@ class BookingController extends Controller
     public function detail(AvailService $availService)
     {
 
-        $availService->load([ 'transactions.attachments', 'transactions.paymentAccount', 'attachments']);
+        $availService->load(['transactions.attachments', 'transactions.paymentAccount', 'attachments']);
 
         $service = Service::with(['user', 'user.profile', 'user.profile.providerProfile'])
             ->where('id', $availService->service->id)
@@ -234,8 +234,8 @@ class BookingController extends Controller
         $paymentAccounts = PaymentAccount::where('user_id', $service->user_id)
             ->get()
             ->groupBy('account_type')
-            ->map(function($accounts) {
-                return $accounts->map(function($account) {
+            ->map(function ($accounts) {
+                return $accounts->map(function ($account) {
                     return [
                         'id' => $account->id,
                         'account_name' => $account->account_name,
@@ -277,16 +277,25 @@ class BookingController extends Controller
 
     public function pay(Request $request)
     {
-        $request->validate([
+        $validationRules = [
             'payment_account_id' => 'required|exists:payment_accounts,id',
             'transaction_type' => 'required|in:payment,deposit,reservation',
             'amount' => 'required|numeric|min:0',
             'currency' => 'required|string',
-            'reference_number' => 'required|string|unique:transactions,reference_number',
-            'attachments.*' => 'required|file|max:5120|mimes:jpg,jpeg,png,pdf',
             'transactionable_id' => 'required',
             'transactionable_type' => 'required|in:AvailService'
-        ]);
+        ];
+
+        // Get payment account to check if it's cash payment
+        $paymentAccount = PaymentAccount::findOrFail($request->payment_account_id);
+
+        // Add reference_number validation only for non-cash payments
+        if ($paymentAccount->account_type !== 'cash') {
+            $validationRules['reference_number'] = 'required|string|unique:transactions,reference_number';
+            $validationRules['attachments.*'] = 'required|file|max:5120|mimes:jpg,jpeg,png,pdf';
+        }
+
+        $request->validate($validationRules);
 
         $availService = AvailService::findOrFail($request->transactionable_id);
 
@@ -295,66 +304,62 @@ class BookingController extends Controller
             ? ceil($availService->total_price * 0.3)
             : $availService->total_price;
 
-        if ($request->amount < $minimumPayment && !$request->transaction_type === 'reservation') {
-            return back()->withErrors([
-                'amount' => "Minimum payment required is ₱{$minimumPayment}"
-            ]);
-        }
-
-        if ($request->amount > $availService->total_price && $request->transaction_type !== 'reservation') {
-            return back()->withErrors([
-                'amount' => 'Amount cannot exceed the total price'
-            ]);
-        }
-
-
-
-            // Create transaction record
-            $transaction = Transaction::create([
-                'payment_account_id' => $request->payment_account_id,
-                'transaction_type' => $request->transaction_type,
-                'amount' => $request->amount,
-                'currency' => $request->currency,
-                'reference_number' => $request->reference_number,
-                'transactionable_id' => $availService->id,
-                'transactionable_type' => Availservice::class,
-                'paid_by' => auth()->id(),
-                'paid_to' => $availService->service->user_id,
-                'status' => 'pending',
-                'remaining_balance' => $availService->total_price - $request->amount
-            ]);
-
-            // Handle file uploads
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $path = $file->store('payment-proofs', 'public');
-
-                    $transaction->attachments()->create([
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_path' => $path,
-                        'file_type' => $file->getClientOriginalExtension(),
-                        'file_size' => $file->getSize(),
-                        'mime_type' => $file->getMimeType()
-                    ]);
-                }
+            if ($request->amount < $minimumPayment && !$request->transaction_type === 'reservation') {
+                return back()->withErrors([
+                    'amount' => "Minimum payment required is ₱{$minimumPayment}"
+                ]);
             }
 
-            // Update service status based on payment type
-
-
-
-
-            // Send notifications
-            // event(new PaymentSubmitted($transaction));
-
-            return redirect()->route('customer.booking.detail', $availService->id)
-                ->with('message', [
-                    'type' => 'success',
-                    'text' => $request->transaction_type === 'deposit'
-                        ? 'Deposit payment submitted successfully'
-                        : 'Full payment submitted successfully'
+            if ($request->amount > $availService->total_price && $request->transaction_type !== 'reservation') {
+                return back()->withErrors([
+                    'amount' => 'Amount cannot exceed the total price'
                 ]);
+            }
 
 
+
+        // Create transaction record
+        $transactionData = [
+            'payment_account_id' => $request->payment_account_id,
+            'transaction_type' => $request->transaction_type,
+            'amount' => $request->amount,
+            'currency' => $request->currency,
+            'transactionable_id' => $availService->id,
+            'transactionable_type' => AvailService::class,
+            'paid_by' => auth()->id(),
+            'paid_to' => $availService->service->user_id,
+            'status' => 'pending',
+            'remaining_balance' => $availService->total_price - $request->amount
+        ];
+
+        // Only add reference number if provided (required for non-cash payments)
+        if ($request->reference_number) {
+            $transactionData['reference_number'] = $request->reference_number;
+        }
+
+        $transaction = Transaction::create($transactionData);
+
+        // Only process attachments for non-cash payments
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('payment-proofs', 'public');
+
+                $transaction->attachments()->create([
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType()
+                ]);
+            }
+        }
+
+        return redirect()->route('customer.booking.detail', $availService->id)
+            ->with('message', [
+                'type' => 'success',
+                'text' => $request->transaction_type === 'deposit'
+                    ? 'Deposit payment submitted successfully'
+                    : 'Full payment submitted successfully'
+            ]);
     }
 }

@@ -15,7 +15,7 @@ class PaymentAccountController extends Controller
         $paymentAccounts = PaymentAccount::where('user_id', Auth::id())
             ->latest()
             ->get()
-            ->map(function($account) {
+            ->map(function ($account) {
                 return [
                     'id' => $account->id,
                     'account_name' => $account->account_name,
@@ -35,7 +35,7 @@ class PaymentAccountController extends Controller
         $request->validate([
             'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
-            'account_type' => 'required|string|in:gcash,paymaya,bank'
+            'account_type' => 'required|string|in:gcash,paymaya,bank,cash'
         ]);
 
         PaymentAccount::create([
@@ -53,7 +53,7 @@ class PaymentAccountController extends Controller
         $request->validate([
             'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
-            'account_type' => 'required|string|in:gcash,paymaya,bank'
+            'account_type' => 'required|string|in:gcash,paymaya,bank,cash'
         ]);
 
         $paymentAccount->update([
