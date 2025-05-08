@@ -206,7 +206,7 @@ class ServiceController extends Controller
 
         broadcast(new NotificationSent($notification))->toOthers();
 
-        return to_route('customer.services.show', ['service' => $request->service])
+        return to_route('customer.booking.payment', ['availService' => $request->service])
             ->with(['message_success' => 'Service booked successfully']);
     }
 

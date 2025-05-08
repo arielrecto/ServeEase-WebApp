@@ -33,7 +33,12 @@ const groupedPaymentMethods = computed(() => {
 });
 
 // Add computed for minimum payment amount
+const reservationFee = computed(() => props.availService.total_price * 0.1); // Fixed ₱500 reservation fee
+
 const minimumPayment = computed(() => {
+    if (form.transaction_type === 'reservation') {
+        return  reservationFee.value;
+    }
     return form.transaction_type === 'deposit'
         ? Math.ceil(props.availService.total_price * 0.3) // 30% minimum deposit
         : props.availService.total_price;
@@ -85,6 +90,12 @@ const transactionTypes = [
         value: 'deposit',
         description: 'Initial deposit or partial payment',
         icon: 'fa-solid fa-clock'
+    },
+    {
+        name: 'Reservation Fee',
+        value: 'reservation',
+        description: 'Pay reservation fee to secure booking at 10%',
+        icon: 'fa-solid fa-calendar-check'
     }
 ];
 
@@ -99,6 +110,15 @@ const validateAmount = (value) => {
         form.setError('amount', 'Please enter a valid amount');
         return false;
     }
+
+    if (form.transaction_type === 'reservation') {
+        if (amount !== reservationFee.value) {
+            form.setError('amount', `Reservation fee must be exactly ₱${reservationFee.value}`);
+            return false;
+        }
+        return true;
+    }
+
     if (amount < minimumPayment.value) {
         form.setError('amount', `Minimum payment required is ₱${minimumPayment.value.toLocaleString()}`);
         return false;
@@ -146,6 +166,17 @@ const submit = () => {
         }
     });
 };
+
+// Add a watch to set the amount when transaction type changes
+watch(() => form.transaction_type, (newType) => {
+    if (newType === 'reservation') {
+        form.amount = reservationFee.value;
+    } else if (newType === 'payment') {
+        form.amount = props.availService.total_price;
+    } else {
+        form.amount = minimumPayment.value;
+    }
+});
 </script>
 
 <template>

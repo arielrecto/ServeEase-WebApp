@@ -35,6 +35,9 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
             <NavLink :href="route('admin.users.index')" :active="route().current('admin.users.index')">
                 Users
             </NavLink>
+            <NavLink :href="route('admin.reports.index')" :active="route().current('customer.report.index')">
+                Report
+            </NavLink>
         </template>
 
         <template v-else>
@@ -59,6 +62,9 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
             </NavLink>
             <NavLink :href="route('messages.index')" :active="route().current('messages.*')">
                 Messages
+            </NavLink>
+            <NavLink :href="route('customer.report.index')" :active="route().current('customer.report.index')">
+                Report
             </NavLink>
         </template>
     </div>

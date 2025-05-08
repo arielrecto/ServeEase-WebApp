@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ServiceTypeController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\BarangayController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\Customer\ServiceController as CustomerServiceController
 use App\Http\Controllers\Customer\ServiceProviderController as CustomerSPController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Admin\CustomerFeedbackController as ADCustomerFeedbackController;
+use App\Http\Controllers\Customer\ReportController as CustomerReportController;
 use App\Http\Controllers\ServiceProvider\BookingController as ServiceProviderBookingController;
 use App\Http\Controllers\ServiceProvider\DashboardController as ServiceProviderDashboardController;
 
@@ -116,6 +118,14 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/{user}/restore', 'restore')->name('restore');
         });
         Route::resource('users', UserController::class);
+
+        Route::prefix('reports')->as('reports.')->group(function(){
+            Route::put('approve/{report}', [ReportController::class, 'approve'])->name('approve');
+            Route::put('reject/{report}', action: [ReportController::class, 'reject'])->name('reject');
+            Route::put('resolve/{report}', [ReportController::class, 'resolve'])->name('resolve');
+        });
+
+        Route::resource('reports', ReportController::class)->except(['create', 'store']);
     });
 
     Route::middleware('suspended')->group(function () {
@@ -147,6 +157,7 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('services', CustomerServiceController::class)->only('show');
             Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
             Route::post('/service-provider/{providerProfile}', [CustomerSPController::class, 'update'])->name('service-provider.update');
+            Route::resource('report', CustomerReportController::class);
         });
 
         Route::prefix('service-provider')->as('service-provider.')->group(function () {

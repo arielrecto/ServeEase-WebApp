@@ -12,6 +12,7 @@ const statusClass = computed(() => {
         in_progress: "bg-orange-100 text-orange-800",
         confirmed: "bg-green-100 text-green-800",
         completed: "bg-green-100 text-green-800",
+        approved: "bg-green-100 text-green-800", // Add this line
     }[props.status];
 });
 
@@ -23,6 +24,7 @@ const statusText = computed(() => {
         in_progress: "In Progress",
         confirmed: "Confirmed",
         completed: "Completed",
+        approved: "Approved", // Add this line
     }[props.status];
 });
 </script>

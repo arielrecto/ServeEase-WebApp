@@ -628,10 +628,11 @@ const paymentStatus = computed(() => {
                                                                     class="font-medium capitalize"
                                                                 >
                                                                     {{
-                                                                        transaction.transaction_type ===
-                                                                        "deposit"
-                                                                            ? "Partial Payment"
-                                                                            : "Full Payment"
+                                                                        {
+                                                                            'deposit': 'Partial Payment',
+                                                                            'payment': 'Full Payment',
+                                                                            'reservation': 'Reservation Fee'
+                                                                        }[transaction.transaction_type] || 'Payment'
                                                                     }}
                                                                 </span>
                                                                 <span

@@ -279,7 +279,7 @@ class BookingController extends Controller
     {
         $request->validate([
             'payment_account_id' => 'required|exists:payment_accounts,id',
-            'transaction_type' => 'required|in:payment,deposit',
+            'transaction_type' => 'required|in:payment,deposit,reservation',
             'amount' => 'required|numeric|min:0',
             'currency' => 'required|string',
             'reference_number' => 'required|string|unique:transactions,reference_number',
@@ -295,13 +295,13 @@ class BookingController extends Controller
             ? ceil($availService->total_price * 0.3)
             : $availService->total_price;
 
-        if ($request->amount < $minimumPayment) {
+        if ($request->amount < $minimumPayment && !$request->transaction_type === 'reservation') {
             return back()->withErrors([
                 'amount' => "Minimum payment required is ₱{$minimumPayment}"
             ]);
         }
 
-        if ($request->amount > $availService->total_price) {
+        if ($request->amount > $availService->total_price && $request->transaction_type !== 'reservation') {
             return back()->withErrors([
                 'amount' => 'Amount cannot exceed the total price'
             ]);

@@ -151,4 +151,13 @@ class User extends Authenticatable
             get: fn() => $this->is_suspended ? 'Suspended' : 'Active',
         );
     }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+    public function reportedBy()
+    {
+        return $this->hasMany(Report::class, 'reported_by');
+    }
 }
