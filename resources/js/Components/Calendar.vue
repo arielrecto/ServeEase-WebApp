@@ -47,8 +47,8 @@ function handleDateClick(arg) {
     }
 
     selectedDate.value = arg.date;
-    form.start_date = arg.date.toISOString().split("T")[0];
-    form.end_date = arg.date.toISOString().split("T")[0];
+    form.start_date = moment(arg.date).format("YYYY-MM-DD");
+    form.end_date = moment(arg.date).format("YYYY-MM-DD");
     showModal.value = true;
 }
 
