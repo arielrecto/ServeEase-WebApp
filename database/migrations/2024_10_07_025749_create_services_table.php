@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->boolean('is_approved');
             $table->boolean('is_quantifiable')->default(false);
             $table->integer('quantity')->default(1);
+            $table->timestamp('archived_at')->nullable();
             $table->foreignIdFor(ServiceType::class)
                 ->constrained()
                 ->cascadeOnDelete();
