@@ -187,8 +187,8 @@ class Service extends Model
     {
         return Attribute::make(
             get: function () {
-                $startOfWeek = Carbon::now()->startOfWeek();
-                $endOfWeek = Carbon::now()->endOfWeek();
+                $startOfWeek = Carbon::now()->startOfWeek()->format('Y-m-d H:i');
+                $endOfWeek = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
 
                 return $this->availService()
                     ->with('transactions')
