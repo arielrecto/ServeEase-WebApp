@@ -198,22 +198,45 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                             >
                                                 {{ service.name }}
                                             </h3>
-                                            <div class="flex items-center mb-4">
-                                                <i
-                                                    class="text-yellow-500 ri-star-fill"
-                                                ></i>
-                                                <span class="ml-1">{{
-                                                    service.avg_rate
-                                                }}</span>
-                                                <span
-                                                    class="ml-2 text-sm text-gray-500"
-                                                    >({{
-                                                        service.total_review_count
-                                                    }}
-                                                    reviews)</span
+                                            <div
+                                                class="flex items-center justify-between mb-3"
+                                            >
+                                                <div
+                                                    class="flex items-center gap-2"
                                                 >
+                                                    <div>
+                                                        <i
+                                                            class="text-yellow-500 ri-star-fill"
+                                                        ></i>
+                                                        <span class="ml-1">
+                                                            {{
+                                                                service.avg_rate
+                                                            }}
+                                                        </span>
+                                                    </div>
+                                                    <span
+                                                        class="ml-2 text-sm text-gray-500"
+                                                    >
+                                                        ({{
+                                                            service.total_review_count
+                                                        }}
+                                                        reviews)
+                                                    </span>
+                                                </div>
+                                                <span
+                                                    v-if="
+                                                        $page.props.auth.user
+                                                            .id ===
+                                                        service.user_id
+                                                    "
+                                                >
+                                                    Earned ₱{{
+                                                        service.weekly_revenue
+                                                    }}
+                                                    this week
+                                                </span>
                                             </div>
-                                            <div class="flex gap-2">
+                                            <div class="flex gap-5">
                                                 <Link
                                                     v-if="
                                                         service.user_id ===
@@ -230,7 +253,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                                     <i
                                                         class="mr-1 ri-edit-line"
                                                     ></i>
-                                                    Edit Service
+                                                    Edit
                                                 </Link>
                                                 <ModalLinkDialog
                                                     v-if="
@@ -248,7 +271,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                                     <i
                                                         class="mr-1 ri-archive-line"
                                                     ></i>
-                                                    Archive Service
+                                                    Archive
                                                 </ModalLinkDialog>
                                             </div>
                                         </div>

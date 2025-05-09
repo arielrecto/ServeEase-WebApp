@@ -26,6 +26,7 @@ class ServiceController extends Controller
                     'name' => $service->name,
                     'price' => $service->price,
                     'price_type' => $service->price_type,
+                    'weekly_revenue' => $service->weekly_revenue,
                     'description' => $service->description,
                     'thumbnail' => $service->service_thumbnail,
                     'avg_rate' => $service->avg_rate,

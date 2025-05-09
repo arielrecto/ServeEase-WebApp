@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,7 +33,7 @@ class Service extends Model
         'archived_at' => 'datetime'
     ];
 
-    protected $appends = ['avg_rate', 'is_added_to_favorites', 'service_thumbnail', 'total_review_count'];
+    protected $appends = ['avg_rate', 'is_added_to_favorites', 'service_thumbnail', 'total_review_count', 'weekly_revenue'];
 
     protected static function booted()
     {
@@ -180,6 +181,29 @@ class Service extends Model
             ->favorites()
             ->where('service_id', $this->id)
             ->exists();
+    }
+
+    public function weeklyRevenue(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $startOfWeek = Carbon::now()->startOfWeek();
+                $endOfWeek = Carbon::now()->endOfWeek();
+
+                return $this->availService()
+                    ->with('transactions')
+                    ->whereHas('transactions', function ($query) use ($startOfWeek, $endOfWeek) {
+                        $query->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+                    })
+                    ->withSum([
+                        'transactions as weekly_revenue' => function ($query) use ($startOfWeek, $endOfWeek) {
+                            $query->where('status', 'approved')
+                                ->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+                        }
+                    ], 'amount')
+                    ->value('weekly_revenue') ?? 0;
+            }
+        );
     }
 
     public function getServiceThumbnailAttribute()

@@ -17,7 +17,14 @@ import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
 
 defineProps(["services"]);
 
-const headers = ref(["Name", "Reference #", "Status", "Created At", "Action"]);
+const headers = ref([
+    "Name",
+    "Reference #",
+    "Weekly Revenue",
+    "Status",
+    "Created At",
+    "Action",
+]);
 </script>
 
 <template>
@@ -70,6 +77,9 @@ const headers = ref(["Name", "Reference #", "Status", "Created At", "Action"]);
                                                 }}
                                             </Link>
                                             <span v-else>---</span>
+                                        </td>
+                                        <td class="font-medium">
+                                            ₱{{ service.weekly_revenue }}
                                         </td>
                                         <td>
                                             <span
