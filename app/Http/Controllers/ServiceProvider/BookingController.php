@@ -73,25 +73,43 @@ class BookingController extends Controller
                 ];
             });
 
+        // Replace the counting section with this optimized version
         $weekStartDate = Carbon::now()->startOfWeek()->format('Y-m-d H:i');
         $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
 
-        $query = AvailService::whereHas('service', function ($q) {
-            $q->where('user_id', Auth::user()->id);
-        });
+        // Create base query to avoid repetition
+        $baseQuery = AvailService::whereRelation('service', 'user_id', '=', auth()->user()->id);
 
-        $latestBookingsCount = $query
-            ->whereBetween('created_at', [$weekStartDate, $weekEndDate])
-            ->count();
-        $ongoingBookingsCount = $query->whereStatus("in_progress")
-            ->count();
-        $pendingBookingsCount = $query
-            ->whereStatus('pending')
-            ->count();
-        $finishedBookingsCount = $query
-            ->whereStatus('completed')
-            ->count();
+        // Get all counts in a single query using select subqueries
+        $bookingCounts = $baseQuery->selectRaw('
+            COUNT(*) as total_bookings,
+            SUM(CASE
+                WHEN created_at BETWEEN ? AND ? THEN 1
+                ELSE 0
+            END) as latest_bookings,
+            SUM(CASE
+                WHEN status = "in_progress" THEN 1
+                ELSE 0
+            END) as ongoing_bookings,
+            SUM(CASE
+                WHEN status = "pending" THEN 1
+                ELSE 0
+            END) as pending_bookings,
+            SUM(CASE
+                WHEN status = "completed" THEN 1
+                ELSE 0
+            END) as finished_bookings',
+            [$weekStartDate, $weekEndDate]
+        )->first();
+
+        // Get reviews count
         $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
+
+        // Extract values from the result
+        $latestBookingsCount = $bookingCounts->latest_bookings;
+        $ongoingBookingsCount = $bookingCounts->ongoing_bookings;
+        $pendingBookingsCount = $bookingCounts->pending_bookings;
+        $finishedBookingsCount = $bookingCounts->finished_bookings;
 
 
         return Inertia::render('Users/ServiceProvider/Booking/Index', compact(['availServices', 'latestBookingsCount', "ongoingBookingsCount", 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount', 'personalEvents']));
