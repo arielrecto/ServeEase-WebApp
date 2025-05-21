@@ -1,6 +1,7 @@
 <script setup>
 import { Link, usePage } from "@inertiajs/vue3";
 import { ref, reactive, computed } from "vue";
+import { router } from "@inertiajs/vue3";
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TableWrapper from "@/Components/Table/TableWrapper.vue";
@@ -43,6 +44,19 @@ const isNotServiceProvider = computed(() => {
 });
 
 const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
+
+const cancelBooking = (bookingId) => {
+    if (confirm("Are you sure you want to cancel this booking?")) {
+        router.put(route("customer.booking.cancel", bookingId), {}, {
+            onSuccess: () => {
+                alert("Booking has been canceled successfully.");
+            },
+            onError: (errors) => {
+                alert("Failed to cancel the booking. Please try again.");
+            },
+        });
+    }
+};
 
 console.log(props.availServices);
 </script>
@@ -215,6 +229,24 @@ console.log(props.availServices);
                                                         )
                                                     "
                                                 />
+
+                                                <!-- Cancel Button -->
+                                                <button
+                                                    v-if="
+                                                        availService.status ===
+                                                            'confirmed' ||
+                                                        availService.status ===
+                                                            'pending'
+                                                    "
+                                                    @click="
+                                                        cancelBooking(
+                                                            availService.id
+                                                        )
+                                                    "
+                                                    class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                                >
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>

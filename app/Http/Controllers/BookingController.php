@@ -41,9 +41,9 @@ class BookingController extends Controller
             ->through(function ($availService) {
                 return [
                     'id' => $availService->id,
-                    'service_id' => $availService->service->id,
-                    'name' => $availService->service->name,
-                    'provider' => $availService->service->user->name,
+                    'service_id' => $availService->service?->id ?? 'N\A',
+                    'name' => $availService->service?->name ?? 'N\A',
+                    'provider' => $availService->service->user?->name ?? 'N\A',
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
                     'service_cart_id' => $availService->serviceCart?->id ?? null,
@@ -304,17 +304,17 @@ class BookingController extends Controller
             ? ceil($availService->total_price * 0.3)
             : $availService->total_price;
 
-            if ($request->amount < $minimumPayment && !$request->transaction_type === 'reservation') {
-                return back()->withErrors([
-                    'amount' => "Minimum payment required is ₱{$minimumPayment}"
-                ]);
-            }
+        if ($request->amount < $minimumPayment && !$request->transaction_type === 'reservation') {
+            return back()->withErrors([
+                'amount' => "Minimum payment required is ₱{$minimumPayment}"
+            ]);
+        }
 
-            if ($request->amount > $availService->total_price && $request->transaction_type !== 'reservation') {
-                return back()->withErrors([
-                    'amount' => 'Amount cannot exceed the total price'
-                ]);
-            }
+        if ($request->amount > $availService->total_price && $request->transaction_type !== 'reservation') {
+            return back()->withErrors([
+                'amount' => 'Amount cannot exceed the total price'
+            ]);
+        }
 
 
 
@@ -361,5 +361,22 @@ class BookingController extends Controller
                     ? 'Deposit payment submitted successfully'
                     : 'Full payment submitted successfully'
             ]);
+    }
+
+    public function cancel(AvailService $availService)
+    {
+        // Ensure the booking is in a cancellable state
+        if (!in_array($availService->status, ['pending', 'confirmed'])) {
+            return back()->withErrors([
+                'message' => 'This booking cannot be canceled.'
+            ]);
+        }
+
+        // Update the status to "cancelled"
+        $availService->update([
+            'status' => 'cancelled',
+        ]);
+
+        return back()->with('success', 'Booking has been canceled successfully.');
     }
 }

@@ -64,6 +64,7 @@ class BookingController extends Controller
                     'start_date' => $availService->start_date,
                     'end_date' => $availService->end_date,
                     'provider' => $availService->service->user->name,
+                    'address' => $availService->service->user->profile->address,
                     'customer' => "{$availService->user->profile->first_name} {$availService->user->profile->last_name}",
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,

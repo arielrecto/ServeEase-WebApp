@@ -49,7 +49,7 @@ const isNotServiceProvider = computed(() => {
     );
 });
 
-const headers = ["Reference #", "Service", "Customer", "Agreed Price", "Status", "Actions"];
+const headers = ["Reference #", "Service", "Customer", "Agreed Price", "Address",  "Status", "Actions"];
 
 const openCalendar = ref(false);
 
@@ -201,6 +201,9 @@ watch(openCalendar, () => {
                                             ₱{{
                                                 availService.total_price.toLocaleString()
                                             }}
+                                        </td>
+                                        <td class="font-bold truncate">
+                                           {{ availService.address }}
                                         </td>
                                         <td>
                                             <StatusBadge :status="availService.status" />

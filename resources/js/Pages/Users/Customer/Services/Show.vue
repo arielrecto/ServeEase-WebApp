@@ -130,39 +130,24 @@ const events = computed(() => {
                     <div class="flex flex-col p-6 bg-white rounded-lg shadow-lg gap-y-1">
                         <div class="flex items-start gap-x-4">
                             <div class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square">
-                                <img :src="service.user
-                                    .profile
-                                    .user_avatar
-                                    " class="object-cover w-full h-full" />
+                                <img :src="service.user.profile.user_avatar" class="object-cover w-full h-full" />
                             </div>
                             <div class="flex flex-col space-y-1">
-                                <span class="text-xl">{{
-                                    service.user.profile
-                                        .full_name
-                                }}</span>
-                                <span class="text-sm italic text-gray-600">{{
-                                    service.user
-                                        .profile
-                                        .provider_profile
-                                        .contact
-                                }}</span>
-                                <span class="text-sm italic text-gray-600">Experience:
-                                    {{
-                                        service.user
-                                            .profile
-                                            .provider_profile
-                                            .experience
-                                    }} {{ service.user.profile.provider_profile.experience_duration }}</span>
-                                <Link :href="route(
-                                    'profile.showProviderProfile',
-                                    service
-                                        .user
-                                        .profile
-                                        .provider_profile
-                                        .id
-                                )
-                                    " class="underline text-primary">Go to
-                                Profile</Link>
+                                <span class="text-xl">{{ service.user.profile.full_name }}</span>
+                                <span class="text-sm italic text-gray-600">{{ service.user.profile.provider_profile.contact }}</span>
+                                <span class="text-sm italic text-gray-600">Address: {{ service.user.profile.provider_profile.address }}</span>
+                                <span class="text-sm italic text-gray-600">
+                                    Experience: {{ service.user.profile.provider_profile.experience }}
+                                    {{ service.user.profile.provider_profile.experience_duration }}
+                                </span>
+                                <div class="flex items-center gap-x-2">
+                                    <Link :href="route('profile.showProviderProfile', service.user.profile.provider_profile.id)" class="underline text-primary">
+                                        Go to Profile
+                                    </Link>
+                                    <Link :href="route('messages.index', { participant_id: service.user.id })" class="underline text-primary">
+                                        Message Provider
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
