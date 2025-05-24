@@ -112,6 +112,10 @@ const getFileIcon = (file) => {
     if (file.type.includes("pdf")) return "fa-file-pdf";
     return "fa-file";
 };
+
+const back = () => {
+    window.history.back();
+};
 </script>
 
 <template>
@@ -120,7 +124,7 @@ const getFileIcon = (file) => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center gap-x-4">
-                <button @click="$router.back()" class="btn btn-ghost">
+                <button @click="back" class="btn btn-ghost">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">

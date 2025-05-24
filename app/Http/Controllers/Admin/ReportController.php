@@ -165,9 +165,10 @@ class ReportController extends Controller
 
     public function resolve(Request $request, Report $report)
     {
-        $validated = $request->validate([
-            'resolution_remarks' => 'required|string|max:1000',
-        ]);
+        // Hindi naman ginagamit to
+        // $validated = $request->validate([
+        //     'resolution_remarks' => 'required|string|max:1000', :/
+        // ]);
 
         $report->update([
             'status' => 'resolved',

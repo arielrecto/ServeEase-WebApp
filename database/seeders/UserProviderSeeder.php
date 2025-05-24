@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\PaymentAccount;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Profile;
@@ -47,6 +48,22 @@ class UserProviderSeeder extends Seeder
             ]);
 
             Service::factory()->create(['service_type_id' => $serviceTypeId, 'user_id' => $user->id]);
+
+            $accountType = fake()->randomElement(['gcash', 'paymaya', 'bank', 'cash']);
+
+            $paymentAccountData = [
+                'account_type' => $accountType,
+                'account_number' => match ($accountType) {
+                    'gcash' => '09123456789',
+                    'paymaya' => '09123456789',
+                    'bank' => '09123456789',
+                    'cash' => null,
+                },
+                'account_name' => $accountType ? $user->profile->full_name : null,
+                'user_id' => $user->id,
+            ];
+
+            PaymentAccount::create($paymentAccountData);
         }
     }
 }

@@ -1,12 +1,12 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TableWrapper from '@/Components/Table/TableWrapper.vue';
 import TableHeader from '@/Components/Table/TableHeader.vue';
 import PaginationLinks from '@/Components/PaginationLinks.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
 import ActionButton from '@/Components/ActionButton.vue';
-import { ref } from 'vue';
 
 const props = defineProps({
     reports: Object,
@@ -30,6 +30,14 @@ const getStatusClass = (status) => {
     }[status] || 'info';
 };
 
+const resolveReport = (id) => {
+    router.put(route('admin.reports.resolve', id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+        }
+    });
+}
 
 console.log(props.reports.value)
 </script>
@@ -119,9 +127,9 @@ console.log(props.reports.value)
                                                 />
                                                 <ActionButton
                                                     v-if="report.status === 'pending'"
-                                                    type="modal"
+                                                    type="button"
                                                     actionType="resolve"
-                                                    :href="route('admin.reports.resolve', report.id)"
+                                                    @button-click="resolveReport(report.id)"
                                                 />
                                             </div>
                                         </td>

@@ -143,6 +143,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/{availService}/detail', 'detail')->name('detail');
                 Route::get('/payment/{availService}', 'showPayment')->name('payment');
                 Route::post('/pay', 'pay')->name('pay');
+                Route::get('/{availService}/confirm-cancel', 'confirmCancel')->name('confirm-cancel');
                 Route::put('/{availService}/cancel', 'cancel')->name('cancel');
             });
             Route::prefix('feedbacks')->controller(CustomerFeedbackController::class)->as('feedbacks.')->group(function () {

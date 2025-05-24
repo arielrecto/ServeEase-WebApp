@@ -30,7 +30,7 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'booking-cancelled') {
-                    return "{$user->name} has cancelled your booking.";
+                    return "{$user->name} has cancelled the booking.";
                 }
 
                 if ($action === 'booking-created') {

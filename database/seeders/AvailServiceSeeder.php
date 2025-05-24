@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\AvailService;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Service;
+use App\Models\AvailService;
 use Illuminate\Database\Seeder;
 
 class AvailServiceSeeder extends Seeder
@@ -12,7 +13,7 @@ class AvailServiceSeeder extends Seeder
     public function run()
     {
 
-        $users = User::role( 'customer')->pluck('id');
+        $users = User::role('customer')->pluck('id');
         $statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'];
 
         foreach (range(1, 100) as $index) {
@@ -20,7 +21,7 @@ class AvailServiceSeeder extends Seeder
 
             AvailService::create([
                 'user_id' => $users->random(),
-                'service_id' => rand(1, 3),
+                'service_id' => Service::all()->pluck('id')->random(),
                 'status' => $statuses[array_rand($statuses)],
                 'total_hours' => rand(2, 8),
                 'start_date' => $startDate,

@@ -26,7 +26,7 @@
                                     >
                                         {{
                                             getInitials(
-                                                getOtherUser(conversation).name
+                                                getOtherUser(conversation).profile.full_name
                                             )
                                         }}
                                     </div>
@@ -41,7 +41,7 @@
                                             class="font-semibold text-gray-900 truncate"
                                         >
                                             {{
-                                                getOtherUser(conversation).name
+                                                getOtherUser(conversation).profile.full_name
                                             }}
                                         </h3>
                                         <span

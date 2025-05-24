@@ -11,10 +11,13 @@ use App\Models\FeedBack;
 use App\Models\ServiceCart;
 use App\Models\Transaction;
 use App\Models\AvailService;
+use App\Models\Notification;
 use Illuminate\Http\Request;
-use App\Models\PaymentAccount;
 use App\Models\PersonalEvent;
+use App\Models\PaymentAccount;
+use App\Events\NotificationSent;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\GenerateNotificationAction;
 
 class BookingController extends Controller
 {
@@ -43,7 +46,7 @@ class BookingController extends Controller
                     'id' => $availService->id,
                     'service_id' => $availService->service?->id ?? 'N\A',
                     'name' => $availService->service?->name ?? 'N\A',
-                    'provider' => $availService->service->user?->name ?? 'N\A',
+                    'provider' => $availService->service->user?->profile?->full_name ?? 'N\A',
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
                     'service_cart_id' => $availService->serviceCart?->id ?? null,
@@ -363,6 +366,13 @@ class BookingController extends Controller
             ]);
     }
 
+    public function confirmCancel(AvailService $availService)
+    {
+        return Inertia::render('Users/Customer/Booking/Cancel', [
+            'availService' => $availService
+        ]);
+    }
+
     public function cancel(AvailService $availService)
     {
         // Ensure the booking is in a cancellable state
@@ -377,6 +387,15 @@ class BookingController extends Controller
             'status' => 'cancelled',
         ]);
 
-        return back()->with('success', 'Booking has been canceled successfully.');
+        $notification = Notification::create([
+            'user_id' => $availService->service->user_id,
+            'content' => GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->user),
+            'type' => 'booking',
+            'url' => "/customer/booking/{$availService->id}/detail"
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
+
+        return back()->with('message_success', 'Booking has been canceled successfully.');
     }
 }

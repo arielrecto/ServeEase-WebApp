@@ -19,10 +19,10 @@ class MessageController extends Controller
             $participant_id = $request->participant_id;
 
             // Check if conversation already exists
-            $existingConversation = Conversation::where(function($query) use ($participant_id) {
+            $existingConversation = Conversation::where(function ($query) use ($participant_id) {
                 $query->where('owner_id', Auth::id())
                     ->where('participant_id', $participant_id);
-            })->orWhere(function($query) use ($participant_id) {
+            })->orWhere(function ($query) use ($participant_id) {
                 $query->where('owner_id', $participant_id)
                     ->where('participant_id', Auth::id());
             })->first();
@@ -39,9 +39,13 @@ class MessageController extends Controller
         // Get all conversations for the current user
         $conversations = Conversation::where('owner_id', Auth::id())
             ->orWhere('participant_id', Auth::id())
-            ->with(['owner', 'participant', 'messages' => function($query) {
-                $query->latest();
-            }])
+            ->with([
+                'owner.profile',
+                'participant.profile',
+                'messages' => function ($query) {
+                    $query->latest();
+                }
+            ])
             ->get();
 
         return Inertia::render('Messages/Index', [
@@ -52,9 +56,13 @@ class MessageController extends Controller
     public function show(Conversation $conversation)
     {
         // Load the conversation with its messages and participants
-        $conversation->load(['messages' => function($query) {
-            $query->with(['sender', 'receiver'])->orderBy('created_at', 'asc');
-        }, 'owner', 'participant']);
+        $conversation->load([
+            'messages' => function ($query) {
+                $query->with(['sender', 'receiver'])->orderBy('created_at', 'asc');
+            },
+            'owner',
+            'participant'
+        ]);
 
         // Mark unseen messages as seen
         Message::where('conversation_id', $conversation->id)
