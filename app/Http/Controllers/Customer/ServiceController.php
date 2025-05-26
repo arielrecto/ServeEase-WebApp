@@ -147,7 +147,7 @@ class ServiceController extends Controller
         $request->validate([
             'startDate' => 'required|date',
             'endDate' => 'required|date',
-            'remark' => 'required|string',
+            'remark' => 'nullable|sometimes|string',
             'total' => 'required|numeric',
             'service' => 'required|exists:services,id',
             'attachments.*' => 'nullable|file|max:10240', // 10MB max per file
@@ -181,7 +181,7 @@ class ServiceController extends Controller
         $availService = AvailService::create([
             'start_date' => $request->startDate,
             'end_date' => $request->endDate,
-            'remarks' => $request->remark,
+            'remarks' => $request?->remark ?? "No additonal note.",
             'total_price' => $request->total,
             'service_id' => $request->service,
             'total_hours' => $total_hours,
@@ -213,7 +213,7 @@ class ServiceController extends Controller
 
         broadcast(new NotificationSent($notification))->toOthers();
 
-        return to_route('customer.booking.payment', ['availService' => $request->service])
+        return to_route('customer.booking.payment', ['availService' => $availService])
             ->with(['message_success' => 'Service booked successfully']);
     }
 
