@@ -220,6 +220,10 @@ const back = () => {
                                                 :min="form.startDate"
                                                 v-model="form.endDate"
                                                 class="block w-full mt-1"
+                                                :disabled="
+                                                    service.price_type ===
+                                                    'fixed rate'
+                                                "
                                                 required
                                             />
                                             <TextInput
@@ -326,7 +330,7 @@ const back = () => {
                                     <i
                                         class="mr-2 fas fa-comment-alt text-primary"
                                     ></i>
-                                    Additional Notes
+                                    Additional Notes (Optional)
                                 </h3>
 
                                 <div>
@@ -356,7 +360,7 @@ const back = () => {
                                     <i
                                         class="mr-2 fas fa-paperclip text-primary"
                                     ></i>
-                                    Attachments
+                                    Attachments (Optional)
                                 </h3>
 
                                 <div class="space-y-4">
