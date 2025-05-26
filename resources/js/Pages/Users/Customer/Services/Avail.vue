@@ -220,10 +220,6 @@ const back = () => {
                                                 :min="form.startDate"
                                                 v-model="form.endDate"
                                                 class="block w-full mt-1"
-                                                :disabled="
-                                                    service.price_type ===
-                                                    'fixed rate'
-                                                "
                                                 required
                                             />
                                             <TextInput
