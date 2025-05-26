@@ -44,7 +44,7 @@ defineProps(["service", 'services', "canLogin", "canRegister"]);
                                 :key="service.id"
                                 class="flex gap-4 p-3 transition rounded-lg bg-gray-50 hover:bg-gray-100">
                             <div class="w-24 overflow-hidden rounded-lg aspect-video">
-                                <img :src="service.service_thumbnail" :alt="service.name"
+                                <img :src="service.thumbnail" :alt="service.name"
                                     class="object-cover w-full h-full" />
                             </div>
                             <div class="flex-1">
