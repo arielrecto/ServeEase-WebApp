@@ -131,11 +131,14 @@ class BookingController extends Controller
             ->through(function ($availService) {
                 return [
                     'id' => $availService->id,
-                    'service_id' => $availService->service->id,
-                    'name' => $availService->service->name,
-                    'provider' => $availService->service->user->name,
+                    'service_id' => $availService->service?->id ?? 'N\A',
+                    'name' => $availService->service?->name ?? 'N\A',
+                    'provider' => $availService->service->user?->profile?->full_name ?? 'N\A',
                     'status' => $availService->status,
                     'total_price' => $availService->total_price,
+                    'service_cart_id' => $availService->serviceCart?->id ?? null,
+                    'is_fully_paid' => $availService->is_fully_paid,
+                    'has_feedback' => $availService->has_feedback,
                     'created_at' => $availService->created_at
                 ];
             });
@@ -154,7 +157,7 @@ class BookingController extends Controller
             ->count();
         $reviewsCount = FeedBack::whereUserId(Auth::user()->id)->count();
 
-        return Inertia::render('Users/Customer/Booking/Archive', compact(['availServices', 'latestBookingsCount', 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
+        return Inertia::render('Users/Customer/Booking/Index', compact(['availServices', 'latestBookingsCount', 'pendingBookingsCount', 'reviewsCount', 'finishedBookingsCount']));
     }
 
     /**
