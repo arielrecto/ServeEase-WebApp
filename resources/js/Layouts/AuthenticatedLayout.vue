@@ -20,6 +20,8 @@ const isServiceProvider = usePage().props.auth.isServiceProvider;
 const roleName = usePage().props.auth.roleName;
 const profile = usePage().props.auth.user.profile;
 const finishedBookings = usePage().props.auth.finishedBookings;
+
+const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboard") : route("customer.dashboard");
 </script>
 
 <template>
@@ -54,7 +56,7 @@ const finishedBookings = usePage().props.auth.finishedBookings;
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex items-center shrink-0">
-                                <Link :href="route('dashboard')">
+                                <Link :href="applicationLogoLink()">
                                     <ApplicationLogo />
                                 </Link>
                             </div>
