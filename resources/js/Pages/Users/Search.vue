@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm, Link } from "@inertiajs/vue3";
+import { Head, useForm, Link, usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 
@@ -48,6 +48,7 @@ const fetchServices = async () => {
                 byRating: form.byRating,
                 byPrice: form.byPrice,
                 byTransaction: form.byTransaction,
+                authId: usePage().props.auth.user.id,
             },
         });
 
