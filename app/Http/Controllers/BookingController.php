@@ -239,6 +239,14 @@ class BookingController extends Controller
 
     public function showPayment(AvailService $availService)
     {
+        if ($availService->user_id !== Auth::user()->id) {
+            return back()->with('message_error', 'You are not authorized to view this booking.');
+        }
+
+        if ($availService->is_fully_paid) {
+            return back()->with('message_error', 'This booking is already fully paid.');
+        }
+
         $service = $availService->service->load(['user', 'user.profile', 'user.profile.providerProfile']);
         // Get provider's payment accounts with better organization
         $paymentAccounts = PaymentAccount::where('user_id', $service->user_id)

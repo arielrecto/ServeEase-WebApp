@@ -38,7 +38,7 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'booking-completed') {
-                    return "The service that you booked with {$user->name} has been completed. Write a review.";
+                    return "The service that you booked with {$user->name} has been completed. Please proceed to payment.";
                 }
                 break;
         }

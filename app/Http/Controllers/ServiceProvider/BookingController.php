@@ -193,7 +193,7 @@ class BookingController extends Controller
             'user_id' => $availService->user->id,
             'content' => $message,
             'type' => 'booking',
-            'url' => "/customer/booking/{$availService->id}/detail"
+            'url' => $availService->status === "completed" ? "/customer/booking/payment/{$availService->id}" : "/customer/booking/{$availService->id}/detail"
         ]);
 
         broadcast(new NotificationSent($notification))->toOthers();
