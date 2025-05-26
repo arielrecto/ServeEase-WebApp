@@ -545,6 +545,7 @@ const paymentStatus = computed(() => {
                                                 v-if="
                                                     availService.status ===
                                                     'completed'
+                                                    && !availService.is_fully_paid
                                                 "
                                                 :href="
                                                     route(
