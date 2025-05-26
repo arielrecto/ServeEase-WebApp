@@ -51,6 +51,7 @@ class BookingController extends Controller
                     'total_price' => $availService->total_price,
                     'service_cart_id' => $availService->serviceCart?->id ?? null,
                     'is_fully_paid' => $availService->is_fully_paid,
+                    'has_feedback' => $availService->has_feedback,
                     'created_at' => $availService->created_at
                 ];
             });
@@ -107,6 +108,9 @@ class BookingController extends Controller
 
     public function detail(AvailService $availService)
     {
+        if ($availService->user_id !== Auth::user()->id) {
+            return back()->with('message_error', 'You are not authorized to view this booking.');
+        }
 
         $availService->load(['transactions.attachments', 'transactions.paymentAccount', 'attachments']);
 
@@ -358,12 +362,12 @@ class BookingController extends Controller
         }
 
         return redirect()->route('customer.booking.detail', $availService->id)
-            ->with('message', [
-                'type' => 'success',
-                'text' => $request->transaction_type === 'deposit'
-                    ? 'Deposit payment submitted successfully'
-                    : 'Full payment submitted successfully'
-            ]);
+            ->with(
+                'message_success',
+                $request->transaction_type === 'deposit'
+                ? 'Deposit payment submitted successfully'
+                : 'Payment submitted successfully'
+            );
     }
 
     public function confirmCancel(AvailService $availService)
