@@ -29,6 +29,9 @@ class SearchController extends Controller
         $services = Service::active()
             ->with(['user.profile', 'serviceType'])
             ->withCount(['availService as avail_service_count'])
+            ->when($request->authId, function ($q) use ($request) {
+                $q->whereNot('user_id', (int) $request->authId);
+            })
             ->when($request->search, function ($q) use ($request) {
                 $rating = null;
                 $price = null;
