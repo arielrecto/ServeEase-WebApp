@@ -11,7 +11,7 @@ class PaymentTransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['paymentAccount', 'paidBy', 'attachments', 'transactionable'])
+        $transactions = Transaction::with(['paymentAccount', 'paidBy.profile', 'attachments', 'transactionable'])
             ->where('paid_to', auth()->id())
             ->latest()
             ->paginate(10);

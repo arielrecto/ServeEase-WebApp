@@ -188,7 +188,7 @@ const paymentStatus = computed(() => {
                                                                 class="text-xl"
                                                                 >{{
                                                                     service.user
-                                                                        .name
+                                                                        .profile.full_name
                                                                 }}</span
                                                             >
                                                             <span

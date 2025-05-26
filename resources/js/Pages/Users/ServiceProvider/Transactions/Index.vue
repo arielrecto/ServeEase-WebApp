@@ -105,7 +105,7 @@ const getFileIcon = (mimeType) => {
                                             </div>
                                         </td>
                                         <td class="p-4">
-                                            {{ transaction.paid_by?.name }}
+                                            {{ transaction.paid_by?.profile.full_name }}
                                         </td>
                                         <td class="p-4">
                                             <span class="capitalize">{{ transaction.transaction_type }}</span>
