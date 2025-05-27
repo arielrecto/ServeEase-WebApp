@@ -204,7 +204,7 @@ const back = () => {
                                             />
                                         </div>
 
-                                        <div>
+                                        <div :class="[service.price_type === 'fixed rate' && 'sr-only']">
                                             <InputLabel
                                                 :value="
                                                     service.price_type === 'hr'

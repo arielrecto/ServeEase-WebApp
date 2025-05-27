@@ -301,6 +301,7 @@ watch(
                                             form.transaction_type === type.value
                                                 ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
                                                 : 'hover:border-gray-300',
+                                            (availService.status !== 'confirmed' && type.value === 'reservation') && 'sr-only'
                                         ]"
                                     >
                                         <div class="flex items-start gap-x-3">

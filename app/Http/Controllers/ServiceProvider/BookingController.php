@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use App\Models\PersonalEvent;
 use Illuminate\Support\Carbon;
 use App\Events\NotificationSent;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Actions\GenerateNotificationAction;
@@ -158,47 +160,46 @@ class BookingController extends Controller
         //     return back()->with('message_error', 'You already have an ongoing booking!');
         // }
 
-        $availService->update([
-            'status' => $request->status
-        ]);
+        try {
+            $availService->loadMissing('user', 'service.user');
 
-        if ($request->status === 'rejected') {
-            $availService->remarks()->create([
-                'user_id' => Auth::id(),
-                'content' => $request->remark
-            ]);
+            $message = match ($request->status) {
+                'confirmed' => GenerateNotificationAction::handle('booking', 'booking-confirmed', $availService->service->user),
+                'rejected' => GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user, ['remark' => $request->remark]),
+                'cancelled' => GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->service->user),
+                'in_progress' => GenerateNotificationAction::handle('booking', 'booking-started', $availService->service->user),
+                'completed' => GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user),
+            };
+
+            $payload = DB::transaction(function () use ($request, $availService, $message) {
+                $availService->update([
+                    'status' => $request->status
+                ]);
+
+                if ($request->status === 'rejected') {
+                    $availService->remarks()->create([
+                        'user_id' => Auth::id(),
+                        'content' => $request->remark
+                    ]);
+                }
+
+                $notification = Notification::create([
+                    'user_id' => $availService->user->id,
+                    'content' => $message,
+                    'type' => 'booking',
+                    'url' => $availService->status === "confirmed" ? "/customer/booking/payment/{$availService->id}" : "/customer/booking/{$availService->id}/detail"
+                ]);
+
+                return $notification;
+            });
+
+            broadcast(new NotificationSent($payload))->toOthers();
+
+            return back();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return back()->with('message_error', 'Oops! Something went wrong. Please try again.');
         }
-
-        $message = '';
-
-        switch ($availService->status) {
-            case 'confirmed':
-                $message = GenerateNotificationAction::handle('booking', 'booking-confirmed', $availService->service->user);
-                break;
-            case 'rejected':
-                $message = GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user, ['remark' => $request->remark]);
-                break;
-            case 'cancelled':
-                $message = GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->service->user);
-                break;
-            case 'in_progress':
-                $message = GenerateNotificationAction::handle('booking', 'booking-started', $availService->service->user);
-                break;
-            case 'completed':
-                $message = GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user);
-                break;
-        }
-
-        $notification = Notification::create([
-            'user_id' => $availService->user->id,
-            'content' => $message,
-            'type' => 'booking',
-            'url' => $availService->status === "completed" ? "/customer/booking/payment/{$availService->id}" : "/customer/booking/{$availService->id}/detail"
-        ]);
-
-        broadcast(new NotificationSent($notification))->toOthers();
-
-        return back();
     }
 
     public function showCart(string $serviceCartId)
