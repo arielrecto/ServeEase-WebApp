@@ -18,7 +18,7 @@ class GenerateNotificationAction
                 break;
             case 'booking':
                 if ($action === 'booking-confirmed') {
-                    return "{$user->name} has confirmed your booking. Click to see the details.";
+                    return "{$user->name} has confirmed your booking. You can now send initial or full payment.";
                 }
 
                 if ($action === 'booking-rejected') {
@@ -38,7 +38,21 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'booking-completed') {
-                    return "The service that you booked with {$user->name} has been completed. Please proceed to payment.";
+                    return "The service that you booked with {$user->name} has been completed. Click to see the details.";
+                }
+                break;
+            case 'payment':
+                if ($action === 'payment-created') {
+                    return "{$user->name} has created a payment for your service. Click to see the details.";
+                }
+                if ($action === 'payment-reservation') {
+                    return "{$user->name} has created a reservation payment for your service. Click to see the details.";
+                }
+                if ($action === 'payment-approved') {
+                    return "{$user->name} has approved your payment. Click to see the details.";
+                }
+                if ($action === 'payment-rejected') {
+                    return "{$user->name} has rejected your payment. Click to see the details.";
                 }
                 break;
         }

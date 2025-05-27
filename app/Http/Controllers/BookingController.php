@@ -239,7 +239,7 @@ class BookingController extends Controller
 
     public function showPayment(AvailService $availService)
     {
-        if ($availService->user_id !== Auth::user()->id) {
+        if ($availService->user_id !== Auth::user()->id || ($availService->status !== 'confirmed' && $availService->status !== 'completed')) {
             return back()->with('message_error', 'You are not authorized to view this booking.');
         }
 
@@ -371,6 +371,32 @@ class BookingController extends Controller
                 ]);
             }
         }
+
+        // Send notification
+        $message = '';
+
+        if ($request->transaction_type === 'reservation') {
+            $message = GenerateNotificationAction::handle(
+                'payment',
+                'payment-reservation',
+                Auth::user(),
+            );
+        } else {
+            $message = GenerateNotificationAction::handle(
+                'payment',
+                'payment-created',
+                Auth::user(),
+            );
+        }
+
+        $notification = Notification::create([
+            'user_id' => $availService->service->user_id,
+            'content' => $message,
+            'type' => 'payment',
+            'url' => "/service-provider/booking/{$availService->id}/detail"
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return redirect()->route('customer.booking.detail', $availService->id)
             ->with(
