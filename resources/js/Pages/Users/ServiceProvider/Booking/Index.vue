@@ -144,7 +144,7 @@ watch(openCalendar, () => {
                     </div>
                     <div class="flex-1">
                         <Link :href="route('service-provider.booking.index', {
-                            filter: 'done',
+                            filter: 'completed',
                         })
                             "
                             class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">
