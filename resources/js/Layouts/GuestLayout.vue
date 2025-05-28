@@ -22,7 +22,7 @@ import { Link } from "@inertiajs/vue3";
     />
 
     <div
-        class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0"
+        class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 justify-center sm:pt-0"
     >
         <div>
             <Link href="/">

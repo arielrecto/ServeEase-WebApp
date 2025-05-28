@@ -39,7 +39,9 @@ const alignmentClasses = computed(() => {
     if (props.align === "left") {
         return "ltr:origin-top-left rtl:origin-top-right start-0";
     } else if (props.align === "right") {
-        return "ltr:origin-top-right rtl:origin-top-left end-0";
+        return "ltr:origin-top-right rtl:origin-top-left -end-1/2 md:end-0";
+    } else if (props.align === "center") {
+        return "origin-center";
     } else {
         return "origin-top";
     }
@@ -78,7 +80,7 @@ const open = ref(false);
         >
             <div
                 v-show="open"
-                class="absolute z-50 mt-2 rounded-md shadow-lg"
+                class="absolute md:left-0 z-50 mt-2 rounded-md shadow-lg"
                 :class="[widthClass, alignmentClasses]"
                 style="display: none"
                 @click="open = false"

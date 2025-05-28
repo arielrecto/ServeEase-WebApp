@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { ModalRoot } from "@inertiaui/modal-vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import moment from "moment";
@@ -20,6 +20,9 @@ const isServiceProvider = usePage().props.auth.isServiceProvider;
 const roleName = usePage().props.auth.roleName;
 const profile = usePage().props.auth.user.profile;
 const finishedBookings = usePage().props.auth.finishedBookings;
+
+const isVerifiedProvider = usePage().props?.auth?.isVerifiedProvider;
+const isAdmin = computed(() => roleName.some((role) => role == "admin"));
 
 const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboard") : route("customer.dashboard");
 </script>
@@ -85,7 +88,7 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                             <NavLinkContainer />
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <div class="hidden md:flex md:items-center sm:ms-6">
                             <!-- Notifications popup -->
                             <NotificationsPopup
                                 v-if="!$page.props.auth.isAdmin"
@@ -93,7 +96,7 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                             />
 
                             <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
+                            <div class="hidden md:block relative ms-3">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -141,7 +144,12 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="flex items-center -me-2 sm:hidden">
+                        <div class="flex items-center -me-2 md:hidden">
+                            <NotificationsPopup
+                                v-if="!$page.props.auth.isAdmin"
+                                :user="$page.props.auth?.user"
+                            />
+
                             <button
                                 @click="
                                     showingNavigationDropdown =
@@ -189,22 +197,98 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
                     }"
-                    class="sm:hidden"
+                    class="md:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
+                        <template v-if="isAdmin">
+                            <ResponsiveNavLink
+                                :href="route('dashboard')"
+                                :active="route().current('dashboard')"
+                            >
+                                Dashboard
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.service-types.index')"
+                                :active="route().current('admin.service-types.index')"
+                            >
+                                Services
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.barangays.index')"
+                                :active="route().current('admin.barangays.index')"
+                            >
+                                Barangays
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.service-provider.index')"
+                                :active="route().current('admin.service-provider.index')"
+                            >
+                                Service Providers
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.feedbacks.index')"
+                                :active="route().current('admin.feedbacks.index')"
+                            >
+                                Reviews
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.cms.index')"
+                                :active="route().current('admin.cms.index')"
+                            >
+                                Pages
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.users.index')"
+                                :active="route().current('admin.users.index')"
+                            >
+                                Users
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('admin.reports.index')"
+                                :active="route().current('customer.report.index')"
+                            >
+                                Report
+                            </ResponsiveNavLink>
+                        </template>
+
+                        <template v-else>
+                            <ResponsiveNavLink :href="route('customer.dashboard')" :active="route().current('customer.dashboard')">
+                                Home
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink v-if="isVerifiedProvider" :href="route('service-provider.dashboard')"
+                                :active="route().current('service-provider.dashboard')">
+                                Dashboard
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('customer.booking.index')" :active="route().current('customer.booking.index')">
+                                My Bookings
+                            </ResponsiveNavLink>
+                            <!-- <NavLink
+                                :href="route('customer.favorites.index')"
+                                :active="route().current('customer.favorites.index')"
+                            >
+                                Favorites
+                            </NavLink> -->
+                            <ResponsiveNavLink :href="route('search.index')" :active="route().current('search.index')">
+                                Search
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('messages.index')" :active="route().current('messages.*')">
+                                Messages
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('customer.report.index')" :active="route().current('customer.report.index')">
+                                Report
+                            </ResponsiveNavLink>
+                        </template>
                     </div>
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
                             <div class="text-base font-medium text-gray-800">
-                                {{ $page.props.auth.user.name }}
+                                {{
+                                    $page.props.auth?.user
+                                        ?.profile?.full_name ??
+                                    "No Name"
+                                }}
                             </div>
                             <div class="text-sm font-medium text-gray-500">
                                 {{ $page.props.auth.user.email }}
@@ -230,7 +314,7 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
             <!-- Page Heading -->
             <header class="bg-white shadow" v-if="$slots.header">
                 <div
-                    class="flex items-center justify-between px-4 py-6 mx-auto gap-x-4 max-w-7xl sm:px-6 lg:px-8"
+                    class="flex md:items-center justify-between flex-col md:flex-row px-4 py-6 mx-auto gap-4 max-w-7xl sm:px-6 lg:px-8"
                 >
                     <slot name="header" />
                 </div>

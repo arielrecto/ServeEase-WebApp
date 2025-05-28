@@ -176,8 +176,8 @@ onMounted(async () => {
                         </form>
                     </div>
 
-                    <div v-if="userServices.length > 0" class="flex flex-wrap items-center justify-center gap-4">
-                        <div class="flex items-center flex-1 gap-x-2">
+                    <div v-if="userServices.length > 0" class="flex flex-wrap items-center justify-center flex-col lg:flex-row gap-4">
+                        <div class="w-full lg:w-auto flex items-center flex-1 gap-x-2">
                             <InputLabel for="byRating" value="Rating" />
 
                             <SelectInput id="byRating" @update-value="fetchServices" class="block w-full mt-1"
@@ -189,7 +189,7 @@ onMounted(async () => {
 
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
-                        <div class="flex items-center flex-1 gap-x-2">
+                        <div class="w-full lg:w-auto flex items-center flex-1 gap-x-2">
                             <InputLabel for="byTransaction" value="Popularity" />
 
                             <SelectInput id="byTransaction" @update-value="fetchServices" class="block w-full mt-1"
@@ -201,7 +201,7 @@ onMounted(async () => {
 
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
-                        <div class="flex items-center flex-1 gap-x-2">
+                        <div class="w-full lg:w-auto flex items-center flex-1 gap-x-2">
                             <InputLabel for="byPrice" value="Price" />
 
                             <SelectInput id="byPrice" @update-value="fetchServices" class="block w-full mt-1"
@@ -218,7 +218,7 @@ onMounted(async () => {
 
                 <section class="px-20">
                     <div ref="dataContainer"
-                        class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]">
+                        class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center md:grid-cols-2 max-h-[70vh]">
                         <UserServiceCard v-for="item in userServices" :service="item" />
                     </div>
                 </section>

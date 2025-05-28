@@ -127,7 +127,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-x-4">
+                        <div class="w-full lg:w-auto flex items-center gap-x-4">
                             <div
                                 class="w-full h-auto p-6 border border-gray-300 rounded-lg md:w-72"
                             >

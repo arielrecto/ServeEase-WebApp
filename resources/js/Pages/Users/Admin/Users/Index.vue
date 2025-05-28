@@ -47,7 +47,7 @@ const search = () => {
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="flex justify-center mb-5 gap-x-5">
+                <div class="flex justify-center flex-col md:flex-row mb-5 gap-5">
                     <div class="flex-1">
                         <Link :href="route('admin.users.index')"
                             class="flex flex-col w-full p-6 bg-white rounded-lg shadow-sm hover:cursor-pointer hover:shadow-lg">

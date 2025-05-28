@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="flex justify-center mb-5 gap-x-5">
+                <div class="grid grid-cols-1 lg:grid-cols-4 mb-5 gap-5">
                     <div class="flex-1">
                         <Link
                             :href="route('service-provider.services.index')"

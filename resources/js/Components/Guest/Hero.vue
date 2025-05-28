@@ -52,7 +52,7 @@ onUnmounted(() => {
             Discover trusted professionals to fulfill all your needs, right in your neighborhood.
           </p>
 
-          <div class="flex flex-wrap gap-4 mt-8 text-center">
+          <div class="flex flex-wrap justify-center md:justify-start gap-4 mt-8 text-center">
             <Link
               href="#"
               class="uppercase btn btn-primary"

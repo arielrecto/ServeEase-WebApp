@@ -15,7 +15,7 @@ const query = ref("");
 </script>
 
 <template>
-    <form @submit.prevent="emits('submitted', query)" class="max-w-md mx-auto">
+    <form @submit.prevent="emits('submitted', query)" class="w-full md:max-w-md md:mx-auto">
         <label
             for="default-search"
             class="mb-2 text-sm font-medium text-gray-900 sr-only"

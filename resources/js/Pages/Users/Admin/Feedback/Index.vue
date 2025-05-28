@@ -56,14 +56,14 @@ const filter = () => {
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
                 Reviews
             </h2>
-            <div class="flex items-center gap-x-4">
+            <div class="w-full md:w-auto flex items-center flex-col nd:flex-row gap-4">
                 <SearchForm @submitted="
                     (query) => {
                         searchForm.searchQuery = query;
                         search();
                     }
                 " placeholder="Search feedback by customer name" />
-                <form @submit.prevent="filter" class="flex items-center gap-x-2">
+                <form @submit.prevent="filter" class="w-full md:w-auto flex items-center gap-x-2">
                     <SelectInput v-model="text" class="mt-1 text-black" required @update:modelValue="
                         ($payload) => (filterForm.rate = $payload)
                     ">

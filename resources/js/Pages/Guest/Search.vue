@@ -226,7 +226,7 @@ onMounted(async () => {
 
             <section class="px-20">
                 <div ref="dataContainer"
-                    class="grid grid-cols-1 gap-y-10 gap-x-16 mb-4 overflow-y-auto justify-items-center sm:grid-cols-2 max-h-[70vh]">
+                    class="grid grid-cols-1 gap-y-10 gap-x-16 mb-4 overflow-y-auto justify-items-center md:grid-cols-2 max-h-[70vh]">
                     <UserServiceCard v-for="item in userServices" :service="item" linkType="modal" />
                 </div>
 
