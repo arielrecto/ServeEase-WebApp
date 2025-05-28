@@ -120,44 +120,46 @@ class Service extends Model
         return is_null($this->archived_at);
     }
 
-    protected function getGroupedRatings()
+
+    protected function getGroupedRatings(): array
     {
-        $feedback = collect($this->availService)->map(function ($booking) {
-            return $booking->feedback;
-        });
+        // Only consider AvailServices that have feedback and valid numeric ratings
+        $ratings = collect($this->availService)
+            ->filter(
+                fn($booking) =>
+                $booking->relationLoaded('feedback') // Optional but efficient
+                && $booking->feedback
+                && is_numeric($booking->feedback->rate)
+            )
+            ->pluck('feedback.rate')
+            ->map(fn($rate) => round($rate)) // Round decimals to nearest int
+            ->filter(fn($rate) => in_array($rate, range(1, 5))); // Keep only 1–5
 
-        $groupedTotalRatings = [];
-
-        for ($i = 1; $i <= 5; $i++) {
-            array_push($groupedTotalRatings, $feedback->where('rate', $i)->count());
-        }
-
-        return $groupedTotalRatings;
+        // Return grouped rating counts from 1 to 5
+        return collect(range(1, 5))->map(function ($rate) use ($ratings) {
+            return $ratings->filter(fn($r) => $r === $rate)->count();
+        })->toArray();
     }
 
-    // ACCESSORS
     public function avgRate(): Attribute
     {
         return Attribute::make(
             get: function () {
-                $groupedTotalRatings = $this->getGroupedRatings();
+                $ratings = FeedBack::whereHas('availService', function ($q) {
+                    $q->where('service_id', $this->id);
+                })
+                    ->pluck('rate')
+                    ->filter(fn($rate) => is_numeric($rate) && in_array((int) $rate, range(1, 5)))
+                    ->map(fn($rate) => round($rate));
 
-                // Get the sum of ratings
-                $ratingSum = array_sum(array_map(function ($item) use ($groupedTotalRatings) {
-                    return $groupedTotalRatings[$item] * ($item + 1);
-                }, array_keys($groupedTotalRatings)));
+                $totalRatings = $ratings->count();
 
-                $totalRatings = array_sum($groupedTotalRatings);
-
-                // if there are no ratings, return 0
-                if ($ratingSum === 0) {
-                    return 0;
+                if ($totalRatings === 0) {
+                    return '0.0';
                 }
 
-                $avgRate = number_format($ratingSum / $totalRatings, 1);
-
-                // Return the formatted average rating
-                return "{$avgRate}";
+                $weightedSum = $ratings->sum();
+                return number_format($weightedSum / $totalRatings, 1);
             }
         );
     }
