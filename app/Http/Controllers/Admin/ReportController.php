@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use App\Models\Report;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Notification;
 
 class ReportController extends Controller
 {
@@ -17,15 +18,18 @@ class ReportController extends Controller
             ->latest()
             ->paginate(10)
             ->through(function ($report) {
+                $report->user->load('profile');
+                $report->reportedBy->load('profile');
+
                 return [
                     'id' => $report->id,
                     'user' => [
                         'id' => $report->user->id,
-                        'name' => $report->user->name,
+                        'name' => $report->user->profile->full_name,
                     ],
                     'reported_by' => [
                         'id' => $report->reportedBy->id,
-                        'name' => $report->reportedBy->name,
+                        'name' => $report->reportedBy->profile->full_name,
                     ],
                     'complaint' => $report->complaint,
                     'type' => $report->type,
@@ -76,18 +80,18 @@ class ReportController extends Controller
 
     public function show(Report $report)
     {
-        $report->load(['user', 'reportedBy', 'attachments']);
+        $report->load(['user', 'user.profile', 'reportedBy', 'attachments']);
 
         return Inertia::render('Users/Admin/Report/Show', [
             'report' => [
                 'id' => $report->id,
                 'user' => [
                     'id' => $report->user->id,
-                    'name' => $report->user->name,
+                    'name' => $report->user->profile->full_name,
                 ],
                 'reported_by' => [
                     'id' => $report->reportedBy->id,
-                    'name' => $report->reportedBy->name,
+                    'name' => $report->reportedBy->profile->full_name,
                 ],
                 'complaint' => $report->complaint,
                 'type' => $report->type,
@@ -143,7 +147,7 @@ class ReportController extends Controller
         $approvedReportsCount = $report->user->reports()->where('status', 'approved')->count();
 
         // Create notification for the reported user
-        Notification::create([
+        $notification = Notification::create([
             'user_id' => $report->user_id,
             'content' => 'Your complaint report #' . $report->id . ' has been approved.',
             'type' => 'report_approved',
@@ -151,28 +155,34 @@ class ReportController extends Controller
             'is_seen' => false
         ]);
 
+        broadcast(new NotificationSent($notification))->toOthers();
+
         // Send warning notification if user has 2 approved reports
         if ($approvedReportsCount === 2) {
-            Notification::create([
+            $notification = Notification::create([
                 'user_id' => $report->user_id,
                 'content' => 'Warning: You have received 2 approved complaints. One more complaint will result in account suspension.',
                 'type' => 'report_warning',
                 'url' => '#',
                 'is_seen' => false
             ]);
+
+            broadcast(new NotificationSent($notification))->toOthers();
         }
         // Check for suspension threshold
         elseif ($approvedReportsCount >= 3) {
             $report->user()->update(['is_suspended' => true]);
 
             // Create suspension notification
-            Notification::create([
+            $notification = Notification::create([
                 'user_id' => $report->user_id,
                 'content' => 'Your account has been suspended due to receiving 3 or more approved complaints.',
                 'type' => 'account_suspended',
                 'url' => '#',
                 'is_seen' => false
             ]);
+
+            broadcast(new NotificationSent($notification))->toOthers();
         }
 
         return back()->with('success', 'Report has been approved.');
