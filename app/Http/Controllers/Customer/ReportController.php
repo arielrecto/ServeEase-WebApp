@@ -131,4 +131,24 @@ class ReportController extends Controller
 
         return back()->with('success', 'Report cancelled successfully.');
     }
+
+    public function receivedComplaints()
+    {
+        $reports = Report::with(['reportedBy'])
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10)
+            ->through(function ($report) {
+                return [
+                    'id' => $report->id,
+                    'type' => $report->type,
+                    'status' => $report->status,
+                    'created_at' => $report->created_at->format('M d, Y'),
+                ];
+            });
+
+        return Inertia::render('Users/Customer/Report/ReceivedComplaints', [
+            'reports' => $reports
+        ]);
+    }
 }

@@ -1,26 +1,20 @@
 <script setup>
-import { Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TableWrapper from "@/Components/Table/TableWrapper.vue";
 import TableHeader from "@/Components/Table/TableHeader.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
+import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
-import { Link } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 
 const props = defineProps({
-    reports: Object,
+    reports: {
+        type: Object,
+        required: true,
+    },
 });
 
-const headers = [
-    "Reference #",
-    "Reported User",
-    "Complaint",
-    "Type",
-    "Status",
-    "Date",
-    "Actions",
-];
+const headers = ["Reference #", "Type", "Status", "Date Reported"];
 
 const getTypeLabel = (type) => {
     return (
@@ -33,29 +27,15 @@ const getTypeLabel = (type) => {
 </script>
 
 <template>
-    <Head title="My Reports" />
+    <Head title="Received Complaints" />
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-x-4">
+                <HeaderBackButton :url="route(`customer.report.index`)" />
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    My Reports
+                    Received Complaints
                 </h2>
-
-                <div class="flex gap-3">
-                    <Link
-                        :href="route('customer.report.received')"
-                        class="px-4 py-2 text-sm font-semibold bg-white border rounded-lg text-primary border-primary hover:bg-primary hover:text-white"
-                    >
-                        View Received Complaints
-                    </Link>
-                    <Link
-                        :href="route('customer.report.create')"
-                        class="px-4 py-2 text-sm font-semibold text-white rounded-lg bg-primary hover:bg-primary-dark"
-                    >
-                        File a Complaint
-                    </Link>
-                </div>
             </div>
         </template>
 
@@ -78,14 +58,6 @@ const getTypeLabel = (type) => {
                                             #{{ report.id }}
                                         </td>
                                         <td>
-                                            {{ report.user.name }}
-                                        </td>
-                                        <td class="max-w-md">
-                                            <p class="truncate">
-                                                {{ report.complaint }}
-                                            </p>
-                                        </td>
-                                        <td>
                                             <span
                                                 class="px-2 py-1 text-xs font-medium rounded-full"
                                                 :class="{
@@ -105,25 +77,8 @@ const getTypeLabel = (type) => {
                                                 :status="report.status"
                                             />
                                         </td>
-                                        <td>
+                                        <td class="text-gray-500">
                                             {{ report.created_at }}
-                                        </td>
-                                        <td>
-                                            <div
-                                                class="flex items-center gap-x-2"
-                                            >
-                                                <Link
-                                                    :href="
-                                                        route(
-                                                            'customer.report.show',
-                                                            report.id
-                                                        )
-                                                    "
-                                                    class="text-sm text-primary hover:text-primary-dark"
-                                                >
-                                                    View Details
-                                                </Link>
-                                            </div>
                                         </td>
                                     </tr>
                                 </template>
@@ -131,16 +86,18 @@ const getTypeLabel = (type) => {
                                     <tr>
                                         <td
                                             :colspan="headers.length"
-                                            class="py-8 text-center text-gray-500"
+                                            class="py-8 italic text-center text-gray-500"
                                         >
-                                            No reports found.
+                                            No complaints received.
                                         </td>
                                     </tr>
                                 </template>
                             </template>
                         </TableWrapper>
 
-                        <PaginationLinks :links="reports.links" class="mt-6" />
+                        <div class="mt-6">
+                            <PaginationLinks :links="reports.links" />
+                        </div>
                     </div>
                 </div>
             </div>

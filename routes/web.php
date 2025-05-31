@@ -159,6 +159,9 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('services', CustomerServiceController::class)->only('show');
             Route::resource('service-provider', CustomerSPController::class)->except(['index', 'show', 'edit', 'update', 'destroy']);
             Route::post('/service-provider/{providerProfile}', [CustomerSPController::class, 'update'])->name('service-provider.update');
+            Route::prefix('report')->as('report.')->controller(CustomerReportController::class)->group(function () {
+                Route::get('/received', 'receivedComplaints')->name('received');
+            });
             Route::resource('report', CustomerReportController::class);
         });
 
