@@ -7,6 +7,7 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Notification;
 
 class ReportController extends Controller
 {
@@ -134,16 +135,44 @@ class ReportController extends Controller
 
     public function approve(Report $report)
     {
-
-
         $report->update([
             'status' => 'approved',
         ]);
 
+        // Count approved reports for this user
+        $approvedReportsCount = $report->user->reports()->where('status', 'approved')->count();
 
+        // Create notification for the reported user
+        Notification::create([
+            'user_id' => $report->user_id,
+            'content' => 'Your complaint report #' . $report->id . ' has been approved.',
+            'type' => 'report_approved',
+            'url' => '#',
+            'is_seen' => false
+        ]);
 
-        if ($report->user->reports()->where('status', 'approved')->count() >= 3) {
+        // Send warning notification if user has 2 approved reports
+        if ($approvedReportsCount === 2) {
+            Notification::create([
+                'user_id' => $report->user_id,
+                'content' => 'Warning: You have received 2 approved complaints. One more complaint will result in account suspension.',
+                'type' => 'report_warning',
+                'url' => '#',
+                'is_seen' => false
+            ]);
+        }
+        // Check for suspension threshold
+        elseif ($approvedReportsCount >= 3) {
             $report->user()->update(['is_suspended' => true]);
+
+            // Create suspension notification
+            Notification::create([
+                'user_id' => $report->user_id,
+                'content' => 'Your account has been suspended due to receiving 3 or more approved complaints.',
+                'type' => 'account_suspended',
+                'url' => '#',
+                'is_seen' => false
+            ]);
         }
 
         return back()->with('success', 'Report has been approved.');

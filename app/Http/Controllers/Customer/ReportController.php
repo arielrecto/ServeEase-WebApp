@@ -37,8 +37,12 @@ class ReportController extends Controller
 
     public function create()
     {
+
         return Inertia::render('Users/Customer/Report/Create', [
             'providers' => User::role('service provider')
+            ->orWhereHas('profile', function ($query) {
+                $query->whereNotNull('provider_profile_id');
+            })
                 ->with('profile')
                 ->get()
                 ->map(fn($user) => [
