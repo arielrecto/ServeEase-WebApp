@@ -18,10 +18,12 @@ class ReportController extends Controller
             ->latest()
             ->paginate(10)
             ->through(function ($report) {
+                $report->load('user.profile');
+
                 return [
                     'id' => $report->id,
                     'user' => [
-                        'name' => $report->user->name,
+                        'name' => $report->user->profile->full_name,
                     ],
                     'complaint' => $report->complaint,
                     'type' => $report->type,
@@ -40,9 +42,9 @@ class ReportController extends Controller
 
         return Inertia::render('Users/Customer/Report/Create', [
             'providers' => User::role('service provider')
-            ->orWhereHas('profile', function ($query) {
-                $query->whereNotNull('provider_profile_id');
-            })
+                ->orWhereHas('profile', function ($query) {
+                    $query->whereNotNull('provider_profile_id');
+                })
                 ->with('profile')
                 ->get()
                 ->map(fn($user) => [
@@ -95,13 +97,13 @@ class ReportController extends Controller
             abort(403);
         }
 
-        $report->load(['user', 'attachments']);
+        $report->load(['user.profile', 'attachments']);
 
         return Inertia::render('Users/Customer/Report/Show', [
             'report' => [
                 'id' => $report->id,
                 'user' => [
-                    'name' => $report->user->name,
+                    'name' => $report->user->profile->full_name,
                 ],
                 'complaint' => $report->complaint,
                 'type' => $report->type,
