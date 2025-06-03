@@ -17,8 +17,14 @@ class ProfileMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
+        $user = Auth::user();
+        if(is_null($user->email_verified_at)){
+            return to_route('verification.verify');
+        }
 
-        $profile = Auth::user()->profile;
+
+        $profile = $user->profile;
+
 
 
         if(!$profile){
