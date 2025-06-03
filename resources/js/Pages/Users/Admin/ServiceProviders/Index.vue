@@ -36,7 +36,6 @@ const ratingOptions = [5, 4, 3, 2, 1];
 </script>
 
 <template>
-
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
@@ -45,14 +44,21 @@ const ratingOptions = [5, 4, 3, 2, 1];
                 Service Providers
             </h2>
             <div class="flex items-center gap-x-4">
-                <SearchForm @submitted="
-                    (query) => {
-                        searchForm.searchQuery = query;
-                        search();
-                    }
-                " placeholder="Search service provider" />
+                <SearchForm
+                    @submitted="
+                        (query) => {
+                            searchForm.searchQuery = query;
+                            search();
+                        }
+                    "
+                    placeholder="Search service provider"
+                />
                 <div>
-                    <Link :href="route('admin.applications.index')" class="button-ghost">Go to applications</Link>
+                    <Link
+                        :href="route('admin.applications.index')"
+                        class="w-max button-ghost"
+                        >Go to applications</Link
+                    >
                 </div>
             </div>
         </template>
@@ -83,11 +89,16 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                         </td>
                                         <td>
                                             <div class="flex gap-x-4">
-                                                <ActionButton type="link" actionType="view" :href="route(
-                                                    'admin.service-provider.show',
-                                                    provider.user.id
-                                                )
-                                                    " />
+                                                <ActionButton
+                                                    type="link"
+                                                    actionType="view"
+                                                    :href="
+                                                        route(
+                                                            'admin.service-provider.show',
+                                                            provider.user.id
+                                                        )
+                                                    "
+                                                />
                                             </div>
                                         </td>
                                     </tr>
