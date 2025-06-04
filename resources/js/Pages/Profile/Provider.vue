@@ -127,7 +127,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                             </div>
                         </div>
 
-                        <div class="w-full lg:w-auto flex items-center gap-x-4">
+                        <div class="flex items-center w-full lg:w-auto gap-x-4">
                             <div
                                 class="w-full h-auto p-6 border border-gray-300 rounded-lg md:w-72"
                             >
@@ -452,6 +452,48 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                             </div>
                                             <p class="text-gray-700">
                                                 {{ review.content }}
+                                            </p>
+                                            <template
+                                                v-if="
+                                                    review.attachments &&
+                                                    review.attachments.length
+                                                "
+                                            >
+                                                <div class="mt-3 space-y-2">
+                                                    <div
+                                                        class="text-sm font-medium text-gray-700"
+                                                    >
+                                                        Attachments:
+                                                    </div>
+                                                    <div
+                                                        class="flex flex-wrap gap-2"
+                                                    >
+                                                        <a
+                                                            v-for="attachment in review.attachments"
+                                                            :key="attachment.id"
+                                                            :href="`/storage/${attachment.file_path}`"
+                                                            target="_blank"
+                                                            class="inline-flex items-center px-3 py-1 text-sm border rounded-full hover:bg-gray-50"
+                                                        >
+                                                            <i
+                                                                class="mr-1 ri-attachment-2"
+                                                            ></i>
+                                                            {{
+                                                                attachment.file_name
+                                                            }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div
+                                            v-if="filteredReviews.length === 0"
+                                            class="my-8"
+                                        >
+                                            <p
+                                                class="text-lg font-semibold text-center"
+                                            >
+                                                No Reviews Found
                                             </p>
                                         </div>
                                     </div>
