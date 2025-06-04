@@ -191,9 +191,9 @@ const back = () => {
                                                 id="startDate"
                                                 type="date"
                                                 :min="
-                                                    new Date()
-                                                        .toISOString()
-                                                        .split('T')[0]
+                                                    new Date().toLocaleDateString(
+                                                        'en-CA'
+                                                    )
                                                 "
                                                 v-model="form.startDate"
                                                 class="block w-full mt-1"
@@ -204,7 +204,12 @@ const back = () => {
                                             />
                                         </div>
 
-                                        <div :class="[service.price_type === 'fixed rate' && 'sr-only']">
+                                        <div
+                                            :class="[
+                                                service.price_type ===
+                                                    'fixed rate' && 'sr-only',
+                                            ]"
+                                        >
                                             <InputLabel
                                                 :value="
                                                     service.price_type === 'hr'
