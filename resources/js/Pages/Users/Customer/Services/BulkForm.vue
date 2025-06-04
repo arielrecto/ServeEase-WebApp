@@ -116,12 +116,18 @@ const enableBargain = (serviceId) => {
                                 <div>
                                     <label class="block mb-2 text-sm font-medium text-gray-700">Start Date</label>
                                     <input type="date" v-model="form.start_date"
+                                        :min="
+                                            new Date()
+                                                .toISOString()
+                                                .split('T')[0]
+                                        "
                                         class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                         required />
                                 </div>
                                 <div>
                                     <label class="block mb-2 text-sm font-medium text-gray-700">End Date</label>
                                     <input type="date" v-model="form.end_date"
+                                        :min="form.start_date"
                                         class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                         required />
                                 </div>
@@ -142,7 +148,7 @@ const enableBargain = (serviceId) => {
                             <div class="space-y-4">
                                 <div v-for="serviceId in selectedServices" :key="serviceId"
                                     class="flex flex-col py-2 border-b">
-                                    <div class="flex justify-between items-center">
+                                    <div class="flex items-center justify-between">
                                         <span>{{ services.find(s => s.id === serviceId)?.name }}</span>
                                         <span>
                                             <input
