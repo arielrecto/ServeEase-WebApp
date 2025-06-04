@@ -147,7 +147,7 @@ class ProfileController extends Controller
 
         $providerProfile = ProviderProfile::with('serviceType')
             ->where('profile_id', $user->profile->id)->firstOrFail();
-        $feedbacks = FeedBack::with(['user.profile', 'availService.service:id,name'])
+        $feedbacks = FeedBack::with(['user.profile', 'availService.service:id,name', 'attachments'])
             ->whereHas('availService', function ($query) use ($services) {
                 $query->whereIn('service_id', $services->map(fn($service) => $service->id)->toArray());
             })
