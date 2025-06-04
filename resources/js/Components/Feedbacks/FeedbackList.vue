@@ -143,27 +143,31 @@ const fetchFeedbacks = async () => {
                     <div class="overflow-y-auto leading-relaxed max-h-28">
                         {{ feedback.content }}
                     </div>
-
                     <div
-                        v-if="
-                            feedback.attachments &&
-                            feedback.attachments.length > 0
-                        "
-                        class="flex mt-2 gap-2 overflow-x-auto pb-2"
+                        v-if="feedback.attachments?.length > 0"
+                        class="flex gap-2 pb-2 mt-2 overflow-x-auto"
                     >
                         <a
                             v-for="attachment in feedback.attachments"
-                            :key="attachment.id"
-                            v-if="attachment.mime_type.startsWith('image/')"
+                            :key="attachment?.id"
                             :href="`/storage/${attachment.file_path}`"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+                            class="relative overflow-hidden transition-opacity rounded-lg aspect-square hover:opacity-90"
+                            :class="
+                                attachment?.mime_type
+                                    .toLowerCase()
+                                    .includes('image')
+                                    ? ''
+                                    : 'hidden'
+                            "
                         >
                             <img
                                 :src="`/storage/${attachment.file_path}`"
-                                :alt="attachment.file_name"
-                                class="w-full h-full object-cover"
+                                :alt="
+                                    attachment.file_name || 'Image attachment'
+                                "
+                                class="object-cover w-full h-full"
                             />
                         </a>
                     </div>
