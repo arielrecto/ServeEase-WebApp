@@ -135,7 +135,7 @@ class ProfileController extends Controller
         $user = User::with(['profile'])->where('id', $providerProfile->profile->user->id)->firstOrFail();
         $profile = $providerProfile->profile;
         $services = Service::withArchived()
-            ->with(['feedbacks', 'attachments'])
+            ->with(['feedbacks'])
             ->withCount([
                 'availService as bookings_count',
                 'availService as finished_bookings_count' => function ($query) {
