@@ -249,7 +249,7 @@ class BookingController extends Controller
                 'user_id' => $service->user_id,
                 'content' => GenerateNotificationAction::handle('booking', 'booking-confirmed', auth()->user()),
                 'type' => 'booking',
-                'url' => "/customer/booking/{$service->id}/detail"
+                'url' => "/customer/booking/payment/{$service->id}"
             ]);
 
             broadcast(new NotificationSent($notification))->toOthers();
