@@ -78,25 +78,25 @@ onBeforeUnmount(() => {
         <div class="px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-8">
                 <div class="p-6 bg-white rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-4">Total Services</h3>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <h3 class="mb-4 text-lg font-semibold">Total Services</h3>
                     <div class="text-4xl font-bold text-blue-600">
                         {{ stats.totalServices.toLocaleString() }}
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
                 <!-- Monthly Services Chart -->
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-4">Monthly Services</h3>
+                <div class="p-6 bg-white rounded-lg shadow">
+                    <h3 class="mb-4 text-lg font-semibold">Monthly Services</h3>
                     <div class="h-80">
                         <canvas id="monthlyServicesChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Service Status Distribution -->
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-4">Service Status Distribution</h3>
+                <div class="p-6 bg-white rounded-lg shadow">
+                    <h3 class="mb-4 text-lg font-semibold">Service Status Distribution</h3>
                     <div class="h-80">
                         <canvas id="serviceStatusChart"></canvas>
                     </div>
@@ -104,21 +104,21 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Statistics Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-2">Active Users</h3>
+            <div class="grid grid-cols-1 gap-6 mt-8 md:grid-cols-3">
+                <div class="p-6 bg-white rounded-lg shadow">
+                    <h3 class="mb-2 text-lg font-semibold">Active Users</h3>
                     <div class="text-3xl font-bold text-green-600">
                         {{ stats.activeUsers.toLocaleString() }}
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-2">Revenue</h3>
+                <div class="p-6 bg-white rounded-lg shadow">
+                    <h3 class="mb-2 text-lg font-semibold">Revenue</h3>
                     <div class="text-3xl font-bold text-purple-600">
                          ₱{{ stats.revenue.toLocaleString() }}
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-2">Ongoing Services</h3>
+                <div class="p-6 bg-white rounded-lg shadow">
+                    <h3 class="mb-2 text-lg font-semibold">Ongoing Bookings</h3>
                     <div class="text-3xl font-bold text-yellow-600">
                         {{ stats.ongoingServices.toLocaleString() }}
                     </div>

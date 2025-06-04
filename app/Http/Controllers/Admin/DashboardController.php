@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Transaction;
 use App\Models\AvailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,8 +26,8 @@ class DashboardController extends Controller
     {
         return [
             'totalServices' => AvailService::count(),
-            'activeUsers' => User::count(),
-            'revenue' => AvailService::sum('total_price'),
+            'activeUsers' => User::with(['roles', 'profile'])->has('profile')->count(),
+            'revenue' => Transaction::where('status', 'approved')->sum('amount'),
             'ongoingServices' => AvailService::where('status', 'in_progress')->count()
         ];
     }
