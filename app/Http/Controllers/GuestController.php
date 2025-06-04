@@ -39,11 +39,21 @@ class GuestController extends Controller
         return Inertia::render('Guest/Show', compact(['service', 'services', 'canLogin', 'canRegister']));
     }
 
-    public function showPageContent(string $slug)
+    public function aboutUs()
     {
         $canLogin = Route::has('login');
         $canRegister = Route::has('register');
-        $page = Page::where('slug', $slug)->firstOrFail();
-        return Inertia::render('Guest/Page', compact(['page', 'canLogin', 'canRegister']));
+        $aboutUs = Page::where('slug', 'about-us')->firstOrFail();
+        $contactUs = Page::where('slug', 'contact-us')->firstOrFail();
+
+        return Inertia::render('Guest/Page', compact(['aboutUs', 'contactUs', 'canLogin', 'canRegister']));
+    }
+
+    public function termsAndCondition()
+    {
+        $canLogin = Route::has('login');
+        $canRegister = Route::has('register');
+        $termsAndCondition = Page::where('slug', 'terms-and-conditions')->firstOrFail();
+        return Inertia::render('Guest/Page', compact(['termsAndCondition', 'canLogin', 'canRegister']));
     }
 }

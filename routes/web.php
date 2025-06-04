@@ -67,6 +67,8 @@ Route::middleware('guest')->controller(GuestController::class)->as('guest.')->gr
     Route::get('/search', 'search')->name('search');
     Route::get('/services', 'services')->name('services');
     Route::get('/services/{id}', 'show')->name('show');
+    Route::get('/about-us', 'aboutUs')->name('about-us');
+    Route::get('/terms-and-condition', 'termsAndCondition')->name('terms-and-condition');
     Route::get('/page/{slug}', 'showPageContent')->name('page.show');
 });
 
