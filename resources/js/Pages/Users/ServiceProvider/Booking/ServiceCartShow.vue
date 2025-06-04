@@ -47,7 +47,7 @@ const submitReply = () => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center gap-x-4">
-                <HeaderBackButton />
+                <HeaderBackButton :url="route('service-provider.booking.index')" />
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
                     Service Cart - {{ serviceCart.reference_number }}
                 </h2>
@@ -56,10 +56,10 @@ const submitReply = () => {
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl rounded-lg">
+                <div class="overflow-hidden bg-white rounded-lg shadow-xl">
                     <!-- Cart Summary -->
                     <div class="p-6 border-b">
-                        <div class="flex justify-between items-center">
+                        <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-lg font-semibold">Reference Number</h3>
                                 <p class="text-2xl font-bold text-primary">{{ serviceCart.reference_number }}</p>
@@ -72,8 +72,8 @@ const submitReply = () => {
 
                         <!-- Service Cart Remarks -->
                         <div v-if="serviceCart.remarks?.length" class="mt-4">
-                            <h3 class="text-lg font-semibold mb-2">Cart Remarks</h3>
-                            <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="mb-2 text-lg font-semibold">Cart Remarks</h3>
+                            <div class="p-4 rounded-lg bg-gray-50">
                                 <div v-for="remark in serviceCart.remarks" :key="remark.id" class="mb-4 last:mb-0">
                                     <p class="text-gray-700">{{ remark.content }}</p>
                                     <p class="text-sm text-gray-500">By: {{ remark.user?.name }} - {{ new Date(remark.created_at).toLocaleDateString() }}</p>
@@ -83,7 +83,7 @@ const submitReply = () => {
 
                         <!-- Reply Form -->
                         <div class="mt-4">
-                            <h3 class="text-lg font-semibold mb-2">Reply to Customer</h3>
+                            <h3 class="mb-2 text-lg font-semibold">Reply to Customer</h3>
                             <form @submit.prevent="submitReply" class="space-y-3">
                                 <textarea
                                     v-model="form.content"
@@ -94,7 +94,7 @@ const submitReply = () => {
                                 <div class="flex justify-end">
                                     <button
                                         type="submit"
-                                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                        class="px-4 py-2 text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-50"
                                         :disabled="form.processing || !form.content"
                                     >
                                         Send Reply
@@ -107,13 +107,13 @@ const submitReply = () => {
                         <div v-if="hasPendingServices" class="flex justify-end gap-4 mt-4">
                             <button
                                 @click="approveAll"
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                class="px-4 py-2 text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
                             >
                                 Approve All
                             </button>
                             <button
                                 @click="rejectAll"
-                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                class="px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                             >
                                 Reject All
                             </button>
@@ -122,19 +122,19 @@ const submitReply = () => {
 
                     <!-- Services List -->
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-4">Services</h3>
+                        <h3 class="mb-4 text-lg font-semibold">Services</h3>
                         <div class="space-y-4">
                             <div v-for="service in availServices" :key="service.id"
-                                class="border rounded-lg p-4">
-                                <div class="flex justify-between items-start">
+                                class="p-4 border rounded-lg">
+                                <div class="flex items-start justify-between">
                                     <div>
                                         <h4 class="font-semibold">{{ service.name }}</h4>
                                         <p class="text-sm text-gray-600">₱{{ service.total_price }}</p>
 
                                         <!-- Service Remarks -->
                                         <div v-if="service.availServiceRemarks?.length" class="mt-3">
-                                            <h5 class="text-sm font-medium text-gray-700 mb-1">Service Remarks:</h5>
-                                            <div class="bg-gray-50 rounded p-3">
+                                            <h5 class="mb-1 text-sm font-medium text-gray-700">Service Remarks:</h5>
+                                            <div class="p-3 rounded bg-gray-50">
                                                 <div v-for="remark in service.availServiceRemarks" :key="remark.id" class="mb-2">
                                                     <p class="text-sm text-gray-700">{{ remark.content }}</p>
                                                     <p class="text-xs text-gray-500">
