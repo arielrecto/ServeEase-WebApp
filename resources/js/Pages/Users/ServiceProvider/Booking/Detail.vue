@@ -148,10 +148,7 @@ watch(selectedStatus, (newStatus) => {
                                                 <span class="inline-block mr-3 text-sm">
                                                     <i class="text-yellow-500 fa-solid fa-star"></i>
                                                     {{
-                                                        Math.floor(
-                                                            Math.random() * 5 +
-                                                            1
-                                                        )
+                                                        service.avg_rate
                                                     }}
                                                 </span>
                                             </div>
