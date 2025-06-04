@@ -86,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/provider/{providerProfile}', 'showProviderProfile')->name('showProviderProfile');
         Route::post('/update', 'updateProfile')->name('updateProfile');
         Route::put('/update/provider', 'updateProviderProfile')->name('updateProviderProfile');
-    });
+    })->middleware(['verified']);
 
     Route::prefix('admin')->as('admin.')->group(function () {
         Route::prefix('cms')->as('cms.')->group(function () {
@@ -128,7 +128,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('reports', ReportController::class)->except(['create', 'store']);
     });
 
-    Route::middleware('suspended')->group(function () {
+    Route::middleware(['verified', 'suspended'])->group(function () {
         Route::middleware(['profile-required'])->prefix('customer')->as('customer.')->group(function () {
             Route::get('dashboard', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
             Route::prefix('services')->as('services.')->group(function () {
