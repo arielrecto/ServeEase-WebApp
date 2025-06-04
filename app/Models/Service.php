@@ -79,10 +79,7 @@ class Service extends Model
 
     public function availService()
     {
-        return $this->hasMany(AvailService::class)
-            ->when(!request()->routeIs('service-provider.*'), function ($query) {
-                return $query->whereNull('archived_at');
-            });
+        return $this->hasMany(AvailService::class);
     }
 
     /**
@@ -168,7 +165,11 @@ class Service extends Model
     {
         return Attribute::make(
             get: function () {
-                return $this->availService()->whereHas('feedback')->count();
+                $bookings = $this->availService()->whereHas('feedback')->pluck('id')->toArray();
+
+                $feedbacks = FeedBack::whereIn('avail_service_id', $bookings)->count();
+
+                return $feedbacks;
             }
         );
     }
