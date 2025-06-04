@@ -85,6 +85,7 @@ class ServiceController extends Controller
                 'user_id',
                 $service->user->id
             )
+            ->where('status', 'in_progress')
             ->count();
 
         return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices', 'ongoingBookingsCount', 'personalEvents']));
@@ -221,7 +222,7 @@ class ServiceController extends Controller
     {
         $rate = $request->rating;
 
-        $feedbacks = FeedBack::with(['user', 'user.profile'])
+        $feedbacks = FeedBack::with(['user', 'user.profile', 'attachments'])
             ->whereHas('availService', function ($query) use ($service) {
                 $query->whereServiceId($service->id);
             })
