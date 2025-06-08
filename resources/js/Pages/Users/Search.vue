@@ -77,7 +77,13 @@ const resetFilters = () => {
     form.reset();
     // Use Inertia router to remove query parameters
     router.get(
-        route("search.index"),
+        route("search.index", {
+            _query: {
+                service:
+                    new URL(window.location.href).searchParams.get("service") ||
+                    "",
+            },
+        }),
         {},
         {
             preserveState: false,
