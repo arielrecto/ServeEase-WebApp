@@ -80,6 +80,7 @@ const resetFilters = () => {
         route("search.index", {
             _query: {
                 service:
+                    form.service ||
                     new URL(window.location.href).searchParams.get("service") ||
                     "",
             },
