@@ -39,7 +39,13 @@ class SearchController extends Controller
                 $request->service = null;
                 $request->brgy = null;
 
-                $q->where('name', 'LIKE', "%{$request->search}%");
+                $q->where('name', 'LIKE', "%{$request->search}%")
+                ->orWhere(function($q) use ($request) {
+                    $q->whereHas('user.profile', function ($q) use ($request) {
+                        $q->where('first_name', 'LIKE', "%{$request->search}%")
+                          ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+                    });
+                });
             })
             ->when($request->service, function ($q) use ($request) {
                 $q->where('service_type_id', $request->service);

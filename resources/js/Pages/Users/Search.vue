@@ -17,21 +17,29 @@ import ComboBox from "@/Components/Form/ComboBox.vue";
 import SearchForm from "@/Components/Form/SearchForm.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
 import UserServiceCard from "@/Components/UserServiceCard.vue";
+import { router } from "@inertiajs/vue3";
 
-defineProps(["brgys", "services"]);
+const props = defineProps({
+    brgys: Array,
+    services: Array,
+    filters: Object,
+});
+
+// Initialize form with URL query parameters
+const form = useForm({
+    search: new URL(window.location.href).searchParams.get("search") || "",
+    service: new URL(window.location.href).searchParams.get("service") || "",
+    brgy: new URL(window.location.href).searchParams.get("brgy") || "",
+    byRating: new URL(window.location.href).searchParams.get("byRating") || "",
+    byPrice: new URL(window.location.href).searchParams.get("byPrice") || "",
+    byTransaction:
+        new URL(window.location.href).searchParams.get("byTransaction") || "",
+});
 
 const ratingFilterOptions = ["Highest", "Lowest"];
 const priceFilterOptions = ["High", "Low"];
 const transactionFilterOptions = ["High", "Low"];
 
-const form = useForm({
-    search: "",
-    service: "",
-    brgy: "",
-    byRating: "",
-    byPrice: "",
-    byTransaction: "",
-});
 const more = ref(15);
 const userServices = ref([]);
 const dataContainer = ref(null);
@@ -40,14 +48,18 @@ const { setIsLoading } = useLoader();
 
 const fetchServices = async () => {
     try {
+        // Update URL with current filters
+        const queryParams = new URLSearchParams();
+        Object.entries(form.data()).forEach(([key, value]) => {
+            if (value) queryParams.append(key, value);
+        });
+
+        const newUrl = `${window.location.pathname}?${queryParams.toString()}`;
+        window.history.pushState({}, "", newUrl);
+
         const res = await axios.get(route("search.filter"), {
             params: {
-                search: form.search,
-                service: form.service,
-                brgy: form.brgy,
-                byRating: form.byRating,
-                byPrice: form.byPrice,
-                byTransaction: form.byTransaction,
+                ...form.data(),
                 authId: usePage().props.auth.user.id,
             },
         });
@@ -58,6 +70,22 @@ const fetchServices = async () => {
     } catch (error) {
         console.error(error);
     }
+};
+
+// Add reset function
+const resetFilters = () => {
+    form.reset();
+    // Use Inertia router to remove query parameters
+    router.get(
+        route("search.index"),
+        {},
+        {
+            preserveState: false,
+            preserveScroll: true,
+            replace: true,
+        }
+    );
+    fetchServices();
 };
 
 const submit = async () => {
@@ -120,7 +148,6 @@ onMounted(async () => {
 </script>
 
 <template>
-
     <Head title="Search a service" />
 
     <AuthenticatedLayout>
@@ -137,76 +164,152 @@ onMounted(async () => {
             <div class="mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8">
                 <section class="px-20 space-y-4">
                     <div class="space-y-5">
-                        <SearchForm @submitted="
-                            async (query) => {
-                                form.search = query;
-                                await fetchServices();
-                            }
-                        " placeholder="Search a keyword" />
-                        <div class="flex items-center w-full">
+                        <div class="flex items-center justify-between">
+                            <!-- <SearchForm
+                                :initial-value="form.search"
+                                @submitted="async (query) => {
+                                    form.search = query;
+                                    await fetchServices();
+                                }"
+                                placeholder="Search a keyword"
+                            /> -->
+                            <!-- Add Reset Button -->
+                        </div>
+
+                        <!-- <div class="flex items-center w-full">
                             <hr class="flex-1 border-gray-300" />
                             <div class="mx-5 text-xs font-semibold text-gray-700">
                                 OR
                             </div>
                             <hr class="flex-1 border-gray-300" />
-                        </div>
+                        </div> -->
                         <form @submit.prevent="submit" method="get">
                             <div class="flex items-end w-full gap-4">
+                                <!-- Add search input -->
+                                <div class="w-full">
+                                    <InputLabel for="search" value="Search by name" />
+                                    <TextInput
+                                        id="search"
+                                        type="text"
+                                        v-model="form.search"
+                                        class="block w-full"
+                                        placeholder="Search service name..."
+                                    />
+                                </div>
+
+                                <!-- Existing service selector -->
                                 <div class="w-full">
                                     <InputLabel for="name" value="Select a service" />
-                                    <ComboBox :items="services" identifier="name" valueName="id" keyName="id"
-                                        @update:model-value="
-                                            (value) =>
-                                                (form.service = value)
-                                        " @reset-value="form.service = ''" :isRequired="false"
-                                        :class="`block w-full bg-white`" />
+                                    <ComboBox
+                                        :items="services"
+                                        identifier="name"
+                                        valueName="id"
+                                        keyName="id"
+                                        @update:model-value="(value) => (form.service = value)"
+                                        @reset-value="form.service = ''"
+                                        :isRequired="false"
+                                        :class="`block w-full bg-white`"
+                                    />
                                 </div>
+
+                                <!-- Existing barangay selector -->
                                 <div class="w-full">
                                     <InputLabel for="name" value="Select a barangay" />
-                                    <ComboBox :items="brgys" identifier="name" valueName="id" keyName="id"
-                                        @update:model-value="
-                                            (value) => (form.brgy = value)
-                                        " @reset-value="form.brgy = ''" :isRequired="false"
-                                        :class="`block w-full bg-white`" />
+                                    <ComboBox
+                                        :items="brgys"
+                                        identifier="name"
+                                        valueName="id"
+                                        keyName="id"
+                                        @update:model-value="(value) => (form.brgy = value)"
+                                        @reset-value="form.brgy = ''"
+                                        :isRequired="false"
+                                        :class="`block w-full bg-white`"
+                                    />
                                 </div>
-                                <div>
-                                    <PrimaryButton>Go</PrimaryButton>
+
+                                <div class="flex items-center gap-2">
+                                    <PrimaryButton>Search</PrimaryButton>
+                                    <button
+                                        v-if="form.search || form.service || form.brgy || form.byRating || form.byPrice || form.byTransaction"
+                                        type="button"
+                                        @click="resetFilters"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                                    >
+                                        <i class="mr-2 fas fa-undo"></i>
+                                        Reset
+                                    </button>
                                 </div>
                             </div>
                         </form>
                     </div>
 
-                    <div v-if="userServices.length > 0" class="flex flex-wrap items-center justify-center flex-col lg:flex-row gap-4">
-                        <div class="w-full lg:w-auto flex items-center flex-1 gap-x-2">
+                    <div
+                        v-if="userServices.length > 0"
+                        class="flex flex-wrap items-center justify-center flex-col lg:flex-row gap-4"
+                    >
+                        <div
+                            class="w-full lg:w-auto flex items-center flex-1 gap-x-2"
+                        >
                             <InputLabel for="byRating" value="Rating" />
 
-                            <SelectInput id="byRating" @update-value="fetchServices" class="block w-full mt-1"
-                                v-model="form.byRating" required>
-                                <option v-for="item in ratingFilterOptions" :value="item">
+                            <SelectInput
+                                id="byRating"
+                                @update-value="fetchServices"
+                                class="block w-full mt-1"
+                                v-model="form.byRating"
+                                required
+                            >
+                                <option
+                                    v-for="item in ratingFilterOptions"
+                                    :value="item"
+                                >
                                     {{ item }}
                                 </option>
                             </SelectInput>
 
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
-                        <div class="w-full lg:w-auto flex items-center flex-1 gap-x-2">
-                            <InputLabel for="byTransaction" value="Popularity" />
+                        <div
+                            class="w-full lg:w-auto flex items-center flex-1 gap-x-2"
+                        >
+                            <InputLabel
+                                for="byTransaction"
+                                value="Popularity"
+                            />
 
-                            <SelectInput id="byTransaction" @update-value="fetchServices" class="block w-full mt-1"
-                                v-model="form.byTransaction" required>
-                                <option v-for="item in transactionFilterOptions" :value="item">
+                            <SelectInput
+                                id="byTransaction"
+                                @update-value="fetchServices"
+                                class="block w-full mt-1"
+                                v-model="form.byTransaction"
+                                required
+                            >
+                                <option
+                                    v-for="item in transactionFilterOptions"
+                                    :value="item"
+                                >
                                     {{ item }}
                                 </option>
                             </SelectInput>
 
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
-                        <div class="w-full lg:w-auto flex items-center flex-1 gap-x-2">
+                        <div
+                            class="w-full lg:w-auto flex items-center flex-1 gap-x-2"
+                        >
                             <InputLabel for="byPrice" value="Price" />
 
-                            <SelectInput id="byPrice" @update-value="fetchServices" class="block w-full mt-1"
-                                v-model="form.byPrice" required>
-                                <option v-for="item in priceFilterOptions" :value="item">
+                            <SelectInput
+                                id="byPrice"
+                                @update-value="fetchServices"
+                                class="block w-full mt-1"
+                                v-model="form.byPrice"
+                                required
+                            >
+                                <option
+                                    v-for="item in priceFilterOptions"
+                                    :value="item"
+                                >
                                     {{ item }}
                                 </option>
                             </SelectInput>
@@ -217,9 +320,23 @@ onMounted(async () => {
                 </section>
 
                 <section class="px-20">
-                    <div ref="dataContainer"
-                        class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center md:grid-cols-2 max-h-[70vh]">
-                        <UserServiceCard v-for="item in userServices" :service="item" />
+                    <div
+                        ref="dataContainer"
+                        class="grid grid-cols-1 gap-10 mb-4 overflow-y-auto justify-items-center md:grid-cols-2 max-h-[70vh]"
+                    >
+                        <template v-if="userServices.length > 0">
+                            <UserServiceCard
+                                v-for="item in userServices"
+                                :service="item"
+                            />
+                        </template>
+                        <template v-else>
+                            <div class="col-span-2 flex flex-col items-center justify-center py-12">
+                                <i class="text-4xl text-gray-400 fas fa-search mb-4"></i>
+                                <p class="text-lg text-gray-600 font-medium">No services found</p>
+                                <p class="text-sm text-gray-500 mt-2">Try adjusting your search criteria or filters</p>
+                            </div>
+                        </template>
                     </div>
                 </section>
             </div>
