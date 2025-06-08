@@ -21,16 +21,13 @@ class ServiceProviderController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search = $request->searchQuery;
         $providers = ProviderProfile::whereNotNull('verified_at')
             ->with(['profile.user', 'serviceType'])
             ->latest()
             ->when($search, function ($query) use ($search) {
-                $query->with([
-                    'profile' => function ($query) use ($search) {
-                        $query->whereRelation('user', 'name', $search);
-                    }
-                ]);
+                $query->whereRelation('profile', 'first_name', 'like', "%{$search}%")
+                    ->orWhereRelation('profile', 'last_name', 'like', "%{$search}%");
             })
             ->paginate(20)
             ->through(function ($provider) {

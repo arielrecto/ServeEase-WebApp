@@ -51,7 +51,6 @@ const items = ref([
 </script>
 
 <template>
-
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
@@ -97,22 +96,40 @@ const items = ref([
                                         </td>
                                         <td>
                                             <div class="flex gap-x-4">
-                                                <ActionButton type="modal" actionType="view" :href="route(
-                                                    'admin.applications.show',
-                                                    provider.id
-                                                )
-                                                    " :modalSlideoverEnabled="true
-                                                        " />
-                                                <ActionButton type="modal" actionType="approve" :href="route(
-                                                    'admin.applications.approve',
-                                                    provider.id
-                                                )
-                                                    " />
-                                                <ActionButton type="modal" actionType="reject" :href="route(
-                                                    'admin.applications.delete',
-                                                    provider.id
-                                                )
-                                                    " />
+                                                <ActionButton
+                                                    type="modal"
+                                                    actionType="view"
+                                                    modalWidth="lg"
+                                                    :href="
+                                                        route(
+                                                            'admin.applications.show',
+                                                            provider.id
+                                                        )
+                                                    "
+                                                    :modalSlideoverEnabled="
+                                                        true
+                                                    "
+                                                />
+                                                <ActionButton
+                                                    type="modal"
+                                                    actionType="approve"
+                                                    :href="
+                                                        route(
+                                                            'admin.applications.approve',
+                                                            provider.id
+                                                        )
+                                                    "
+                                                />
+                                                <ActionButton
+                                                    type="modal"
+                                                    actionType="reject"
+                                                    :href="
+                                                        route(
+                                                            'admin.applications.delete',
+                                                            provider.id
+                                                        )
+                                                    "
+                                                />
                                             </div>
                                         </td>
                                     </tr>

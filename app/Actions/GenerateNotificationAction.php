@@ -8,6 +8,10 @@ class GenerateNotificationAction
     {
         switch ($notificationType) {
             case 'application':
+                if ($action === 'application-created') {
+                    return "{$user->profile->full_name} has applied to be a service provider in ServEase. Click to see the details.";
+                }
+
                 if ($action === 'application-approved') {
                     return "Your application as a service provider in ServEase has been approved.";
                 }

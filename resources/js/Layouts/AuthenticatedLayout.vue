@@ -24,7 +24,10 @@ const finishedBookings = usePage().props.auth.finishedBookings;
 const isVerifiedProvider = usePage().props?.auth?.isVerifiedProvider;
 const isAdmin = computed(() => roleName.some((role) => role == "admin"));
 
-const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboard") : route("customer.dashboard");
+const applicationLogoLink = () =>
+    roleName[0] === "admin"
+        ? route("admin.dashboard")
+        : route("customer.dashboard");
 </script>
 
 <template>
@@ -91,12 +94,11 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                         <div class="hidden md:flex md:items-center sm:ms-6">
                             <!-- Notifications popup -->
                             <NotificationsPopup
-                                v-if="!$page.props.auth.isAdmin"
                                 :user="$page.props.auth?.user"
                             />
 
                             <!-- Settings Dropdown -->
-                            <div class="hidden md:block relative ms-3">
+                            <div class="relative hidden md:block ms-3">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -146,7 +148,6 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                         <!-- Hamburger -->
                         <div class="flex items-center -me-2 md:hidden">
                             <NotificationsPopup
-                                v-if="!$page.props.auth.isAdmin"
                                 :user="$page.props.auth?.user"
                             />
 
@@ -209,25 +210,35 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('admin.service-types.index')"
-                                :active="route().current('admin.service-types.index')"
+                                :active="
+                                    route().current('admin.service-types.index')
+                                "
                             >
                                 Services
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('admin.barangays.index')"
-                                :active="route().current('admin.barangays.index')"
+                                :active="
+                                    route().current('admin.barangays.index')
+                                "
                             >
                                 Barangays
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('admin.service-provider.index')"
-                                :active="route().current('admin.service-provider.index')"
+                                :active="
+                                    route().current(
+                                        'admin.service-provider.index'
+                                    )
+                                "
                             >
                                 Service Providers
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('admin.feedbacks.index')"
-                                :active="route().current('admin.feedbacks.index')"
+                                :active="
+                                    route().current('admin.feedbacks.index')
+                                "
                             >
                                 Reviews
                             </ResponsiveNavLink>
@@ -245,21 +256,38 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('admin.reports.index')"
-                                :active="route().current('customer.report.index')"
+                                :active="
+                                    route().current('customer.report.index')
+                                "
                             >
                                 Report
                             </ResponsiveNavLink>
                         </template>
 
                         <template v-else>
-                            <ResponsiveNavLink :href="route('customer.dashboard')" :active="route().current('customer.dashboard')">
+                            <ResponsiveNavLink
+                                :href="route('customer.dashboard')"
+                                :active="route().current('customer.dashboard')"
+                            >
                                 Home
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink v-if="isVerifiedProvider" :href="route('service-provider.dashboard')"
-                                :active="route().current('service-provider.dashboard')">
+                            <ResponsiveNavLink
+                                v-if="isVerifiedProvider"
+                                :href="route('service-provider.dashboard')"
+                                :active="
+                                    route().current(
+                                        'service-provider.dashboard'
+                                    )
+                                "
+                            >
                                 Dashboard
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('customer.booking.index')" :active="route().current('customer.booking.index')">
+                            <ResponsiveNavLink
+                                :href="route('customer.booking.index')"
+                                :active="
+                                    route().current('customer.booking.index')
+                                "
+                            >
                                 My Bookings
                             </ResponsiveNavLink>
                             <!-- <NavLink
@@ -268,13 +296,24 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                             >
                                 Favorites
                             </NavLink> -->
-                            <ResponsiveNavLink :href="route('search.index')" :active="route().current('search.index')">
+                            <!-- <ResponsiveNavLink
+                                :href="route('types.index')"
+                                :active="route().current('types.index')"
+                            >
                                 Search
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('messages.index')" :active="route().current('messages.*')">
+                            </ResponsiveNavLink> -->
+                            <ResponsiveNavLink
+                                :href="route('messages.index')"
+                                :active="route().current('messages.*')"
+                            >
                                 Messages
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('customer.report.index')" :active="route().current('customer.report.index')">
+                            <ResponsiveNavLink
+                                :href="route('customer.report.index')"
+                                :active="
+                                    route().current('customer.report.index')
+                                "
+                            >
                                 Report
                             </ResponsiveNavLink>
                         </template>
@@ -285,9 +324,8 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
                         <div class="px-4">
                             <div class="text-base font-medium text-gray-800">
                                 {{
-                                    $page.props.auth?.user
-                                        ?.profile?.full_name ??
-                                    "No Name"
+                                    $page.props.auth?.user?.profile
+                                        ?.full_name ?? "No Name"
                                 }}
                             </div>
                             <div class="text-sm font-medium text-gray-500">
@@ -314,7 +352,7 @@ const applicationLogoLink = () => roleName[0] === "admin" ? route("admin.dashboa
             <!-- Page Heading -->
             <header class="bg-white shadow" v-if="$slots.header">
                 <div
-                    class="flex md:items-center justify-between flex-col md:flex-row px-4 py-6 mx-auto gap-4 max-w-7xl sm:px-6 lg:px-8"
+                    class="flex flex-col justify-between gap-4 px-4 py-6 mx-auto md:items-center md:flex-row max-w-7xl sm:px-6 lg:px-8"
                 >
                     <slot name="header" />
                 </div>

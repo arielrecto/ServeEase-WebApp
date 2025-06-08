@@ -73,14 +73,16 @@ const modalRef = ref(null);
                     }}</span>
                 </div>
                 <div class="flex flex-col gap-y-1">
-                    <span class="font-semibold">Valid ID photo</span>
-                    <div class="w-full">
+                    <span class="font-semibold"
+                        >Valid ID photo (Click to view)</span
+                    >
+                    <a :href="providerProfile.valid_id_image" target="_blank">
                         <img
                             :src="providerProfile.valid_id_image"
                             alt="Valid ID image"
                             class="object-cover"
                         />
-                    </div>
+                    </a>
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold"
@@ -92,24 +94,38 @@ const modalRef = ref(null);
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold"
-                        >Citizenship Document photo</span
+                        >Citizenship Document photo (Click to view)</span
                     >
                     <div class="w-full">
-                        <img
-                            :src="providerProfile.citizenship_document_image"
-                            alt="Citizenship document image"
-                            class="object-cover"
-                        />
+                        <a
+                            :href="providerProfile.citizenship_document_image"
+                            target="_blank"
+                        >
+                            <img
+                                :src="
+                                    providerProfile.citizenship_document_image
+                                "
+                                alt="Citizenship document image"
+                                class="object-cover"
+                            />
+                        </a>
                     </div>
                 </div>
                 <div class="flex flex-col gap-y-1">
-                    <span class="font-semibold">Proof document</span>
+                    <span class="font-semibold"
+                        >Proof document (Click to view)</span
+                    >
                     <div class="w-full">
-                        <img
-                            :src="providerProfile.proof_document_image"
-                            alt="Provider certificate"
-                            class="object-cover"
-                        />
+                        <a
+                            :href="providerProfile.proof_document_image"
+                            target="_blank"
+                        >
+                            <img
+                                :src="providerProfile.proof_document_image"
+                                alt="Provider certificate"
+                                class="object-cover"
+                            />
+                        </a>
                     </div>
                 </div>
             </div>

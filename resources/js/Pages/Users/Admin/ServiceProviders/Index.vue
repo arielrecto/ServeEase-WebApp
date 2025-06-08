@@ -29,7 +29,7 @@ const searchForm = useForm({
 });
 
 const search = () => {
-    searchForm.get(route("admin.users.index"));
+    searchForm.get(route("admin.service-provider.index"));
 };
 
 const ratingOptions = [5, 4, 3, 2, 1];

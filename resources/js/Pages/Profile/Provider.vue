@@ -62,9 +62,13 @@ const filteredReviews = computed(() => {
 
 const state = reactive({
     tabs: [
-        { name: "Services", value: "0" },
-        { name: "Archived Services", value: "1" },
-        { name: "Reviews", value: "2" },
+        { name: "Services", value: "0", hidden: false },
+        {
+            name: "Archived Services",
+            value: "1",
+            hidden: usePage().props.auth.user.id !== props.user.id,
+        },
+        { name: "Reviews", value: "2", hidden: false },
     ],
 });
 
@@ -160,6 +164,7 @@ const ratingOptions = [5, 4, 3, 2, 1];
                                 :key="tab.value"
                                 :value="tab.value"
                                 class="px-6 py-4 text-sm font-medium"
+                                :class="[tab.hidden ? 'hidden' : '']"
                                 v-slot="{ selected }"
                             >
                                 <button

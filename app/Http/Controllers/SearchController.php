@@ -27,7 +27,7 @@ class SearchController extends Controller
 
         // Query active services only by default (not archived)
         $services = Service::active()
-            ->with(['user.profile', 'serviceType'])
+            ->with(['user.profile.providerProfile', 'serviceType'])
             ->withCount(['availService as avail_service_count'])
             ->when($request->authId, function ($q) use ($request) {
                 $q->whereNot('user_id', (int) $request->authId);

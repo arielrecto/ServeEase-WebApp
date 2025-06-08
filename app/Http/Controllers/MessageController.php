@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Message;
-use App\Models\Conversation;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Events\MessageSent;
+use App\Models\Conversation;
+use App\Models\Notification;
+use Illuminate\Http\Request;
+use App\Events\NotificationSent;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -94,8 +96,25 @@ class MessageController extends Controller
             'is_seen' => false,
         ]);
 
+        $notification = Notification::create([
+            'user_id' => $receiverId,
+            'content' => Auth::user()->profile->full_name . ' sent you a message: ' . mb_strimwidth($message->content, 0, 28, "..."),
+            'type' => 'message',
+            'url' => '/messages/' . $conversation->id
+        ]);
+
         broadcast(new MessageSent($message))->toOthers();
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return redirect()->back();
+    }
+
+    public function destroy(Conversation $conversation)
+    {
+        $conversation->messages()->delete();
+
+        $conversation->delete();
+
+        return redirect()->route('messages.index')->with('messages_success', 'Conversation deleted successfully.');
     }
 }

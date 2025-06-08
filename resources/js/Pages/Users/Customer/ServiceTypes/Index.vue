@@ -25,7 +25,15 @@ defineProps({
                         :key="serviceType.id"
                         class="overflow-hidden transition bg-white rounded-lg shadow hover:shadow-lg"
                     >
-                        <Link :href="route('types.show', serviceType.id)">
+                        <Link
+                            :href="
+                                route('search.index', {
+                                    _query: {
+                                        service: serviceType.id,
+                                    },
+                                })
+                            "
+                        >
                             <img
                                 alt=""
                                 :src="serviceType.thumbnail"

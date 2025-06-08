@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
                 <div class="p-6 bg-white rounded-lg shadow">
-                    <h3 class="mb-2 text-lg font-semibold">Revenue</h3>
+                    <h3 class="mb-2 text-lg font-semibold">Revenue Earned by Service Providers</h3>
                     <div class="text-3xl font-bold text-purple-600">
                          ₱{{ stats.revenue.toLocaleString() }}
                     </div>

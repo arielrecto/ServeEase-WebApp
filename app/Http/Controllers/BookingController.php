@@ -393,7 +393,7 @@ class BookingController extends Controller
             'user_id' => $availService->service->user_id,
             'content' => $message,
             'type' => 'payment',
-            'url' => "/service-provider/booking/{$availService->id}/detail"
+            'url' => "/service-provider/transactions"
         ]);
 
         broadcast(new NotificationSent($notification))->toOthers();

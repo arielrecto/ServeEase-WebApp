@@ -470,7 +470,7 @@ const paymentStatus = computed(() => {
                                                 "
                                                 class="relative"
                                             >
-                                                <div
+                                                <!-- <div
                                                     v-if="
                                                         state.availServiceBtnShown
                                                     "
@@ -478,8 +478,8 @@ const paymentStatus = computed(() => {
                                                         state.availServiceBtnShown = false
                                                     "
                                                     class="fixed inset-0 z-40"
-                                                ></div>
-                                                <div
+                                                ></div> -->
+                                                <!-- <div
                                                     v-if="
                                                         state.availServiceBtnShown
                                                     "
@@ -505,25 +505,16 @@ const paymentStatus = computed(() => {
                                                     >
                                                         Add to Bulk Service
                                                     </Link>
-                                                    <!--<Link :href="route(
-                                                        'customer.services.avail.create',
-                                                        service.id
-                                                    )
-                                                        " class="btn btn-primary">Avail</Link>-->
-                                                </div>
-                                                <button
-                                                    @click="
-                                                        state.availServiceBtnShown =
-                                                            !state.availServiceBtnShown
-                                                    "
-                                                    type="button"
+                                                </div> -->
+                                                <Link
+                                                    :href="route('customer.services.show', service.id)"
                                                     class="flex items-center justify-center w-full text-center button-ghost"
                                                 >
                                                     <i
                                                         class="ri-shopping-cart-line"
                                                     ></i>
                                                     Avail again
-                                                </button>
+                                                </Link>
                                             </div>
 
                                             <Link

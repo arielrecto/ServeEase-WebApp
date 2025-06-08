@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'is_suspended',
+        'email_verified_at', // TODO: remove in production
     ];
 
     protected $appends = ['user_status'];

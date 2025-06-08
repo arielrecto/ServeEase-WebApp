@@ -52,6 +52,7 @@ class ServiceController extends Controller
     {
         $service = Service::with(['user.profile.providerProfile'])->where('id', $id)->first();
 
+        $totalUserServices = Service::where('user_id', $service->user->id)->count();
 
         $availServices = AvailService::with(['user.profile', 'service', 'service.user', 'service.user.profile', 'service.user.profile.providerProfile'])
             ->whereRelation(
@@ -88,7 +89,7 @@ class ServiceController extends Controller
             ->where('status', 'in_progress')
             ->count();
 
-        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices', 'ongoingBookingsCount', 'personalEvents']));
+        return Inertia::render('Users/Customer/Services/Show', compact(['service', 'availServices', 'totalUserServices', 'ongoingBookingsCount', 'personalEvents']));
     }
 
     /**

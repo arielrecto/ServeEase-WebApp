@@ -187,7 +187,10 @@ onMounted(async () => {
                             <div class="flex items-end w-full gap-4">
                                 <!-- Add search input -->
                                 <div class="w-full">
-                                    <InputLabel for="search" value="Search by name" />
+                                    <InputLabel
+                                        for="search"
+                                        value="Search by name"
+                                    />
                                     <TextInput
                                         id="search"
                                         type="text"
@@ -198,7 +201,7 @@ onMounted(async () => {
                                 </div>
 
                                 <!-- Existing service selector -->
-                                <div class="w-full">
+                                <!-- <div class="w-full">
                                     <InputLabel for="name" value="Select a service" />
                                     <ComboBox
                                         :items="services"
@@ -210,17 +213,22 @@ onMounted(async () => {
                                         :isRequired="false"
                                         :class="`block w-full bg-white`"
                                     />
-                                </div>
+                                </div> -->
 
                                 <!-- Existing barangay selector -->
                                 <div class="w-full">
-                                    <InputLabel for="name" value="Select a barangay" />
+                                    <InputLabel
+                                        for="name"
+                                        value="Select a barangay"
+                                    />
                                     <ComboBox
                                         :items="brgys"
                                         identifier="name"
                                         valueName="id"
                                         keyName="id"
-                                        @update:model-value="(value) => (form.brgy = value)"
+                                        @update:model-value="
+                                            (value) => (form.brgy = value)
+                                        "
                                         @reset-value="form.brgy = ''"
                                         :isRequired="false"
                                         :class="`block w-full bg-white`"
@@ -230,7 +238,14 @@ onMounted(async () => {
                                 <div class="flex items-center gap-2">
                                     <PrimaryButton>Search</PrimaryButton>
                                     <button
-                                        v-if="form.search || form.service || form.brgy || form.byRating || form.byPrice || form.byTransaction"
+                                        v-if="
+                                            form.search ||
+                                            form.service ||
+                                            form.brgy ||
+                                            form.byRating ||
+                                            form.byPrice ||
+                                            form.byTransaction
+                                        "
                                         type="button"
                                         @click="resetFilters"
                                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
@@ -245,10 +260,10 @@ onMounted(async () => {
 
                     <div
                         v-if="userServices.length > 0"
-                        class="flex flex-wrap items-center justify-center flex-col lg:flex-row gap-4"
+                        class="flex flex-col flex-wrap items-center justify-center gap-4 lg:flex-row"
                     >
                         <div
-                            class="w-full lg:w-auto flex items-center flex-1 gap-x-2"
+                            class="flex items-center flex-1 w-full lg:w-auto gap-x-2"
                         >
                             <InputLabel for="byRating" value="Rating" />
 
@@ -270,7 +285,7 @@ onMounted(async () => {
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
                         <div
-                            class="w-full lg:w-auto flex items-center flex-1 gap-x-2"
+                            class="flex items-center flex-1 w-full lg:w-auto gap-x-2"
                         >
                             <InputLabel
                                 for="byTransaction"
@@ -295,7 +310,7 @@ onMounted(async () => {
                             <!-- <InputError class="mt-2" :message="form.errors.gender" /> -->
                         </div>
                         <div
-                            class="w-full lg:w-auto flex items-center flex-1 gap-x-2"
+                            class="flex items-center flex-1 w-full lg:w-auto gap-x-2"
                         >
                             <InputLabel for="byPrice" value="Price" />
 
@@ -331,10 +346,19 @@ onMounted(async () => {
                             />
                         </template>
                         <template v-else>
-                            <div class="col-span-2 flex flex-col items-center justify-center py-12">
-                                <i class="text-4xl text-gray-400 fas fa-search mb-4"></i>
-                                <p class="text-lg text-gray-600 font-medium">No services found</p>
-                                <p class="text-sm text-gray-500 mt-2">Try adjusting your search criteria or filters</p>
+                            <div
+                                class="flex flex-col items-center justify-center col-span-2 py-12"
+                            >
+                                <i
+                                    class="mb-4 text-4xl text-gray-400 fas fa-search"
+                                ></i>
+                                <p class="text-lg font-medium text-gray-600">
+                                    No services found
+                                </p>
+                                <p class="mt-2 text-sm text-gray-500">
+                                    Try adjusting your search criteria or
+                                    filters
+                                </p>
                             </div>
                         </template>
                     </div>
