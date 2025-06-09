@@ -34,7 +34,7 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'booking-cancelled') {
-                    return "{$user->name} has cancelled the booking.";
+                    return "{$user->name} has cancelled the booking. Reason: {$data['remark']}";
                 }
 
                 if ($action === 'booking-created') {

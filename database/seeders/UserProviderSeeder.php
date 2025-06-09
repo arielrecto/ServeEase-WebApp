@@ -34,7 +34,7 @@ class UserProviderSeeder extends Seeder
             $serviceTypeId = ServiceType::all()->random()->id;
 
             ProviderProfile::create([
-                'service_type_id' => $serviceTypeId,
+                'service_type_id' => 1,
                 'experience' => '2',
                 'experience_duration' => 'Years',
                 'contact' => '09123456789',

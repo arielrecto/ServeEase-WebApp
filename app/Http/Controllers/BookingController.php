@@ -414,7 +414,7 @@ class BookingController extends Controller
         ]);
     }
 
-    public function cancel(AvailService $availService)
+    public function cancel(Request $request, AvailService $availService)
     {
         // Ensure the booking is in a cancellable state
         if (!in_array($availService->status, ['pending', 'confirmed'])) {
@@ -423,19 +423,29 @@ class BookingController extends Controller
             ]);
         }
 
-        // Update the status to "cancelled"
-        $availService->update([
-            'status' => 'cancelled',
-        ]);
+        DB::transaction(function () use ($availService, $request) {
+            // Update the status to "cancelled"
+            $availService->update([
+                'status' => 'cancelled',
+            ]);
 
-        $notification = Notification::create([
-            'user_id' => $availService->service->user_id,
-            'content' => GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->user),
-            'type' => 'booking',
-            'url' => "/customer/booking/{$availService->id}/detail"
-        ]);
+            // Create a remark if provided
+            if ($request->has('remarks') && !empty($request->remarks)) {
+                $availService->remarks()->create([
+                    'content' => $request->remarks,
+                    'user_id' => Auth::id(),
+                ]);
+            }
 
-        broadcast(new NotificationSent($notification))->toOthers();
+            $notification = Notification::create([
+                'user_id' => $availService->service->user_id,
+                'content' => GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->user, ['remark' => $request->remarks]),
+                'type' => 'booking',
+                'url' => "/customer/booking/{$availService->id}/detail"
+            ]);
+
+            broadcast(new NotificationSent($notification))->toOthers();
+        });
 
         return back()->with('message_success', 'Booking has been canceled successfully.');
     }

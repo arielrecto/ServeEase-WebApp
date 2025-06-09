@@ -101,6 +101,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('applications')->as('applications.')->controller(ServiceProviderApplicationController::class)->group(function () {
             Route::get('/approve/{id}', 'approve')->name('approve');
             Route::put('/approved/{id}', 'approved')->name('approved');
+            Route::get('/rejected', 'rejected')->name('rejected');
             Route::delete('/rejected/{id}', 'reject')->name('reject');
             Route::get('/delete/{id}', 'delete')->name('delete');
         });
