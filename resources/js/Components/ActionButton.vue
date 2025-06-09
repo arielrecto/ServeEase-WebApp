@@ -61,6 +61,9 @@ const icon = computed(() => {
         case "cart":
             return "fa-solid fa-shopping-cart"; // Added cart icon
             break;
+        case "resolve":
+            return "ri-check-double-line"; // Added resolve icon
+            break;
         default:
             return "ri-more-2-fill";
             break;

@@ -80,7 +80,7 @@ class ReportController extends Controller
 
     public function show(Report $report)
     {
-        $report->load(['user', 'user.profile', 'reportedBy', 'attachments']);
+        $report->load(['user', 'user.profile', 'reportedBy', 'attachments', 'remarks.user']);
 
         return Inertia::render('Users/Admin/Report/Show', [
             'report' => [
@@ -96,6 +96,7 @@ class ReportController extends Controller
                 'complaint' => $report->complaint,
                 'type' => $report->type,
                 'status' => $report->status,
+                'admin_remarks' => $report->remarks->last()?->content,
                 'created_at' => $report->created_at->format('M d, Y'),
                 'attachments' => $report->attachments->map(fn($attachment) => [
                     'id' => $attachment->id,
@@ -151,7 +152,7 @@ class ReportController extends Controller
             'user_id' => $report->user_id,
             'content' => 'Your complaint report #' . $report->id . ' has been approved.',
             'type' => 'report_approved',
-            'url' => '#',
+            'url' => '/customer/report/received',
             'is_seen' => false
         ]);
 
@@ -163,7 +164,7 @@ class ReportController extends Controller
                 'user_id' => $report->user_id,
                 'content' => 'Warning: You have received 2 approved complaints. One more complaint will result in account suspension.',
                 'type' => 'report_warning',
-                'url' => '#',
+                'url' => '/customer/report/received',
                 'is_seen' => false
             ]);
 
@@ -178,7 +179,7 @@ class ReportController extends Controller
                 'user_id' => $report->user_id,
                 'content' => 'Your account has been suspended due to receiving 3 or more approved complaints.',
                 'type' => 'account_suspended',
-                'url' => '#',
+                'url' => '/customer/report/received',
                 'is_seen' => false
             ]);
 
@@ -194,10 +195,24 @@ class ReportController extends Controller
             'admin_remarks' => 'required|string|max:1000',
         ]);
 
-        $report->update([
-            'status' => 'rejected',
-            'admin_remarks' => $validated['admin_remarks'],
+        $report->update(['status' => 'rejected']);
+
+        // Create remark using polymorphic relationship
+        $report->remarks()->create([
+            'user_id' => auth()->id(),
+            'content' => $validated['admin_remarks']
         ]);
+
+        // Create notification for the user
+        $notification = Notification::create([
+            'user_id' => $report->user_id,
+            'content' => 'Your complaint report #' . $report->id . ' has been rejected. Click to see the details.',
+            'type' => 'report_rejected',
+            'url' => '/customer/report/' . $report->id,
+            'is_seen' => false
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return back()->with('success', 'Report has been rejected.');
     }

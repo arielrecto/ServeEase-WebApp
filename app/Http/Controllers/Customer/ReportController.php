@@ -97,7 +97,7 @@ class ReportController extends Controller
             abort(403);
         }
 
-        $report->load(['user.profile', 'attachments']);
+        $report->load(['user.profile', 'attachments', 'remarks.user']);
 
         return Inertia::render('Users/Customer/Report/Show', [
             'report' => [
@@ -115,7 +115,14 @@ class ReportController extends Controller
                     'file_path' => asset('storage/' . $attachment->file_path),
                     'file_type' => $attachment->file_type,
                 ]),
-                'admin_remarks' => $report->admin_remarks,
+                'remarks' => $report->remarks->map(fn($remark) => [
+                    'id' => $remark->id,
+                    'content' => $remark->content,
+                    'created_at' => $remark->created_at,
+                    'user' => [
+                        'name' => $remark->user->name
+                    ]
+                ]),
             ]
         ]);
     }

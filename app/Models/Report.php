@@ -9,6 +9,16 @@ class Report extends Model
 {
     use HasFactory;
 
+    public function remarks()
+    {
+        return $this->morphMany(Remark::class, 'remarkable');
+    }
+
+    public function latestRemark()
+    {
+        return $this->morphOne(Remark::class, 'remarkable')->latest();
+    }
+
 
     protected $fillable = [
         'user_id',
@@ -28,7 +38,8 @@ class Report extends Model
     {
         return $this->belongsTo(User::class, 'reported_by');
     }
-    public function attachments(){
+    public function attachments()
+    {
         return $this->morphMany(Attachment::class, 'attachable');
     }
 }

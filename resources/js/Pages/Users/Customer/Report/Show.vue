@@ -134,17 +134,41 @@ const printReport = () => {
                             </div>
                         </div>
 
-                        <!-- Admin Response -->
+                        <!-- Admin Remarks -->
                         <div
-                            v-if="report.admin_remarks"
+                            v-if="report.remarks?.length"
                             class="p-4 border border-gray-200 rounded-lg"
                         >
                             <p class="text-sm font-medium text-gray-500">
-                                Admin Response
+                                Admin Remarks
                             </p>
-                            <p class="mt-2 whitespace-pre-wrap">
-                                {{ report.admin_remarks }}
-                            </p>
+                            <div class="mt-3 space-y-4">
+                                <div
+                                    v-for="remark in report.remarks"
+                                    :key="remark.id"
+                                    class="text-sm"
+                                >
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <p class="font-medium text-gray-700">
+                                            {{ remark.user.name }}
+                                        </p>
+                                        <p class="text-xs text-gray-500">
+                                            {{
+                                                new Date(
+                                                    remark.created_at
+                                                ).toLocaleDateString()
+                                            }}
+                                        </p>
+                                    </div>
+                                    <p
+                                        class="mt-1 text-gray-600 whitespace-pre-wrap"
+                                    >
+                                        {{ remark.content }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
