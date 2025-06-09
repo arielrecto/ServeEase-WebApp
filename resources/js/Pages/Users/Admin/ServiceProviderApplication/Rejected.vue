@@ -5,10 +5,9 @@ import TableHeader from "@/Components/Table/TableHeader.vue";
 import TableBody from "@/Components/Table/TableBody.vue";
 import ActionButton from "@/Components/ActionButton.vue";
 import PaginationLinks from "@/Components/PaginationLinks.vue";
-import { ModalLink } from "@inertiaui/modal-vue";
-import { Link } from "@inertiajs/vue3";
-import moment from "moment";
+import { Head } from "@inertiajs/vue3";
 import { ref } from "vue";
+import moment from "moment";
 
 defineProps({
     providers: Object,
@@ -21,51 +20,16 @@ const headers = ref([
     "Date Submitted",
     "Action",
 ]);
-
-const items = ref([
-    {
-        id: 1,
-        name: "David Rondina",
-        service_type: "Plumbing",
-        experience: "2 years",
-        status: "Pending",
-        created_at: "Oct. 10, 2024",
-    },
-    {
-        id: 2,
-        name: "John Doe",
-        service_type: "Plumbing",
-        experience: "2 years",
-        status: "Pending",
-        created_at: "Oct. 10, 2024",
-    },
-    {
-        id: 3,
-        name: "Laufey Lin",
-        service_type: "Plumbing",
-        experience: "4 years",
-        status: "Pending",
-        created_at: "Oct. 10, 2024",
-    },
-]);
 </script>
 
 <template>
-    <Head title="Applications" />
+    <Head title="Rejected Applications" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Applications
+                Rejected Applications
             </h2>
-            <div>
-                <Link
-                    :href="route('admin.applications.rejected')"
-                    class="w-max button-ghost"
-                >
-                    View Archive
-                </Link>
-            </div>
         </template>
 
         <div class="py-12">
@@ -78,14 +42,6 @@ const items = ref([
                             </template>
 
                             <template #body>
-                                <!-- <TableBody :items="providers.data" keyName="id">
-                                    <td>
-                                        <div class="flex gap-x-4">
-                                            <ActionButton type="modal" actionType="view" :href="route('admin.service-provider.show', 1)" modalSlideoverEnabled />
-                                            <ActionButton type="modal" actionType="delete" :href="route('admin.service-provider.delete', 1)"/>
-                                        </div>
-                                    </td>
-                                </TableBody> -->
                                 <template v-if="providers.data.length !== 0">
                                     <tr v-for="provider in providers.data">
                                         <td>
@@ -99,7 +55,9 @@ const items = ref([
                                             {{
                                                 moment(
                                                     provider.created_at
-                                                ).format("ll")
+                                                ).format(
+                                                    "MMMM Do YYYY, h:mm:ss a"
+                                                )
                                             }}
                                         </td>
                                         <td>
@@ -116,26 +74,6 @@ const items = ref([
                                                     "
                                                     :modalSlideoverEnabled="
                                                         true
-                                                    "
-                                                />
-                                                <ActionButton
-                                                    type="modal"
-                                                    actionType="approve"
-                                                    :href="
-                                                        route(
-                                                            'admin.applications.approve',
-                                                            provider.id
-                                                        )
-                                                    "
-                                                />
-                                                <ActionButton
-                                                    type="modal"
-                                                    actionType="reject"
-                                                    :href="
-                                                        route(
-                                                            'admin.applications.delete',
-                                                            provider.id
-                                                        )
                                                     "
                                                 />
                                             </div>

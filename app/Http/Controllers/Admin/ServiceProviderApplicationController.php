@@ -176,4 +176,27 @@ class ServiceProviderApplicationController extends Controller
             ->back()
             ->with('message_success', 'Application has been rejected');
     }
+
+    /**
+     * Display rejected applications.
+     */
+    public function rejected()
+    {
+        $providers = ProviderProfile::with(['serviceType', 'profile.user'])
+            ->where('status', 'rejected')
+            ->latest()
+            ->paginate(10)
+            ->through(function ($provider) {
+                return [
+                    'id' => $provider->id,
+                    'name' => $provider->profile->user->name,
+                    'service_type' => $provider->serviceType->name,
+                    'service_type_id' => $provider->serviceType->id,
+                    'experience' => $provider->experience,
+                    'created_at' => $provider->created_at
+                ];
+            });
+
+        return Inertia::render('Users/Admin/ServiceProviderApplication/Rejected', compact(['providers']));
+    }
 }

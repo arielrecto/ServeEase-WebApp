@@ -62,15 +62,21 @@ const modalRef = ref(null);
                         providerProfile.contact
                     }}</span>
                 </div>
+                <div class="flex flex-col gap-y-1">
+                    <span class="font-semibold">Status</span>
+                    <span class="text-gray-600">{{
+                        providerProfile.status
+                    }}</span>
+                </div>
             </div>
 
             <h3 class="text-lg font-semibold">Submitted Documents</h3>
             <div class="space-y-3">
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold">Valid ID Selected</span>
-                    <span class="text-gray-600">{{
-                        providerProfile.valid_id_type
-                    }}</span>
+                    <span class="text-gray-600">
+                        {{ providerProfile.valid_id_type }}
+                    </span>
                 </div>
                 <div class="flex flex-col gap-y-1">
                     <span class="font-semibold"
@@ -146,7 +152,7 @@ const modalRef = ref(null);
             </div>
         </section>
 
-        <section>
+        <section v-if="providerProfile.status !== 'rejected'">
             <div class="flex items-center gap-2">
                 <button
                     class="flex items-center w-full panel-btn panel-btn-accept"
@@ -163,10 +169,8 @@ const modalRef = ref(null);
                 >
                     Reject
                 </ModalLink>
-                <!-- <button class="flex items-center w-full panel-btn panel-btn-reject" onclick="modal_reject.showModal()">
-                    Reject
-                </button> -->
             </div>
+
             <dialog id="my_modal_2" class="modal">
                 <div class="modal-box">
                     <form method="dialog">
@@ -206,46 +210,6 @@ const modalRef = ref(null);
                     <button>close</button>
                 </form>
             </dialog>
-            <dialog id="modal_reject" class="modal">
-                <div class="modal-box">
-                    <form method="dialog">
-                        <button
-                            class="absolute btn btn-sm btn-circle btn-ghost right-2 top-2"
-                        >
-                            ✕
-                        </button>
-                    </form>
-                    <div class="space-y-6">
-                        <h2
-                            class="text-xl font-semibold leading-tight text-gray-800"
-                        >
-                            Reject this application?
-                        </h2>
-                        <p>This will reject this user's application.</p>
-                        <div class="modal-action">
-                            <form method="dialog">
-                                <button class="button-ghost">Cancel</button>
-                            </form>
-                            <form @submit.prevent="reject">
-                                <button
-                                    type="submit"
-                                    :disabled="form.processing"
-                                    class="button-primary"
-                                >
-                                    Confirm
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <form method="dialog" class="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
-            <!-- <ModalLinkDialog :href="route('admin.service-provider.approve', providerProfile.id)" @success="modalRef.close" class="sticky flex items-center w-full panel-btn panel-btn-accept">Approve</ModalLinkDialog> -->
-            <!-- <ModalLink @success="modalRef.close" :href="route('admin.service-provider.approve', providerProfile.id)" class="sticky flex items-center w-full panel-btn panel-btn-accept">
-                Approve
-            </ModalLink> -->
         </section>
     </Modal>
 </template>
