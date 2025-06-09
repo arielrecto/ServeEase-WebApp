@@ -89,9 +89,9 @@ const isAdmin = computed(() => roleName.some((role) => role == "admin"));
             >
                 Favorites
             </NavLink> -->
-            <!-- <NavLink :href="route('search.index')" :active="route().current('search.index')">
+            <NavLink :href="route('search.index')" :active="route().current('search.index')">
                 Search
-            </NavLink> -->
+            </NavLink>
             <NavLink
                 :href="route('messages.index')"
                 :active="route().current('messages.*')"

@@ -296,12 +296,12 @@ const applicationLogoLink = () =>
                             >
                                 Favorites
                             </NavLink> -->
-                            <!-- <ResponsiveNavLink
+                            <ResponsiveNavLink
                                 :href="route('types.index')"
                                 :active="route().current('types.index')"
                             >
                                 Search
-                            </ResponsiveNavLink> -->
+                            </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('messages.index')"
                                 :active="route().current('messages.*')"

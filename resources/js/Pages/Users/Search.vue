@@ -1,6 +1,6 @@
 <script setup>
 import { Head, useForm, Link, usePage } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 import { useLoader } from "@/Composables/loader";
@@ -34,6 +34,13 @@ const form = useForm({
     byPrice: new URL(window.location.href).searchParams.get("byPrice") || "",
     byTransaction:
         new URL(window.location.href).searchParams.get("byTransaction") || "",
+});
+
+const selectedCategory = computed(() => {
+    if (!form.service) return null;
+
+    return props.services.find((service) => service.id === Number(form.service))
+        .name;
 });
 
 const ratingFilterOptions = ["Highest", "Lowest"];
@@ -208,19 +215,25 @@ onMounted(async () => {
                                 </div>
 
                                 <!-- Existing service selector -->
-                                <!-- <div class="w-full">
-                                    <InputLabel for="name" value="Select a service" />
+                                <div class="w-full">
+                                    <InputLabel
+                                        for="name"
+                                        value="Select a service"
+                                    />
                                     <ComboBox
+                                        :selected-item="selectedCategory"
                                         :items="services"
                                         identifier="name"
                                         valueName="id"
                                         keyName="id"
-                                        @update:model-value="(value) => (form.service = value)"
+                                        @update:model-value="
+                                            (value) => (form.service = value)
+                                        "
                                         @reset-value="form.service = ''"
                                         :isRequired="false"
                                         :class="`block w-full bg-white`"
                                     />
-                                </div> -->
+                                </div>
 
                                 <!-- Existing barangay selector -->
                                 <div class="w-full">

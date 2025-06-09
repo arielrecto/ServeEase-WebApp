@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 
 const props = defineProps({
+    selectedItem: String,
     items: Array,
     identifier: String,
     valueName: String,
@@ -103,35 +104,66 @@ watch([query, toggle], () => {
     else open.value = false;
 });
 
-
 // Reset value from form when user changes the value on the input field
 watch(selectedItem, () => {
-    if (!props.items.find((item) => item[props.identifier] === selectedItem.value)) {
-        emits('reset-value');
+    if (
+        !props.items.find(
+            (item) => item[props.identifier] === selectedItem.value
+        )
+    ) {
+        emits("reset-value");
+    }
+});
+
+onMounted(() => {
+    if (props.selectedItem) {
+        selectedItem.value = props.selectedItem;
     }
 });
 </script>
 
 <template>
-    <div v-click-outside="onClickOutside" class="relative inline-flex flex-col border border-gray-300 rounded-lg"
-        :class="class">
+    <div
+        v-click-outside="onClickOutside"
+        class="relative inline-flex flex-col border border-gray-300 rounded-lg"
+        :class="class"
+    >
         <div class="flex w-full">
-            <input @click="toggle = true" ref="textInputRef" @input="
-                (e) => {
-                    onInput(e);
-                }
-            " type="text" :value="selectedItem || query"
+            <input
+                @click="toggle = true"
+                ref="textInputRef"
+                @input="
+                    (e) => {
+                        onInput(e);
+                    }
+                "
+                type="text"
+                :value="selectedItem || query"
                 class="w-full m-0 overflow-hidden border-none focus:border-transparent focus:ring-0 focus:outline-none"
-                :required="isRequired" />
-            <button @click="onToggle" type="button" class="inline-flex items-center px-4 border-l border-l-gray-300">
-                <i class="fa-solid" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                :required="isRequired"
+            />
+            <button
+                @click="onToggle"
+                type="button"
+                class="inline-flex items-center px-4 border-l border-l-gray-300"
+            >
+                <i
+                    class="fa-solid"
+                    :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"
+                ></i>
             </button>
         </div>
 
-        <div v-if="open"
-            class="absolute w-full overflow-y-auto border border-gray-300 rounded-b-lg bg-inherit max-h-60 top-10">
-            <div @click="onSelection(item)" v-for="item in filteredItems" :key="item[keyName]"
-                class="hover:bg-gray-200 hover:cursor-pointer px-4 py-1.5">
+        <div
+            v-if="open"
+            class="absolute w-full overflow-y-auto border border-gray-300 rounded-b-lg bg-inherit max-h-60 top-10"
+        >
+            <div
+                @click="onSelection(item)"
+                v-for="item in filteredItems"
+                :key="item[keyName]"
+                class="hover:bg-gray-200 hover:cursor-pointer px-4 py-1.5"
+            >
                 {{ item.name }}
             </div>
         </div>
