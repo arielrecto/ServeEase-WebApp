@@ -16,9 +16,11 @@ const form = ref({
     services: [],
     start_date: "",
     end_date: "",
+    start_time: "", // Add start time
+    end_time: "", // Add end time
     remark: "",
     total_amount: "",
-    serviceDetails: {}, // Store details for each service (bargain price and remarks)
+    serviceDetails: {},
 });
 
 // Initialize serviceDetails with default values
@@ -44,6 +46,8 @@ const submit = () => {
     router.post(route("customer.services.bulk-avail"), {
         services: selectedServices.value,
         start_date: form.value.start_date,
+        start_time: form.value.start_time,
+        end_time: form.value.end_time,
         end_date: form.value.end_date,
         remark: form.value.remark,
         total_amount: form.value.total_amount,
@@ -180,6 +184,51 @@ const enableBargain = (serviceId) => {
                                         placeholder="Add any special instructions or notes for the service provider"
                                     ></textarea>
                                 </div>
+                                <!-- Include Time Checkbox -->
+                                <!-- <div class="md:col-span-2 mb-4">
+                                    <div class="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="includeTime"
+                                            v-model="form.includeTime"
+                                            class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                        />
+                                        <label
+                                            for="includeTime"
+                                            class="ml-2 text-sm text-gray-600"
+                                        >
+                                            Specify time for all services
+                                        </label>
+                                    </div>
+                                </div> -->
+
+                                <!-- Time Inputs -->
+
+                                    <div>
+                                        <label
+                                            class="block mb-2 text-sm font-medium text-gray-700"
+                                            >Start Time</label
+                                        >
+                                        <input
+                                            type="time"
+                                            v-model="form.start_time"
+                                            class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block mb-2 text-sm font-medium text-gray-700"
+                                            >End Time</label
+                                        >
+                                        <input
+                                            type="time"
+                                            v-model="form.end_time"
+                                            class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                            required
+                                        />
+                                    </div>
+
                             </div>
                         </div>
 

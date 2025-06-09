@@ -21,6 +21,8 @@ class AvailService extends Model
         'remarks',
         'quantity',
         'total_price',
+        'start_time',
+        'end_time',
         'service_cart_id',
     ];
 
