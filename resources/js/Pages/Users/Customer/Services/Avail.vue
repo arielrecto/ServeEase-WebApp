@@ -14,12 +14,15 @@ const props = defineProps({
 const form = useForm({
     startDate: null,
     endDate: null,
+    startTime: null,  // Add this
+    endTime: null,    // Add this
     hours: null,
     total: null,
     service: props.service.id,
     remark: null,
     quantity: 1,
-    attachments: [], // Add this
+    attachments: [],
+    includeTime: false, // Add this toggle state
 });
 
 const quantity = ref(1);
@@ -116,6 +119,23 @@ const getFileIcon = (file) => {
 const back = () => {
     window.history.back();
 };
+
+// Add computed property for time validation
+const minTime = computed(() => {
+    if (!form.startDate || form.startDate !== moment().format('YYYY-MM-DD')) {
+        return null;
+    }
+    return moment().format('HH:mm');
+});
+
+// Add time validation watcher
+watch(() => form.startTime, (value) => {
+    if (value && form.endTime && value >= form.endTime) {
+        form.endTime = moment(value, 'HH:mm')
+            .add(1, 'hour')
+            .format('HH:mm');
+    }
+});
 </script>
 
 <template>
@@ -245,6 +265,47 @@ const back = () => {
                                                     form.errors.hours
                                                 "
                                             />
+                                        </div>
+                                    </div>
+
+                                    <!-- Inside the Schedule Details section, after date inputs -->
+                                    <div class="mt-4">
+                                        <!-- <div class="flex items-center mb-4">
+                                            <input
+                                                type="checkbox"
+                                                id="includeTime"
+                                                v-model="form.includeTime"
+                                                class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                            >
+                                            <label for="includeTime" class="ml-2 text-sm text-gray-600">
+                                                Specify time for the service
+                                            </label>
+                                        </div> -->
+
+                                        <div  class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <InputLabel for="startTime" value="Start Time" />
+                                                <TextInput
+                                                    id="startTime"
+                                                    type="time"
+                                                    v-model="form.startTime"
+                                                    class="block w-full mt-1"
+                                                    required
+                                                />
+                                                <InputError :message="form.errors.startTime" />
+                                            </div>
+
+                                            <div>
+                                                <InputLabel for="endTime" value="End Time" />
+                                                <TextInput
+                                                    id="endTime"
+                                                    type="time"
+                                                    v-model="form.endTime"
+                                                    class="block w-full mt-1"
+                                                    required
+                                                />
+                                                <InputError :message="form.errors.endTime" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

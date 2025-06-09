@@ -146,13 +146,18 @@ class ServiceController extends Controller
 
     public function availStore(Request $request)
     {
+
+
         $request->validate([
             'startDate' => 'required|date',
             'endDate' => 'required|date',
+            'startTime' => 'required',
+            'endTime' => 'required',
             'remark' => 'nullable|sometimes|string',
             'total' => 'required|numeric',
             'service' => 'required|exists:services,id',
-            'attachments.*' => 'nullable|file|max:10240', // 10MB max per file
+            'attachments.*' => 'nullable|file|max:10240',
+
         ]);
 
         $service = Service::find($request->service);
@@ -167,9 +172,9 @@ class ServiceController extends Controller
 
         if (
             PersonalEvent::where('user_id', $service->user->id)
-                ->where('start_date', '<=', $request->endDate)
-                ->where('end_date', '>=', $request->startDate)
-                ->exists()
+            ->where('start_date', '<=', $request->endDate)
+            ->where('end_date', '>=', $request->startDate)
+            ->exists()
         ) {
             return back()->with(['message_error' => 'Service Provider have a personal event during this time']);
         }
@@ -180,10 +185,13 @@ class ServiceController extends Controller
             $total_hours = $request->hours;
         }
 
+        // Create avail service with optional time
         $availService = AvailService::create([
             'start_date' => $request->startDate,
             'end_date' => $request->endDate,
-            'remarks' => $request?->remark ?? "No additonal note.",
+            'start_time' => $request->startTime ?? null,
+            'end_time' => $request->endTime ?? null,
+            'remarks' => $request->remark ?? "No additional note.",
             'total_price' => $request->total,
             'service_id' => $request->service,
             'total_hours' => $total_hours,
@@ -266,7 +274,10 @@ class ServiceController extends Controller
             'services' => ['required', 'array', 'min:1'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'start_time' => ['required'],
+            'end_time' => ['required'],
             'remark' => ['required', 'string'],
+            'includeTime' => ['boolean'],
         ]);
 
         $services = Service::whereIn('id', $request->services)->get();
@@ -306,10 +317,16 @@ class ServiceController extends Controller
                     $total_price = $request->serviceDetails[$service->id]['bargain_price'];
                 }
 
-                // Create avail service record
+
+
+
+
+                // Create avail service record with time if included
                 $availService = AvailService::create([
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
+                    'start_time' => $request->start_time ?? null,
+                    'end_time' =>  $request->end_time ?? null,
                     'remarks' => $request->remark,
                     'total_price' => $total_price,
                     'service_id' => $service->id,
@@ -324,16 +341,6 @@ class ServiceController extends Controller
                     'remarkable_id' => $availService->id,
                     'remarkable_type' => AvailService::class
                 ]);
-
-                // Create notification for service provider
-                // $notification = Notification::create([
-                //     'user_id' => $service->user_id,
-                //     'content' => GenerateNotificationAction::handle('booking', 'bulk-booking-created', Auth::user()),
-                //     'type' => 'booking',
-                //     'url' => "/service-provider/booking/{$availService->id}/detail"
-                // ]);
-
-                // broadcast(new NotificationSent($notification))->toOthers();
             }
 
             return to_route('customer.services.show', ['service' => $services->first()->id])

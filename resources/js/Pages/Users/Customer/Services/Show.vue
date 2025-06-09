@@ -18,15 +18,33 @@ const props = defineProps({
 
 const events = computed(() => {
     if (props.availServices.length === 0) return [];
-
+    console.log(props.availServices)
     return [
         ...props.availServices.map((item) => ({
             title: `Booking with ${item.user.profile.full_name}`,
-            start: item.start_date,
-            end: moment(item.end_date).add(1, "day").format("YYYY-MM-DD"),
+            start: item.start_time
+                ? `${item.start_date}T${item.start_time}`
+                : item.start_date,
+            end: item.end_time
+                ? `${item.end_date}T${item.end_time}`
+                : moment(item.end_date).add(1, "day").format("YYYY-MM-DD"),
+            allDay: !item.start_time || !item.end_time,
+            extendedProps: {
+                time: item.start_time && item.end_time
+                    ? `${moment(item.start_time, 'HH:mm').format('h:mm A')} - ${moment(item.end_time, 'HH:mm').format('h:mm A')}`
+                    : 'All Day'
+            }
         })),
     ];
 });
+
+const showEventDetails = ref(false);
+const selectedEvent = ref(null);
+
+const handleEventClick = (event) => {
+    selectedEvent.value = event;
+    showEventDetails.value = true;
+};
 </script>
 
 <template>
@@ -148,7 +166,10 @@ const events = computed(() => {
                             {{ service.user.profile.first_name }}'s upcoming
                             bookings & events
                         </h2>
-                        <Calendar :events="[...events, ...personalEvents]" />
+                        <Calendar
+                            :events="[...events, ...personalEvents]"
+                            :onEventClick="handleEventClick"
+                        />
                     </div>
 
                     <div class="flex-1">
@@ -237,6 +258,35 @@ const events = computed(() => {
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <!-- Add Modal for Event Details -->
+    <div v-if="showEventDetails" class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50" @click="showEventDetails = false"></div>
+
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="relative px-4 pt-5 pb-4 overflow-hidden transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium">Event Details</h3>
+                    <button @click="showEventDetails = false" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Close</span>
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4" v-if="selectedEvent">
+                    <div>
+                        <h4 class="font-medium">{{ selectedEvent.title }}</h4>
+                        <p class="text-sm text-gray-600">
+                            {{ moment(selectedEvent.start).format('MMMM D, YYYY') }}
+                            <span v-if="selectedEvent.extendedProps.time">
+                                at {{ selectedEvent.extendedProps.time }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <!-- <template>

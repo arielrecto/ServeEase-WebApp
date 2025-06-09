@@ -2,7 +2,7 @@
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import ModalLinkDialog from "@/Components/Modal/ModalLinkDialog.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -18,6 +18,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    onEventClick: {
+        type: Function,
+        default: null,
+    }
 });
 
 const showModal = ref(false);
@@ -37,6 +41,11 @@ const calendarOptions = ref({
     events: [],
     selectable: props.can_create,
     dateClick: handleDateClick,
+    eventClick: handleEventClick, // Add event click handler
+    eventDidMount: function(info) {
+        // Add cursor pointer to events
+        info.el.style.cursor = 'pointer';
+    }
 });
 
 function handleDateClick(arg) {
@@ -50,6 +59,13 @@ function handleDateClick(arg) {
     form.start_date = moment(arg.date).format("YYYY-MM-DD");
     form.end_date = moment(arg.date).format("YYYY-MM-DD");
     showModal.value = true;
+}
+
+// Add event click handler function
+function handleEventClick(info) {
+    if (props.onEventClick) {
+        props.onEventClick(info.event);
+    }
 }
 
 const submit = () => {
@@ -69,6 +85,30 @@ watch(
     },
     { immediate: true }
 );
+
+const renderEventContent = (eventInfo) => {
+    return {
+        html: `
+            <div class="p-2 hover:bg-gray-50">
+                <div class="font-medium">${eventInfo.event.title}</div>
+                <div class="text-xs text-gray-600">
+                    ${eventInfo.event.extendedProps.time || ''}
+                </div>
+            </div>
+        `,
+    };
+};
+
+onMounted(() => {
+    calendarOptions.value.events = props.events.map((event) => ({
+        ...event,
+        start: moment(event.start).format("YYYY-MM-DD"),
+        end: moment(event.end).format("YYYY-MM-DD"),
+        display: "block",
+    }));
+
+    renderEventContent;
+})
 </script>
 
 <template>
