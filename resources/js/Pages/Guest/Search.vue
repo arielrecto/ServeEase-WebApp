@@ -434,7 +434,7 @@ onMounted(async () => {
                 </div>
 
                 <div
-                    v-if="userServices === 0"
+                    v-if="userServices.length === 0"
                     class="text-sm text-center text-gray-700"
                 >
                     No services found.
