@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { watch } from "vue";
+
+const props = defineProps({
     placeholder: {
         default: "Select an option",
         type: String,
@@ -16,18 +18,32 @@ defineProps({
         type: [String, null],
         default: null,
     },
+    modelValue: {
+        type: [String, Number],
+        default: "",
+    },
 });
 
 const emits = defineEmits(["update:modelValue"]);
+
+// Watch for external resets - when modelValue becomes empty/null
+watch(
+    () => props.modelValue,
+    (newValue) => {
+        if (!newValue && newValue !== 0) {
+            emits("update:modelValue", "");
+        }
+    }
+);
 </script>
 
 <template>
     <select
-        v-model="model"
+        :value="modelValue"
         @change="emits('update:modelValue', $event.target.value)"
         class="text-gray-900 border-gray-300 focus:border-primary focus:ring-primary rounded-xl"
     >
-        <option disabled selected>{{ placeholder }}</option>
+        <option value="" disabled selected>{{ placeholder }}</option>
         <template v-if="choices">
             <option
                 v-for="choice in choices"

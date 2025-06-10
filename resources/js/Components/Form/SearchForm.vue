@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
@@ -8,14 +8,29 @@ const props = defineProps({
         type: String,
         default: "Search something",
     },
+    initialValue: {
+        type: String,
+        default: "",
+    },
 });
 const emits = defineEmits(["submitted"]);
 
-const query = ref("");
+const query = ref(props.initialValue);
+
+// Watch for external resets
+watch(
+    () => props.initialValue,
+    (newValue) => {
+        query.value = newValue;
+    }
+);
 </script>
 
 <template>
-    <form @submit.prevent="emits('submitted', query)" class="w-full md:max-w-md md:mx-auto">
+    <form
+        @submit.prevent="emits('submitted', query)"
+        class="w-full md:max-w-md md:mx-auto"
+    >
         <label
             for="default-search"
             class="mb-2 text-sm font-medium text-gray-900 sr-only"

@@ -2,12 +2,27 @@
 import { ref, computed, watch, onMounted } from "vue";
 
 const props = defineProps({
-    selectedItem: String,
-    items: Array,
-    identifier: String,
-    valueName: String,
-    keyName: String,
+    items: {
+        type: Array,
+        required: true,
+    },
+    identifier: {
+        type: String,
+        default: "name",
+    },
+    valueName: {
+        type: String,
+        default: "id",
+    },
+    keyName: {
+        type: String,
+        default: "id",
+    },
     class: String,
+    initialValue: {
+        type: String,
+        default: "",
+    },
     isRequired: {
         type: Boolean,
         default: false,
@@ -15,25 +30,42 @@ const props = defineProps({
 });
 
 const query = ref("");
-const selectedItem = ref("");
-const selectedValue = ref("");
 const selectedItems = ref([]);
+const selectedText = ref("");
 const toggle = ref(false);
 const open = ref(false);
 const textInputRef = ref();
 
-const people = [
-    { id: 1, name: "Tom Cook" },
-    { id: 2, name: "Wade Cooper" },
-    { id: 3, name: "Tanya Fox" },
-    { id: 4, name: "Arlene Mccoy" },
-    { id: 5, name: "Devon Webb" },
-    { id: 6, name: "Devon Webb" },
-    { id: 7, name: "Devon Webb" },
-    { id: 8, name: "Devon Webb" },
-    { id: 9, name: "Devon Webb" },
-    { id: 10, name: "Devon Webb" },
-];
+const resetQuery = () => {
+    query.value = "";
+};
+
+// Watch for external resets and initialize
+watch(
+    () => props.initialValue,
+    (newValue) => {
+        if (newValue) {
+            const item = props.items.find(
+                (item) => item[props.valueName] === newValue
+            );
+            if (item) {
+                selectedText.value = item[props.identifier];
+                selectedItems.value = [{ ...item }];
+                if (textInputRef.value) {
+                    textInputRef.value.value = item[props.identifier];
+                }
+            }
+        } else {
+            selectedText.value = "";
+            resetQuery();
+            selectedItems.value = [];
+            if (textInputRef.value) {
+                textInputRef.value.value = "";
+            }
+        }
+    },
+    { immediate: true }
+);
 
 const emits = defineEmits(["update:model-value", "reset-value"]);
 
@@ -47,10 +79,9 @@ const filteredItems = computed(() => {
 });
 
 const onInput = (e) => {
-    selectedItem.value = "";
+    selectedText.value = "";
     query.value = e.target.value;
     textInputRef.value.value = query.value;
-    // console.log(query.value);
 };
 
 const onToggle = () => {
@@ -64,18 +95,14 @@ const onClickOutside = () => {
 };
 
 const onSelection = (item) => {
-    selectedItems.value.splice(0, selectedItems.value.length);
-    selectedItems.value.push({ ...item });
-    textInputRef.value.value = item.name;
-    selectedItem.value = item.name;
-    // selectedValue.value = item[props.valueName];
+    selectedItems.value = [{ ...item }];
+    selectedText.value = item.name;
+    if (textInputRef.value) {
+        textInputRef.value.value = item.name;
+    }
     toggle.value = false;
     resetQuery();
     emits("update:model-value", item.id);
-};
-
-const resetQuery = () => {
-    query.value = "";
 };
 
 const vClickOutside = {
@@ -104,20 +131,15 @@ watch([query, toggle], () => {
     else open.value = false;
 });
 
-// Reset value from form when user changes the value on the input field
-watch(selectedItem, () => {
+// Reset value when input text doesn't match any item
+watch(selectedText, () => {
     if (
+        selectedText.value &&
         !props.items.find(
-            (item) => item[props.identifier] === selectedItem.value
+            (item) => item[props.identifier] === selectedText.value
         )
     ) {
         emits("reset-value");
-    }
-});
-
-onMounted(() => {
-    if (props.selectedItem) {
-        selectedItem.value = props.selectedItem;
     }
 });
 </script>
@@ -132,13 +154,9 @@ onMounted(() => {
             <input
                 @click="toggle = true"
                 ref="textInputRef"
-                @input="
-                    (e) => {
-                        onInput(e);
-                    }
-                "
+                @input="onInput"
                 type="text"
-                :value="selectedItem || query"
+                :value="selectedText || query"
                 class="w-full m-0 overflow-hidden border-none focus:border-transparent focus:ring-0 focus:outline-none"
                 :required="isRequired"
             />

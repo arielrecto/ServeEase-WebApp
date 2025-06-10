@@ -35,6 +35,8 @@ const form = useForm({
 });
 
 const resetSearch = async () => {
+    form.reset();
+    // Explicitly clear all values after form.reset()
     form.search = "";
     form.service = "";
     form.brgy = "";
@@ -216,13 +218,14 @@ onMounted(async () => {
                         <div class="flex items-center gap-4">
                             <div class="flex-1">
                                 <SearchForm
+                                    :initial-value="form.search"
                                     @submitted="
                                         async (query) => {
                                             form.search = query;
                                             await fetchServices();
                                         }
                                     "
-                                    placeholder="Search for services..."
+                                    placeholder="Search for service or provider..."
                                 />
                             </div>
                             <PrimaryButton
@@ -273,6 +276,7 @@ onMounted(async () => {
                                                 (value) =>
                                                     (form.service = value)
                                             "
+                                            :initial-value="form.service"
                                             @reset-value="form.service = ''"
                                             :isRequired="false"
                                             :class="`block w-full bg-white`"
@@ -288,6 +292,7 @@ onMounted(async () => {
                                             identifier="name"
                                             valueName="id"
                                             keyName="id"
+                                            :initial-value="form.brgy"
                                             @update:model-value="
                                                 (value) => (form.brgy = value)
                                             "

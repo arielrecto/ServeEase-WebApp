@@ -58,6 +58,8 @@ const toggleSearchMode = (mode) => {
 };
 
 const resetSearch = async () => {
+    form.reset();
+    // Explicitly clear all values after form.reset()
     form.search = "";
     // form.service = "";
     form.brgy = "";
@@ -98,16 +100,17 @@ const fetchServices = async () => {
 // Add reset function
 const resetFilters = () => {
     form.reset();
-    // Use Inertia router to remove query parameters
+    // Explicitly clear all values after form.reset()
+    form.search = "";
+    form.service = "";
+    form.brgy = "";
+    form.byRating = "";
+    form.byPrice = "";
+    form.byTransaction = "";
+
+    // Update URL to remove query params
     router.get(
-        route("search.index", {
-            _query: {
-                service:
-                    form.service ||
-                    new URL(window.location.href).searchParams.get("service") ||
-                    "",
-            },
-        }),
+        route("search.index"),
         {},
         {
             preserveState: false,
@@ -268,7 +271,7 @@ onMounted(async () => {
                                                 await fetchServices();
                                             }
                                         "
-                                        placeholder="Search for services..."
+                                        placeholder="Search for service or provider..."
                                     />
                                 </div>
                                 <PrimaryButton
@@ -335,6 +338,7 @@ onMounted(async () => {
                                                 identifier="name"
                                                 valueName="id"
                                                 keyName="id"
+                                                :initial-value="form.brgy"
                                                 @update:model-value="
                                                     (value) =>
                                                         (form.brgy = value)
@@ -434,7 +438,7 @@ onMounted(async () => {
                                         class="flex items-center justify-between pt-6 border-t"
                                     >
                                         <PrimaryButton
-                                            @click="resetFilters"
+                                            @click="resetSearch"
                                             type="button"
                                             class="button-ghost"
                                             title="Reset filters"

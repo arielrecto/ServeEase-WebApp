@@ -23,16 +23,14 @@ const modalRef = ref(null);
                 <h2 class="text-lg">{{ service.name }}</h2>
                 <span class="text-sm">
                     <i class="text-yellow-500 fa-solid fa-star"></i>
-                    4.8
+                    {{ service.avg_rate }}
                 </span>
                 <div>
-                    ₱ <span class="text-3xl font-black text-primary">2000</span>
-                    <span
-                        v-if="service.price_type === 'fixed'"
-                        class="text-gray-600"
-                    >
-                        (Fixed Rate)</span
-                    >
+                    ₱
+                    <span class="text-3xl font-black text-primary">{{
+                        service.price
+                    }}</span>
+                    / {{ service.price_type }}
                 </div>
 
                 <div

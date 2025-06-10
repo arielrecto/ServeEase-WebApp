@@ -32,23 +32,23 @@ class SearchController extends Controller
             ->when($request->authId, function ($q) use ($request) {
                 $q->whereNot('user_id', (int) $request->authId);
             })
+            ->when($request->service, function ($q) use ($request) {
+                $q->where('service_type_id', $request->service);
+            })
             ->when($request->search, function ($q) use ($request) {
                 $rating = null;
                 $price = null;
                 $transactions = null;
-                $request->service = null;
+                // $request->service = null;
                 $request->brgy = null;
 
                 $q->where('name', 'LIKE', "%{$request->search}%")
-                ->orWhere(function($q) use ($request) {
-                    $q->whereHas('user.profile', function ($q) use ($request) {
-                        $q->where('first_name', 'LIKE', "%{$request->search}%")
-                          ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+                    ->orWhere(function ($q) use ($request) {
+                        $q->whereHas('user.profile', function ($q) use ($request) {
+                            $q->where('first_name', 'LIKE', "%{$request->search}%")
+                                ->orWhere('last_name', 'LIKE', "%{$request->search}%");
+                        });
                     });
-                });
-            })
-            ->when($request->service, function ($q) use ($request) {
-                $q->where('service_type_id', $request->service);
             })
             ->when($request->brgy, function ($q) use ($request) {
                 $q->where('barangay_id', $request->brgy);
