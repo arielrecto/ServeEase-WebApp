@@ -184,8 +184,8 @@ console.log(props.reports.value);
                                                 />
                                                 <ActionButton
                                                     v-if="
-                                                        report.status ===
-                                                        'pending'
+                                                        report.status !==
+                                                        'resolved'
                                                     "
                                                     type="button"
                                                     actionType="resolve"

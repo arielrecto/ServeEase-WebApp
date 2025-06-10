@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Models\Report;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Report;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
@@ -85,9 +87,18 @@ class ReportController extends Controller
             }
         }
 
+        $notification = Notification::create([
+            'user_id' => User::role('admin')->first()->id,
+            'content' => 'New report submitted by ' . auth()->user()->profile->full_name . '. Click to see the details.',
+            'type' => 'report',
+            'url' => '/admin/reports/' . $report->id
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
+
         return redirect()
             ->route('customer.report.index')
-            ->with('success', 'Report submitted successfully.');
+            ->with('message_success', 'Report submitted successfully.');
     }
 
     public function show(Report $report)

@@ -441,7 +441,7 @@ class BookingController extends Controller
                 'user_id' => $availService->service->user_id,
                 'content' => GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->user, ['remark' => $request->remarks]),
                 'type' => 'booking',
-                'url' => "/customer/booking/{$availService->id}/detail"
+                'url' => "/service-provider/booking/{$availService->id}/detail"
             ]);
 
             broadcast(new NotificationSent($notification))->toOthers();

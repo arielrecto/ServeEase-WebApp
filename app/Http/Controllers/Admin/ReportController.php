@@ -207,7 +207,7 @@ class ReportController extends Controller
         $notification = Notification::create([
             'user_id' => $report->user_id,
             'content' => 'Your complaint report #' . $report->id . ' has been rejected. Click to see the details.',
-            'type' => 'report_rejected',
+            'type' => 'report',
             'url' => '/customer/report/' . $report->id,
             'is_seen' => false
         ]);

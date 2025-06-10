@@ -9,13 +9,15 @@ const props = defineProps({
 
 const form = useForm({
     availServiceId: props.availService.id,
+    remarks: "", // Changed to match backend expectation
 });
 
 const submit = () => {
     form.put(route("customer.booking.cancel", form.availServiceId), {
+        preserveScroll: true,
         onFinish: () => {
             modalRef.value.close();
-        }
+        },
     });
 };
 
@@ -31,9 +33,28 @@ const modalRef = ref(null);
                 Cancel Booking?
             </h2>
 
-            <p>
-                This booking will be cancelled.
-            </p>
+            <div class="space-y-4">
+                <p class="text-gray-600">
+                    This booking will be cancelled. Please provide a reason for
+                    cancellation:
+                </p>
+
+                <div class="space-y-2">
+                    <textarea
+                        v-model="form.remarks"
+                        rows="3"
+                        class="block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="Enter your reason for cancellation..."
+                        required
+                    ></textarea>
+                    <p
+                        v-if="form.errors.remarks"
+                        class="mt-1 text-sm text-red-600"
+                    >
+                        {{ form.errors.remarks }}
+                    </p>
+                </div>
+            </div>
 
             <form @submit.prevent="submit">
                 <div class="flex justify-end">
@@ -47,10 +68,11 @@ const modalRef = ref(null);
                         </button>
                         <button
                             type="submit"
-                            :disabled="form.processing"
+                            :disabled="form.processing || !form.remarks"
                             class="button-primary"
                         >
-                            Confirm
+                            <span v-if="form.processing">Cancelling...</span>
+                            <span v-else>Confirm</span>
                         </button>
                     </div>
                 </div>

@@ -13,12 +13,12 @@ const isVerifiedProvider = computed(() => page.props.auth.isVerifiedProvider);
 const isServiceProvider = computed(() => page.props.auth.isServiceProvider);
 
 const menuItems = [
-    {
-        id: 2,
-        title: "Service Types",
-        url: route("types.index"),
-        icon: "ri-service-line",
-    },
+    // {
+    //     id: 2,
+    //     title: "Service Types",
+    //     url: route("types.index"),
+    //     icon: "ri-service-line",
+    // },
     {
         id: 5,
         title: "Provider Profile",

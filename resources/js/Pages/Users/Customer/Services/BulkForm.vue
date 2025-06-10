@@ -69,6 +69,33 @@ const enableBargain = (serviceId) => {
     serviceDetail.is_bargain = true;
     serviceDetail.remark = `I would like to bargain the price to ₱${serviceDetail.bargain_price}.`;
 };
+
+const minTime = computed(() => {
+    if (
+        !form.value.start_date ||
+        form.value.start_date !== new Date().toLocaleDateString("en-CA")
+    ) {
+        return null;
+    }
+    const now = new Date();
+    const minutes = now.getMinutes();
+    // Round up to next 30 minutes
+    if (minutes > 30) {
+        now.setHours(now.getHours() + 1);
+        now.setMinutes(0);
+    } else if (minutes > 0) {
+        now.setMinutes(30);
+    }
+    return `${now.getHours().toString().padStart(2, "0")}:${now
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+});
+
+const isTimeValid = computed(() => {
+    if (!form.value.start_time || !form.value.end_time) return false;
+    return form.value.end_time > form.value.start_time;
+});
 </script>
 
 <template>
@@ -185,13 +212,13 @@ const enableBargain = (serviceId) => {
                                     ></textarea>
                                 </div>
                                 <!-- Include Time Checkbox -->
-                                <!-- <div class="md:col-span-2 mb-4">
+                                <!-- <div class="mb-4 md:col-span-2">
                                     <div class="flex items-center">
                                         <input
                                             type="checkbox"
                                             id="includeTime"
                                             v-model="form.includeTime"
-                                            class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                            class="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary"
                                         />
                                         <label
                                             for="includeTime"
@@ -204,31 +231,46 @@ const enableBargain = (serviceId) => {
 
                                 <!-- Time Inputs -->
 
-                                    <div>
-                                        <label
-                                            class="block mb-2 text-sm font-medium text-gray-700"
-                                            >Start Time</label
-                                        >
-                                        <input
-                                            type="time"
-                                            v-model="form.start_time"
-                                            class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label
-                                            class="block mb-2 text-sm font-medium text-gray-700"
-                                            >End Time</label
-                                        >
-                                        <input
-                                            type="time"
-                                            v-model="form.end_time"
-                                            class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                                            required
-                                        />
-                                    </div>
-
+                                <div>
+                                    <label
+                                        class="block mb-2 text-sm font-medium text-gray-700"
+                                        >Start Time</label
+                                    >
+                                    <input
+                                        type="time"
+                                        v-model="form.start_time"
+                                        :min="minTime"
+                                        step="1800"
+                                        class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        class="block mb-2 text-sm font-medium text-gray-700"
+                                        >End Time</label
+                                    >
+                                    <input
+                                        type="time"
+                                        v-model="form.end_time"
+                                        :min="form.start_time"
+                                        max="23:59"
+                                        class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                        required
+                                    />
+                                </div>
+                                <div
+                                    v-if="
+                                        !isTimeValid &&
+                                        form.start_time &&
+                                        form.end_time
+                                    "
+                                    class="md:col-span-2"
+                                >
+                                    <p class="mt-2 text-sm text-red-600">
+                                        End time must be later than start time
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -323,7 +365,10 @@ const enableBargain = (serviceId) => {
                             <button
                                 type="submit"
                                 class="px-8 py-3 font-medium text-white transition-colors duration-200 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                                :disabled="selectedServices.length === 0"
+                                :disabled="
+                                    selectedServices.length === 0 ||
+                                    !isTimeValid
+                                "
                             >
                                 Proceed to Booking
                             </button>

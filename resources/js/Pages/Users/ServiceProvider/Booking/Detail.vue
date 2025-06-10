@@ -9,7 +9,7 @@ import HeaderBackButton from "@/Components/HeaderBackButton.vue";
 import FeedbackList from "@/Components/Feedbacks/FeedbackList.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
 import SelectInput from "@/Components/Form/SelectInput.vue";
-import FileView from '@/Components/FileView.vue';
+import FileView from "@/Components/FileView.vue";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -24,11 +24,12 @@ const props = defineProps({
 
 // Add computed property for service cart reference
 const cartReference = computed(() => {
-
-    return props.availService.service_cart_id ? {
-        reference: props.availService.service_cart?.reference_number,
-        id: props.availService.service_cart_id
-    } : null;
+    return props.availService.service_cart_id
+        ? {
+              reference: props.availService.service_cart?.reference_number,
+              id: props.availService.service_cart_id,
+          }
+        : null;
 });
 
 const state = reactive({
@@ -114,7 +115,6 @@ watch(selectedStatus, (newStatus) => {
 </script>
 
 <template>
-
     <Head :title="service.name" />
 
     <AuthenticatedLayout>
@@ -128,88 +128,142 @@ watch(selectedStatus, (newStatus) => {
             <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="h-[35vh] w-full">
-                        <img :src="service.service_thumbnail" alt="Image showing the service"
-                            class="object-cover w-full h-full" />
+                        <img
+                            :src="service.service_thumbnail"
+                            alt="Image showing the service"
+                            class="object-cover w-full h-full"
+                        />
                     </div>
 
                     <div class="p-8">
                         <Tabs value="0">
                             <TabList>
-                                <Tab v-for="tab in state.tabs" :value="tab.value">{{ tab.name }}</Tab>
+                                <Tab
+                                    v-for="tab in state.tabs"
+                                    :value="tab.value"
+                                    >{{ tab.name }}</Tab
+                                >
                             </TabList>
                             <TabPanels>
                                 <TabPanel value="0">
-                                    <div class="flex flex-col gap-y-4 md:grid md:grid-cols-3 gap-x-8">
-                                        <div class="order-2 col-span-2 md:order-1">
+                                    <div
+                                        class="flex flex-col gap-y-4 md:grid md:grid-cols-3 gap-x-8"
+                                    >
+                                        <div
+                                            class="order-2 col-span-2 md:order-1"
+                                        >
                                             <div class="mb-12 space-y-2">
                                                 <h1 class="text-2xl font-bold">
                                                     {{ service.name }}
                                                 </h1>
-                                                <span class="inline-block mr-3 text-sm">
-                                                    <i class="text-yellow-500 fa-solid fa-star"></i>
-                                                    {{
-                                                        service.avg_rate
-                                                    }}
+                                                <span
+                                                    class="inline-block mr-3 text-sm"
+                                                >
+                                                    <i
+                                                        class="text-yellow-500 fa-solid fa-star"
+                                                    ></i>
+                                                    {{ service.avg_rate }}
                                                 </span>
                                             </div>
 
                                             <div class="flex flex-col gap-y-1">
-                                                <span class="text-gray-600">Description</span>
-                                                <div class="overflow-y-auto max-h-48">
+                                                <span class="text-gray-600"
+                                                    >Description</span
+                                                >
+                                                <div
+                                                    class="overflow-y-auto max-h-48"
+                                                >
                                                     <span class="">{{
                                                         service.description
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
-                                            <div v-if="
-                                                service.terms_and_conditions
-                                            " class="flex flex-col gap-y-1">
-                                                <span class="text-gray-600">Terms & conditions</span>
-                                                <div class="overflow-y-auto max-h-48">
+                                            <div
+                                                v-if="
+                                                    service.terms_and_conditions
+                                                "
+                                                class="flex flex-col gap-y-1"
+                                            >
+                                                <span class="text-gray-600"
+                                                    >Terms & conditions</span
+                                                >
+                                                <div
+                                                    class="overflow-y-auto max-h-48"
+                                                >
                                                     <span class="">{{
                                                         service.terms_and_conditions
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
                                             </div>
-                                            <div class="flex flex-col mt-20 gap-y-3">
-                                                <span class="text-xl font-semibold">About the provider</span>
-                                                <div class="flex flex-col gap-y-1">
-                                                    <div class="flex items-start gap-x-4">
+                                            <div
+                                                class="flex flex-col mt-20 gap-y-3"
+                                            >
+                                                <span
+                                                    class="text-xl font-semibold"
+                                                    >About the provider</span
+                                                >
+                                                <div
+                                                    class="flex flex-col gap-y-1"
+                                                >
+                                                    <div
+                                                        class="flex items-start gap-x-4"
+                                                    >
                                                         <div
-                                                            class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square">
-                                                            <img :src="service.user
-                                                                    .profile
-                                                                    .user_avatar
-                                                                " class="object-cover w-full h-full" />
+                                                            class="w-16 h-16 overflow-hidden bg-gray-600 rounded-full aspect-square"
+                                                        >
+                                                            <img
+                                                                :src="
+                                                                    service.user
+                                                                        .profile
+                                                                        .user_avatar
+                                                                "
+                                                                class="object-cover w-full h-full"
+                                                            />
                                                         </div>
-                                                        <div class="flex flex-col space-y-1">
-                                                            <span class="text-xl">{{
-                                                                service.user
-                                                                    .name
-                                                            }}</span>
-                                                            <span class="text-sm italic text-gray-600">{{
-                                                                service.user
-                                                                    .profile
-                                                                    .provider_profile
-                                                                    .contact
-                                                            }}</span>
-                                                            <span class="text-sm italic text-gray-600">Experience:
+                                                        <div
+                                                            class="flex flex-col space-y-1"
+                                                        >
+                                                            <span
+                                                                class="text-xl"
+                                                                >{{
+                                                                    service.user
+                                                                        .name
+                                                                }}</span
+                                                            >
+                                                            <span
+                                                                class="text-sm italic text-gray-600"
+                                                                >{{
+                                                                    service.user
+                                                                        .profile
+                                                                        .provider_profile
+                                                                        .contact
+                                                                }}</span
+                                                            >
+                                                            <span
+                                                                class="text-sm italic text-gray-600"
+                                                                >Experience:
                                                                 {{
                                                                     service.user
                                                                         .profile
                                                                         .provider_profile
                                                                         .experience
-                                                                }}</span>
-                                                            <Link :href="route(
-                                                                'profile.showProviderProfile',
-                                                                service
-                                                                    .user
-                                                                    .profile
-                                                                    .provider_profile
-                                                                    .id
-                                                            )
-                                                                " class="underline text-primary">Go to
-                                                            Profile</Link>
+                                                                }}</span
+                                                            >
+                                                            <Link
+                                                                :href="
+                                                                    route(
+                                                                        'profile.showProviderProfile',
+                                                                        service
+                                                                            .user
+                                                                            .profile
+                                                                            .provider_profile
+                                                                            .id
+                                                                    )
+                                                                "
+                                                                class="underline text-primary"
+                                                                >Go to
+                                                                Profile</Link
+                                                            >
                                                         </div>
                                                     </div>
                                                 </div>
@@ -217,15 +271,29 @@ watch(selectedStatus, (newStatus) => {
                                         </div>
 
                                         <div
-                                            class="order-1 h-auto p-5 space-y-4 border border-gray-300 rounded-lg md:order-2">
+                                            class="order-1 h-auto p-5 space-y-4 border border-gray-300 rounded-lg md:order-2"
+                                        >
                                             <!-- Add reference number section -->
-                                            <div v-if="cartReference" class="mb-4 space-y-1">
-                                                <div class="text-gray-600">Reference Number</div>
+                                            <div
+                                                v-if="cartReference"
+                                                class="mb-4 space-y-1"
+                                            >
+                                                <div class="text-gray-600">
+                                                    Reference Number
+                                                </div>
                                                 <div>
                                                     <Link
-                                                        :href="route('service-provider.booking.cart.show', cartReference.id)"
-                                                        class="font-semibold text-primary hover:underline">
-                                                    {{ cartReference.reference }}
+                                                        :href="
+                                                            route(
+                                                                'service-provider.booking.cart.show',
+                                                                cartReference.id
+                                                            )
+                                                        "
+                                                        class="font-semibold text-primary hover:underline"
+                                                    >
+                                                        {{
+                                                            cartReference.reference
+                                                        }}
                                                     </Link>
                                                 </div>
                                             </div>
@@ -236,9 +304,12 @@ watch(selectedStatus, (newStatus) => {
                                                     </div>
                                                     <div class="font-bold">
                                                         ₱
-                                                        <span class="text-xl text-primary">{{
-                                                            availService.total_price.toLocaleString()
-                                                        }}</span>
+                                                        <span
+                                                            class="text-xl text-primary"
+                                                            >{{
+                                                                availService.total_price.toLocaleString()
+                                                            }}</span
+                                                        >
                                                     </div>
                                                 </div>
                                                 <div class="space-y-1">
@@ -246,7 +317,11 @@ watch(selectedStatus, (newStatus) => {
                                                         Status
                                                     </div>
 
-                                                    <StatusBadge :status="availService.status" />
+                                                    <StatusBadge
+                                                        :status="
+                                                            availService.status
+                                                        "
+                                                    />
 
                                                     <!-- <SelectInput
                                                         v-show="
@@ -286,16 +361,62 @@ watch(selectedStatus, (newStatus) => {
                                                     </select> -->
                                                 </div>
                                             </div>
+                                            <div
+                                                v-if="availService.start_time"
+                                                class="space-y-1"
+                                            >
+                                                <div class="text-gray-600">
+                                                    Time
+                                                </div>
+                                                <div>
+                                                    {{
+                                                        moment(
+                                                            availService.start_time,
+                                                            "HH:mm"
+                                                        ).format("hh:mm A")
+                                                    }}
+                                                    -
+                                                    {{
+                                                        moment(
+                                                            availService.end_time,
+                                                            "HH:mm"
+                                                        ).format("hh:mm A")
+                                                    }}
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-if="
+                                                    availService.remarks
+                                                        .length > 0 &&
+                                                    availService.status ===
+                                                        'cancelled'
+                                                "
+                                                class="space-y-1"
+                                            >
+                                                <div class="text-gray-600">
+                                                    Cancellation Reason
+                                                </div>
+                                                <div class="font-bold">
+                                                    {{
+                                                        availService.remarks[0]
+                                                            .content
+                                                    }}
+                                                </div>
+                                            </div>
                                             <div class="space-y-1">
-                                                <template v-if="
-                                                    availService.service
-                                                        .price_type === 'hr'
-                                                ">
+                                                <template
+                                                    v-if="
+                                                        availService.service
+                                                            .price_type === 'hr'
+                                                    "
+                                                >
                                                     <div class="text-gray-600">
                                                         Total Work Hours
                                                     </div>
                                                     <div class="font-bold">
-                                                        <span class="text-xl text-primary">
+                                                        <span
+                                                            class="text-xl text-primary"
+                                                        >
                                                             {{
                                                                 availService.total_hours.toLocaleString()
                                                             }}
@@ -307,7 +428,9 @@ watch(selectedStatus, (newStatus) => {
                                                         Total Work Days
                                                     </div>
                                                     <div class="font-bold">
-                                                        <span class="text-xl text-primary">
+                                                        <span
+                                                            class="text-xl text-primary"
+                                                        >
                                                             {{
                                                                 moment(
                                                                     availService.end_date
@@ -328,14 +451,18 @@ watch(selectedStatus, (newStatus) => {
                                                     Service Price * rate
                                                 </div>
                                                 <div class="font-bold">
-                                                    ₱<span class="text-xl text-primary">
+                                                    ₱<span
+                                                        class="text-xl text-primary"
+                                                    >
                                                         {{
                                                             availService.service.price.toLocaleString()
                                                         }}
                                                         *
                                                     </span>
 
-                                                    <span class="text-xl text-primary">
+                                                    <span
+                                                        class="text-xl text-primary"
+                                                    >
                                                         {{
                                                             availService.service.price_type.toLocaleString()
                                                         }}
@@ -349,23 +476,44 @@ watch(selectedStatus, (newStatus) => {
                                                     Quantity
                                                 </div>
                                                 <div class="font-bold">
-                                                    <span class="text-xl text-primary">
-                                                        {{ availService.quantity }}
+                                                    <span
+                                                        class="text-xl text-primary"
+                                                    >
+                                                        {{
+                                                            availService.quantity
+                                                        }}
                                                     </span>
-                                                    <span class="text-sm text-gray-500 ml-1">
-                                                        {{ availService.quantity > 1 ? 'units' : 'unit' }}
+                                                    <span
+                                                        class="ml-1 text-sm text-gray-500"
+                                                    >
+                                                        {{
+                                                            availService.quantity >
+                                                            1
+                                                                ? "units"
+                                                                : "unit"
+                                                        }}
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <!-- Add this if quantity is more than 1 -->
-                                            <div class="space-y-1" v-if="availService.quantity > 1">
+                                            <div
+                                                class="space-y-1"
+                                                v-if="availService.quantity > 1"
+                                            >
                                                 <div class="text-gray-600">
                                                     Price per unit
                                                 </div>
                                                 <div class="font-bold">
-                                                    ₱<span class="text-xl text-primary">
-                                                        {{ (availService.total_price / availService.quantity).toLocaleString() }}
+                                                    ₱<span
+                                                        class="text-xl text-primary"
+                                                    >
+                                                        {{
+                                                            (
+                                                                availService.total_price /
+                                                                availService.quantity
+                                                            ).toLocaleString()
+                                                        }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -409,14 +557,28 @@ watch(selectedStatus, (newStatus) => {
                                                     {{ availService.remarks }}
                                                 </div>
                                             </div>
-                                            <div class="space-y-1" v-if="availService.attachments?.length">
-                                                <div class="bg-gray-50 p-4 rounded-lg border">
-                                                    <h3 class="text-lg font-medium mb-4 flex items-center">
-                                                        <i class="fas fa-paperclip mr-2 text-primary"></i>
+                                            <div
+                                                class="space-y-1"
+                                                v-if="
+                                                    availService.attachments
+                                                        ?.length
+                                                "
+                                            >
+                                                <div
+                                                    class="p-4 border rounded-lg bg-gray-50"
+                                                >
+                                                    <h3
+                                                        class="flex items-center mb-4 text-lg font-medium"
+                                                    >
+                                                        <i
+                                                            class="mr-2 fas fa-paperclip text-primary"
+                                                        ></i>
                                                         Attachments
                                                     </h3>
 
-                                                    <div class="grid grid-cols-1 gap-3">
+                                                    <div
+                                                        class="grid grid-cols-1 gap-3"
+                                                    >
                                                         <FileView
                                                             v-for="file in availService.attachments"
                                                             :key="file.id"

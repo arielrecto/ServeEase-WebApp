@@ -188,7 +188,8 @@ const paymentStatus = computed(() => {
                                                                 class="text-xl"
                                                                 >{{
                                                                     service.user
-                                                                        .profile.full_name
+                                                                        .profile
+                                                                        .full_name
                                                                 }}</span
                                                             >
                                                             <span
@@ -258,6 +259,40 @@ const paymentStatus = computed(() => {
                                                             availService.status
                                                         "
                                                     />
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-if="availService.start_time"
+                                                class="space-y-1"
+                                            >
+                                                <div class="text-gray-600">
+                                                    Time
+                                                </div>
+                                                <div>
+                                                    {{
+                                                        moment(availService.start_time, 'HH:mm').format('hh:mm A')
+                                                    }}
+                                                    -
+                                                    {{ moment(availService.end_time, 'HH:mm').format('hh:mm A') }}
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-if="
+                                                    availService.remarks
+                                                        .length > 0 &&
+                                                    availService.status ===
+                                                        'cancelled'
+                                                "
+                                                class="space-y-1"
+                                            >
+                                                <div class="text-gray-600">
+                                                    Cancellation Reason
+                                                </div>
+                                                <div class="font-bold">
+                                                    {{
+                                                        availService.remarks[0]
+                                                            .content
+                                                    }}
                                                 </div>
                                             </div>
                                             <div class="space-y-1">
@@ -507,7 +542,12 @@ const paymentStatus = computed(() => {
                                                     </Link>
                                                 </div> -->
                                                 <Link
-                                                    :href="route('customer.services.show', service.id)"
+                                                    :href="
+                                                        route(
+                                                            'customer.services.show',
+                                                            service.id
+                                                        )
+                                                    "
                                                     class="flex items-center justify-center w-full text-center button-ghost"
                                                 >
                                                     <i
@@ -535,8 +575,8 @@ const paymentStatus = computed(() => {
                                             <Link
                                                 v-if="
                                                     availService.status ===
-                                                    'completed'
-                                                    && !availService.is_fully_paid
+                                                        'completed' &&
+                                                    !availService.is_fully_paid
                                                 "
                                                 :href="
                                                     route(
@@ -656,10 +696,17 @@ const paymentStatus = computed(() => {
                                                                 >
                                                                     {{
                                                                         {
-                                                                            'deposit': 'Partial Payment',
-                                                                            'payment': 'Full Payment',
-                                                                            'reservation': 'Reservation Fee'
-                                                                        }[transaction.transaction_type] || 'Payment'
+                                                                            deposit:
+                                                                                "Partial Payment",
+                                                                            payment:
+                                                                                "Full Payment",
+                                                                            reservation:
+                                                                                "Reservation Fee",
+                                                                        }[
+                                                                            transaction
+                                                                                .transaction_type
+                                                                        ] ||
+                                                                        "Payment"
                                                                     }}
                                                                 </span>
                                                                 <span

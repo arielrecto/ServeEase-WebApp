@@ -14,8 +14,8 @@ const props = defineProps({
 const form = useForm({
     startDate: null,
     endDate: null,
-    startTime: null,  // Add this
-    endTime: null,    // Add this
+    startTime: null, // Add this
+    endTime: null, // Add this
     hours: null,
     total: null,
     service: props.service.id,
@@ -94,6 +94,38 @@ watch(
 watch(() => form.hours, updateTotal);
 watch(() => form.endDate, updateTotal);
 
+const minTime = computed(() => {
+    if (!form.startDate || form.startDate !== moment().format("YYYY-MM-DD")) {
+        return null;
+    }
+    const now = moment();
+    const minutes = now.minutes();
+    // Round up to next 30 minutes
+    if (minutes > 30) {
+        return now.add(1, "hour").startOf("hour").format("HH:mm");
+    } else if (minutes > 0) {
+        return now.minutes(30).format("HH:mm");
+    }
+    return now.format("HH:mm");
+});
+
+// Add time validation watcher
+watch(
+    () => form.startTime,
+    (value) => {
+        if (value && form.endTime && value >= form.endTime) {
+            form.endTime = moment(value, "HH:mm")
+                .add(1, "hour")
+                .format("HH:mm");
+        }
+    }
+);
+
+const isTimeValid = computed(() => {
+    if (!form.startTime || !form.endTime) return false;
+    return form.endTime > form.startTime;
+});
+
 const submit = () => {
     form.post(route("customer.services.avail.store"), {
         onFinish: () => form.reset(),
@@ -119,23 +151,6 @@ const getFileIcon = (file) => {
 const back = () => {
     window.history.back();
 };
-
-// Add computed property for time validation
-const minTime = computed(() => {
-    if (!form.startDate || form.startDate !== moment().format('YYYY-MM-DD')) {
-        return null;
-    }
-    return moment().format('HH:mm');
-});
-
-// Add time validation watcher
-watch(() => form.startTime, (value) => {
-    if (value && form.endTime && value >= form.endTime) {
-        form.endTime = moment(value, 'HH:mm')
-            .add(1, 'hour')
-            .format('HH:mm');
-    }
-});
 </script>
 
 <template>
@@ -275,36 +290,68 @@ watch(() => form.startTime, (value) => {
                                                 type="checkbox"
                                                 id="includeTime"
                                                 v-model="form.includeTime"
-                                                class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                                class="w-4 h-4 border-gray-300 rounded text-primary focus:ring-primary"
                                             >
                                             <label for="includeTime" class="ml-2 text-sm text-gray-600">
                                                 Specify time for the service
                                             </label>
                                         </div> -->
 
-                                        <div  class="grid grid-cols-2 gap-4">
+                                        <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <InputLabel for="startTime" value="Start Time" />
-                                                <TextInput
+                                                <InputLabel
+                                                    for="startTime"
+                                                    value="Start Time"
+                                                />
+                                                <input
                                                     id="startTime"
                                                     type="time"
                                                     v-model="form.startTime"
-                                                    class="block w-full mt-1"
+                                                    :min="minTime"
+                                                    step="1800"
+                                                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary"
                                                     required
                                                 />
-                                                <InputError :message="form.errors.startTime" />
+                                                <InputError
+                                                    :message="
+                                                        form.errors.startTime
+                                                    "
+                                                />
                                             </div>
-
                                             <div>
-                                                <InputLabel for="endTime" value="End Time" />
-                                                <TextInput
+                                                <InputLabel
+                                                    for="endTime"
+                                                    value="End Time"
+                                                />
+                                                <input
                                                     id="endTime"
                                                     type="time"
                                                     v-model="form.endTime"
-                                                    class="block w-full mt-1"
+                                                    :min="form.startTime"
+                                                    max="23:59"
+                                                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary"
                                                     required
                                                 />
-                                                <InputError :message="form.errors.endTime" />
+                                                <InputError
+                                                    :message="
+                                                        form.errors.endTime
+                                                    "
+                                                />
+                                            </div>
+                                            <div
+                                                v-if="
+                                                    !isTimeValid &&
+                                                    form.startTime &&
+                                                    form.endTime
+                                                "
+                                                class="col-span-2"
+                                            >
+                                                <p
+                                                    class="mt-2 text-sm text-red-600"
+                                                >
+                                                    End time must be later than
+                                                    start time
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -525,7 +572,9 @@ watch(() => form.startTime, (value) => {
                                     <button
                                         type="submit"
                                         class="flex items-center px-6 py-3 text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 gap-x-2"
-                                        :disabled="form.processing"
+                                        :disabled="
+                                            form.processing || !isTimeValid
+                                        "
                                     >
                                         <i class="fas fa-check"></i>
                                         {{
