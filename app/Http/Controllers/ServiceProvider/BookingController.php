@@ -165,7 +165,10 @@ class BookingController extends Controller
 
             $message = match ($request->status) {
                 'confirmed' => GenerateNotificationAction::handle('booking', 'booking-confirmed', $availService->service->user),
-                'rejected' => GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user, ['remark' => $request->remark]),
+                'rejected' => GenerateNotificationAction::handle('booking', 'booking-rejected', $availService->service->user, [
+                    'remark' => $request->remark,
+                    'otherRemark' => $request->otherRemark ?? null
+                ]),
                 'cancelled' => GenerateNotificationAction::handle('booking', 'booking-cancelled', $availService->service->user),
                 'in_progress' => GenerateNotificationAction::handle('booking', 'booking-started', $availService->service->user),
                 'completed' => GenerateNotificationAction::handle('booking', 'booking-completed', $availService->service->user),
@@ -177,11 +180,17 @@ class BookingController extends Controller
                 ]);
 
                 if ($request->status === 'rejected') {
+                    $remarkContent = $request->remark;
+                    if ($request->remark === 'Other' && !empty($request->otherRemark)) {
+                        $remarkContent .= ': ' . $request->otherRemark;
+                    }
                     $availService->remarks()->create([
                         'user_id' => Auth::id(),
-                        'content' => $request->remark
+                        'content' => $remarkContent
                     ]);
                 }
+
+                // dd($availService);
 
                 $notification = Notification::create([
                     'user_id' => $availService->user->id,

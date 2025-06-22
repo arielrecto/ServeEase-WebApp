@@ -21,7 +21,7 @@ const props = defineProps({
     onEventClick: {
         type: Function,
         default: null,
-    }
+    },
 });
 
 const showModal = ref(false);
@@ -42,10 +42,10 @@ const calendarOptions = ref({
     selectable: props.can_create,
     dateClick: handleDateClick,
     eventClick: handleEventClick, // Add event click handler
-    eventDidMount: function(info) {
+    eventDidMount: function (info) {
         // Add cursor pointer to events
-        info.el.style.cursor = 'pointer';
-    }
+        info.el.style.cursor = "pointer";
+    },
 });
 
 function handleDateClick(arg) {
@@ -92,11 +92,37 @@ const renderEventContent = (eventInfo) => {
             <div class="p-2 hover:bg-gray-50">
                 <div class="font-medium">${eventInfo.event.title}</div>
                 <div class="text-xs text-gray-600">
-                    ${eventInfo.event.extendedProps.time || ''}
+                    ${eventInfo.event.extendedProps.time || ""}
                 </div>
             </div>
         `,
     };
+};
+
+const getStatusBadgeClass = (status) => {
+    return {
+        cancelled: "bg-red-100 text-red-800",
+        rejected: "bg-red-100 text-red-800",
+        pending: "bg-yellow-100 text-yellow-800",
+        in_progress: "bg-orange-100 text-orange-800",
+        confirmed: "bg-green-100 text-green-800",
+        completed: "bg-green-100 text-green-800",
+        approved: "bg-green-100 text-green-800", // Add this line
+        resolved: "bg-blue-100 text-blue-800",
+    }[status];
+};
+
+const getStatusText = (status) => {
+    return {
+        cancelled: "Cancelled",
+        rejected: "Rejected",
+        pending: "Pending",
+        in_progress: "In Progress",
+        confirmed: "Confirmed",
+        completed: "Completed",
+        approved: "Approved", // Add this line
+        resolved: "Resolved",
+    }[status];
 };
 
 onMounted(() => {
@@ -108,14 +134,24 @@ onMounted(() => {
     }));
 
     renderEventContent;
-})
+});
 </script>
 
 <template>
     <div class="w-full h-full min-h-96">
         <FullCalendar :options="calendarOptions">
             <template v-slot:eventContent="arg">
-                <i>{{ arg.event.title }}</i>
+                <div class="fc-event-wrap event-title">
+                    <i>{{ arg.event.title }}</i>
+                    <p
+                        v-if="arg.event.extendedProps?.status"
+                        :class="
+                            getStatusBadgeClass(arg.event.extendedProps.status)
+                        "
+                    >
+                        {{ getStatusText(arg.event.extendedProps?.status) }}
+                    </p>
+                </div>
             </template>
         </FullCalendar>
 
@@ -259,3 +295,20 @@ onMounted(() => {
         </template>
     </div>
 </template>
+
+<style scoped>
+.fc-event-wrap {
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: normal;
+    max-width: 100%;
+    overflow: hidden;
+}
+/* .event-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} */
+</style>

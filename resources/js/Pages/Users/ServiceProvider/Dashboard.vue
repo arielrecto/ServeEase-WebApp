@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-4 mb-5 gap-5">
+                <div class="grid grid-cols-1 gap-5 mb-5 lg:grid-cols-4">
                     <div class="flex-1">
                         <Link
                             :href="route('service-provider.services.index')"
@@ -236,14 +236,14 @@ onBeforeUnmount(() => {
                             {{ stats.completedBookings }}
                         </p>
                     </div>
-                    <div class="p-6 bg-white rounded-lg shadow-sm">
+                    <!-- <div class="p-6 bg-white rounded-lg shadow-sm">
                         <h3 class="text-sm font-medium text-gray-500">
                             Total Revenue
                         </h3>
                         <p class="mt-2 text-3xl font-semibold text-purple-600">
                             ₱{{ stats.totalRevenue.toLocaleString() }}
                         </p>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Charts -->

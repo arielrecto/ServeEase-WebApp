@@ -8,9 +8,20 @@ const props = defineProps({
     status: String,
 });
 
+const rejectionReasons = [
+    { id: 1, reason: "Schedule conflict" },
+    { id: 2, reason: "Service unavailable" },
+    { id: 3, reason: "Location out of service area" },
+    { id: 4, reason: "Insufficient booking details" },
+    { id: 5, reason: "Service capacity full" },
+    { id: 6, reason: "Equipment/tools unavailable" },
+    { id: 7, reason: "Other" },
+];
+
 const form = useForm({
     status: props.status,
     remark: "",
+    otherRemark: "",
 });
 
 const submit = () => {
@@ -56,11 +67,26 @@ const modalRef = ref(null);
             <label class="block text-sm font-medium text-gray-700">
                 Reason for Rejection
             </label>
-            <textarea
+            <select
                 v-model="form.remark"
-                rows="4"
                 class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:border-primary focus:ring-primary"
-                placeholder="Please provide a reason for rejection..."
+                required
+            >
+                <option value="" disabled selected>Select a reason...</option>
+                <option
+                    v-for="reason in rejectionReasons"
+                    :key="reason.id"
+                    :value="reason.reason"
+                >
+                    {{ reason.reason }}
+                </option>
+            </select>
+            <textarea
+                v-if="form.remark === 'Other'"
+                v-model="form.otherRemark"
+                rows="4"
+                class="w-full mt-2 border-gray-300 rounded-lg shadow-sm focus:border-primary focus:ring-primary"
+                placeholder="Please specify the reason..."
                 required
             ></textarea>
         </div>

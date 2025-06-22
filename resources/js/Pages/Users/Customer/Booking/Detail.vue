@@ -270,10 +270,18 @@ const paymentStatus = computed(() => {
                                                 </div>
                                                 <div>
                                                     {{
-                                                        moment(availService.start_time, 'HH:mm').format('hh:mm A')
+                                                        moment(
+                                                            availService.start_time,
+                                                            "HH:mm"
+                                                        ).format("hh:mm A")
                                                     }}
                                                     -
-                                                    {{ moment(availService.end_time, 'HH:mm').format('hh:mm A') }}
+                                                    {{
+                                                        moment(
+                                                            availService.end_time,
+                                                            "HH:mm"
+                                                        ).format("hh:mm A")
+                                                    }}
                                                 </div>
                                             </div>
                                             <div
@@ -475,29 +483,6 @@ const paymentStatus = computed(() => {
                                                 </div>
                                             </div>
 
-                                            <div>
-                                                <ModalLinkDialog
-                                                    v-if="
-                                                        availService.status ===
-                                                            'completed' &&
-                                                        !availService.has_feedback &&
-                                                        availService.is_fully_paid
-                                                    "
-                                                    :href="
-                                                        route(
-                                                            'customer.feedbacks.create'
-                                                        ) +
-                                                        `?id=${availService.id}`
-                                                    "
-                                                    class="w-full btn button-ghost"
-                                                >
-                                                    <i
-                                                        class="ri-edit-2-line"
-                                                    ></i>
-                                                    Write a review
-                                                </ModalLinkDialog>
-                                            </div>
-
                                             <div
                                                 v-if="
                                                     availService.status ===
@@ -555,6 +540,29 @@ const paymentStatus = computed(() => {
                                                     ></i>
                                                     Avail again
                                                 </Link>
+                                            </div>
+
+                                            <div>
+                                                <ModalLinkDialog
+                                                    v-if="
+                                                        availService.status ===
+                                                            'completed' &&
+                                                        !availService.has_feedback &&
+                                                        availService.is_fully_paid
+                                                    "
+                                                    :href="
+                                                        route(
+                                                            'customer.feedbacks.create'
+                                                        ) +
+                                                        `?id=${availService.id}`
+                                                    "
+                                                    class="w-full btn button-primary"
+                                                >
+                                                    <i
+                                                        class="ri-edit-2-line"
+                                                    ></i>
+                                                    Write a review
+                                                </ModalLinkDialog>
                                             </div>
 
                                             <Link

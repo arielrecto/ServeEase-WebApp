@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Customer;
 use Inertia\Inertia;
 use App\Models\FeedBack;
 use App\Models\AvailService;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Events\NotificationSent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Actions\GenerateNotificationAction;
 
 class CustomerFeedbackController extends Controller
 {
@@ -74,6 +77,19 @@ class CustomerFeedbackController extends Controller
                 ]);
             }
         }
+
+        $message = GenerateNotificationAction::handle('feedback', 'feedback-created', Auth::user(), [
+            "feedback" => $safe['content']
+        ]);
+
+        $notification = Notification::create([
+            'user_id' => Auth::user(),
+            'content' => $message,
+            'type' => 'booking',
+            'url' => "/profile/provider",
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return back()->with('message_success', 'Feedback submitted successfully');
     }

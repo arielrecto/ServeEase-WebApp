@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Service;
@@ -14,12 +15,28 @@ use App\Events\NotificationSent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Actions\GenerateNotificationAction;
 
 class ServiceProviderController extends Controller
 {
     public function create()
     {
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+
+        $rejectedCount = ProviderProfile::whereHas('profile', function ($query) use ($now) {
+            $query->where('user_id', Auth::user()->id);
+        })
+            ->where('status', 'rejected')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->count();
+
+        if ($rejectedCount >= 3) {
+            return back()->with('message_error', 'You have reached the maximum number of rejected bookings for this month. Please try again later.');
+        }
+
         $serviceTypes = ServiceType::all();
         $providerProfile = auth()->user()->profile->providerProfile;
 

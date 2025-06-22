@@ -275,7 +275,7 @@ onMounted(() => {
                                         for="additional_documents"
                                         value="Additional Supporting Documents (Optional)"
                                     />
-                                    <p class="text-sm text-gray-500 mb-2">
+                                    <p class="mb-2 text-sm text-gray-500">
                                         Upload any additional documents that might support your application (PDF, Images, Documents)
                                     </p>
 
@@ -283,7 +283,7 @@ onMounted(() => {
                                         <div class="flex items-center justify-center w-full">
                                             <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                                                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                                    <i class="mb-2 text-2xl text-gray-400 fas fa-cloud-upload-alt"></i>
                                                     <p class="mb-2 text-sm text-gray-500">
                                                         <span class="font-semibold">Click to upload</span> or drag and drop
                                                     </p>
@@ -303,11 +303,11 @@ onMounted(() => {
                                         <div v-if="form.additional_documents.length" class="grid grid-cols-1 gap-2">
                                             <div v-for="(file, index) in form.additional_documents"
                                                 :key="index"
-                                                class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                                                class="flex items-center justify-between p-2 rounded-lg bg-gray-50"
                                             >
                                                 <div class="flex items-center space-x-2">
-                                                    <i class="fas fa-file text-gray-400"></i>
-                                                    <span class="text-sm truncate max-w-xs">{{ file.name }}</span>
+                                                    <i class="text-gray-400 fas fa-file"></i>
+                                                    <span class="max-w-xs text-sm truncate">{{ file.name }}</span>
                                                     <span class="text-xs text-gray-500">
                                                         {{ (file.size / 1024).toFixed(1) }} KB
                                                     </span>

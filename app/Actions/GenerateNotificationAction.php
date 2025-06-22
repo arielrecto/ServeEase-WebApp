@@ -26,7 +26,11 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'booking-rejected') {
-                    return "The service that you booked with {$user->name} has been declined. Reason: {$data['remark']}";
+                    $reason = $data['remark'] ?? '';
+                    if (($reason === 'Other' || $reason === 'other') && !empty($data['otherRemark'])) {
+                        $reason .= ': ' . $data['otherRemark'];
+                    }
+                    return "The service that you booked with {$user->name} has been declined. Reason: {$reason}";
                 }
 
                 if ($action === 'booking-started') {
@@ -43,6 +47,11 @@ class GenerateNotificationAction
 
                 if ($action === 'booking-completed') {
                     return "The service that you booked with {$user->name} has been completed. Click to see the details.";
+                }
+                break;
+            case 'feedback':
+                if ($action === 'feedback-created') {
+                    return "{$user->name} has given feedback on your service: {$data['feedback']}. Click to see the details.";
                 }
                 break;
             case 'payment':

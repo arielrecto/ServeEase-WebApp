@@ -70,21 +70,46 @@ const icon = computed(() => {
     }
 });
 
-const CLASSES =
-    "inline-flex items-center justify-center w-12 h-12 text-lg transition duration-200 ease-in-out border border-gray-300 rounded-lg bg-neutral-50 active:scale-95";
+const getTextColor = (text) => {
+    return {
+        pending: "text-yellow-600",
+        complete: "text-green-600",
+        confirm: "text-green-600",
+        failed: "text-red-600",
+        partial: "text-blue-600",
+        edit: "text-blue-600",
+        reject: "text-red-600",
+        cancel: "text-red-600",
+        cart: "text-green-600",
+        view: "text-blue-600",
+        approve: "text-green-600", // Add this line
+        resolve: "text-blue-600",
+        "start service": "text-orange-600",
+    }[text];
+};
+
+const capitalizeFirstLetter = (str) =>
+    str.replace(/^\w/, (c) => c.toUpperCase());
+
+const CLASSES = `
+    inline-flex items-center justify-center p-2  text-xs font-bold text-lg transition duration-200 ease-in-out border border-gray-300 rounded-lg bg-neutral-50 active:scale-95 ${getTextColor(
+        props.actionType
+    )}`;
 </script>
 
 <template>
-    <div class="tooltip" :data-tip="tooltipText">
+    <div>
         <template v-if="type === 'link'">
             <Link :href="href" :class="CLASSES">
-                <i :class="icon"></i>
+                <!-- <i :class="icon"></i> -->
+                <span>{{ capitalizeFirstLetter(actionType) }}</span>
             </Link>
         </template>
         <template v-else-if="type === 'modal'">
             <template v-if="!modalSlideoverEnabled">
                 <ModalLinkDialog :href="href" :class="CLASSES">
-                    <i :class="icon"></i>
+                    <!-- <i :class="icon"></i> -->
+                    <span>{{ capitalizeFirstLetter(actionType) }}</span>
                 </ModalLinkDialog>
                 <!-- <ModalLink :href="href" panel-classes="bg-white space-y-6 px-6 py-4 overflow-hidden rounded-md shadow" :class="CLASSES">
                     <i :class="icon"></i>
@@ -105,7 +130,8 @@ const CLASSES =
                 type="button"
                 :class="CLASSES"
             >
-                <i :class="icon"></i>
+                <!-- <i :class="icon"></i> -->
+                <span>{{ capitalizeFirstLetter(actionType) }}</span>
             </button>
         </template>
     </div>

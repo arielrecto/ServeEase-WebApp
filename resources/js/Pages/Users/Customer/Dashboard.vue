@@ -1,12 +1,16 @@
 <script setup>
-import { Link, usePage, Head } from "@inertiajs/vue3";
+import { Link, usePage, Head, useForm } from "@inertiajs/vue3";
 import { ref, reactive, computed } from "vue";
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import GoTo from "@/Components/Dashboard/GoTo.vue";
 import UserServiceCard from "@/Components/UserServiceCard.vue";
+import SearchForm from "@/Components/Form/SearchForm.vue";
 
 const page = usePage();
+const form = useForm({
+    searchQuery: "",
+});
 
 const authUser = ref(page.props.auth.user);
 const isVerifiedProvider = computed(() => page.props.auth.isVerifiedProvider);
@@ -33,6 +37,10 @@ const menuItems = [
     },
 ];
 
+const search = () => {
+    form.get(route("customer.dashboard"));
+};
+
 const services = computed(() => page.props.services);
 </script>
 
@@ -41,9 +49,22 @@ const services = computed(() => page.props.services);
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight ggtext-gray-800">
-                Home
-            </h2>
+            <div class="flex items-center justify-between w-full">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                    Home
+                </h2>
+
+                <SearchForm
+                    @submitted="
+                        (query) => {
+                            form.searchQuery = query;
+                            search();
+                        }
+                    "
+                    placeholder="Search for service or provider..."
+                    class="mx-0"
+                />
+            </div>
         </template>
 
         <div class="py-12">

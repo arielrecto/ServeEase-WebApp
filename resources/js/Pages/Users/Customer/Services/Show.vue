@@ -32,7 +32,8 @@ const events = computed(() => {
             extendedProps: {
                 time: item.start_time && item.end_time
                     ? `${moment(item.start_time, 'HH:mm').format('h:mm A')} - ${moment(item.end_time, 'HH:mm').format('h:mm A')}`
-                    : 'All Day'
+                    : 'All Day',
+                status: item.status,
             }
         })),
     ];

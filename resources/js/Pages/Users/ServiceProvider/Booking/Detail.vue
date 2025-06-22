@@ -554,7 +554,11 @@ watch(selectedStatus, (newStatus) => {
                                                     Remarks
                                                 </div>
                                                 <div>
-                                                    {{ availService.remarks }}
+                                                    {{
+                                                        availService
+                                                            .remarks?.[0]
+                                                            ?.content
+                                                    }}
                                                 </div>
                                             </div>
                                             <div

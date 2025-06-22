@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Models\User;
+use DB;
 use Inertia\Inertia;
 use App\Models\Remark;
 use App\Models\Service;
@@ -146,8 +147,6 @@ class ServiceController extends Controller
 
     public function availStore(Request $request)
     {
-
-
         $request->validate([
             'startDate' => 'required|date',
             'endDate' => 'required|date',
@@ -172,11 +171,22 @@ class ServiceController extends Controller
 
         if (
             PersonalEvent::where('user_id', $service->user->id)
-            ->where('start_date', '<=', $request->endDate)
-            ->where('end_date', '>=', $request->startDate)
-            ->exists()
+                ->where('start_date', '<=', $request->endDate)
+                ->where('end_date', '>=', $request->startDate)
+                ->exists()
         ) {
             return back()->with(['message_error' => 'Service Provider have a personal event during this time']);
+        }
+
+        if (
+            $this->hasOverlappingService(
+                [$request->service],
+                $request->startDate,
+                $request->startTime,
+                $request->endTime
+            )
+        ) {
+            return back()->with(['message_error' => 'There is already a booking scheduled for this time slot']);
         }
 
         $total_hours = Carbon::parse($request->startDate)->diffInDays(Carbon::parse($request->endDate)) * 8;
@@ -225,6 +235,31 @@ class ServiceController extends Controller
 
         return to_route('customer.booking.detail', ['availService' => $availService])
             ->with(['message_success' => 'Service booked successfully']);
+    }
+
+    public function hasOverlappingService($serviceIds, $startDate, $startTime, $endTime)
+    {
+        // Check for overlapping services on the same day
+        return AvailService::query()
+            ->whereIn('service_id', $serviceIds)
+            ->whereDate('start_date', Carbon::parse($startDate)->toDateString())
+            ->whereIn('status', ['in_progress', 'confirmed'])
+            ->where(function ($query) use ($startTime, $endTime) {
+                $query->where(function ($q) use ($startTime) {
+                    // Check if new booking starts during an existing booking
+                    $q->where('start_time', '<=', $startTime)
+                        ->where('end_time', '>', $startTime);
+                })->orWhere(function ($q) use ($endTime) {
+                    // Check if new booking ends during an existing booking
+                    $q->where('start_time', '<', $endTime)
+                        ->where('end_time', '>=', $endTime);
+                })->orWhere(function ($q) use ($startTime, $endTime) {
+                    // Check if new booking completely contains an existing booking
+                    $q->where('start_time', '>=', $startTime)
+                        ->where('end_time', '<=', $endTime);
+                });
+            })
+            ->exists();
     }
 
     public function getFeedbackByService(Request $request, Service $service)
@@ -279,54 +314,59 @@ class ServiceController extends Controller
             'remark' => ['required', 'string'],
             'includeTime' => ['boolean'],
         ]);
-
-        $services = Service::whereIn('id', $request->services)->get();
-        $total_hours = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) * 8;
-
-
-        $serviceChart = ServiceCart::create([
-            'user_id' => Auth::user()->id,
-            'reference_number' => strtoupper(uniqid('REF-')),
-            'total_amount' => $request->total_amount
-        ]);
-
-
-        Remark::create([
-            'content' => $request->remark,
-            'user_id' => Auth::user()->id,
-            'remarkable_id' => $serviceChart->id,
-            'remarkable_type' => ServiceCart::class
-        ]);
-
-
-
         try {
-            foreach ($services as $service) {
-                // Check if user is trying to avail their own service
-                if ($service->user_id == Auth::user()->id) {
-                    return response()->json(['message' => 'You cannot avail your own service'], 422);
+            $services = DB::transaction(function () use ($request) {
+                $services = Service::whereIn('id', $request->services)->get();
+                $total_hours = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) * 8;
+
+                if (
+                    $this->hasOverlappingService(
+                        $services->pluck('id')->toArray(),
+                        $request->startDate,
+                        $request->startTime,
+                        $request->endTime
+                    )
+                ) {
+                    return back()->with(['message_error' => 'There is already a booking scheduled for this time slot']);
                 }
 
-                // Calculate total price based on price type
-                $total_price = $service->price;
-                if ($service->price_type == 'hr') {
-                    $total_price *= $total_hours;
+                $serviceChart = ServiceCart::create([
+                    'user_id' => Auth::user()->id,
+                    'reference_number' => strtoupper(uniqid('REF-')),
+                    'total_amount' => $request->total_amount
+                ]);
+
+
+                Remark::create([
+                    'content' => $request->remark,
+                    'user_id' => Auth::user()->id,
+                    'remarkable_id' => $serviceChart->id,
+                    'remarkable_type' => ServiceCart::class
+                ]);
+
+                foreach ($services as $service) {
+                    // Check if user is trying to avail their own service
+                    if ($service->user_id == Auth::user()->id) {
+                        return response()->json(['message' => 'You cannot avail your own service'], 422);
+                    }
+
+                    // Calculate total price based on price type
+                    $total_price = $service->price;
+                    if ($service->price_type == 'hr') {
+                        $total_price *= $total_hours;
+                    }
+
+                    if (count($request->serviceDetails) > 0) {
+                        $total_price = $request->serviceDetails[$service->id]['bargain_price'];
+                    }
                 }
-
-                if (count($request->serviceDetails) > 0) {
-                    $total_price = $request->serviceDetails[$service->id]['bargain_price'];
-                }
-
-
-
-
 
                 // Create avail service record with time if included
                 $availService = AvailService::create([
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
                     'start_time' => $request->start_time ?? null,
-                    'end_time' =>  $request->end_time ?? null,
+                    'end_time' => $request->end_time ?? null,
                     'remarks' => $request->remark,
                     'total_price' => $total_price,
                     'service_id' => $service->id,
@@ -341,7 +381,9 @@ class ServiceController extends Controller
                     'remarkable_id' => $availService->id,
                     'remarkable_type' => AvailService::class
                 ]);
-            }
+
+                return $services;
+            });
 
             return to_route('customer.services.show', ['service' => $services->first()->id])
                 ->with('message_success', 'Bulk service booking successful');
