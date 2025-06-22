@@ -315,6 +315,7 @@ class ServiceController extends Controller
             'includeTime' => ['boolean'],
         ]);
         try {
+<<<<<<< HEAD
             $services = DB::transaction(function () use ($request) {
                 $services = Service::whereIn('id', $request->services)->get();
                 $total_hours = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) * 8;
@@ -328,6 +329,13 @@ class ServiceController extends Controller
                     )
                 ) {
                     return back()->with(['message_error' => 'There is already a booking scheduled for this time slot']);
+=======
+            $availService = null;
+            foreach ($services as $service) {
+                // Check if user is trying to avail their own service
+                if ($service->user_id == Auth::user()->id) {
+                    return response()->json(['message' => 'You cannot avail your own service'], 422);
+>>>>>>> 5b1daec17e95af9329992745e0a04642f20e0834
                 }
 
                 $serviceChart = ServiceCart::create([
@@ -384,6 +392,15 @@ class ServiceController extends Controller
 
                 return $services;
             });
+
+            $notification = Notification::create([
+                'user_id' => $availService->service->user->id,
+                'content' => GenerateNotificationAction::handle('booking', 'booking-created', Auth::user()),
+                'type' => 'booking',
+                'url' => "/customer/booking/cart/{$availService->service_cart_id}"
+            ]);
+
+            broadcast(new NotificationSent($notification))->toOthers();
 
             return to_route('customer.services.show', ['service' => $services->first()->id])
                 ->with('message_success', 'Bulk service booking successful');

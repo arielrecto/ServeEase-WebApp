@@ -42,13 +42,13 @@ class SearchController extends Controller
                 // $request->service = null;
                 $request->brgy = null;
 
-                $q->where('name', 'LIKE', "%{$request->search}%")
-                    ->orWhere(function ($q) use ($request) {
-                        $q->whereHas('user.profile', function ($q) use ($request) {
+                $q->where(function ($q) use ($request) {
+                    $q->where('name', 'LIKE', "%{$request->search}%")
+                        ->orWhereHas('user.profile', function ($q) use ($request) {
                             $q->where('first_name', 'LIKE', "%{$request->search}%")
                                 ->orWhere('last_name', 'LIKE', "%{$request->search}%");
                         });
-                    });
+                });
             })
             ->when($request->brgy, function ($q) use ($request) {
                 $q->where('barangay_id', $request->brgy);
