@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Models\Remark;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
@@ -26,16 +27,20 @@ class ServiceProviderController extends Controller
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        $rejectedCount = ProviderProfile::whereHas('profile', function ($query) use ($now) {
-            $query->where('user_id', Auth::user()->id);
-        })
-            ->where('status', 'rejected')
+        $rejectedCount = Remark::where('remarkable_type', ProviderProfile::class)
+            ->where('remarkable_id', auth()->user()->profile->providerProfile->id)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 
         if ($rejectedCount >= 3) {
             return back()->with('message_error', 'You have reached the maximum number of rejected bookings for this month. Please try again later.');
         }
+
+        // dd($rejectedCount, ProviderProfile::whereHas('profile', function ($query) use ($now) {
+        //     $query->where('user_id', Auth::user()->id);
+        // })
+        //     ->where('status', 'rejected')
+        //     ->whereBetween('created_at', [$startOfMonth, $endOfMonth]));
 
         $serviceTypes = ServiceType::all();
         $providerProfile = auth()->user()->profile->providerProfile;

@@ -18,7 +18,7 @@ const props = defineProps({
 
 const events = computed(() => {
     if (props.availServices.length === 0) return [];
-    console.log(props.availServices)
+    console.log(props.availServices);
     return [
         ...props.availServices.map((item) => ({
             title: `Booking with ${item.user.profile.full_name}`,
@@ -30,11 +30,16 @@ const events = computed(() => {
                 : moment(item.end_date).add(1, "day").format("YYYY-MM-DD"),
             allDay: !item.start_time || !item.end_time,
             extendedProps: {
-                time: item.start_time && item.end_time
-                    ? `${moment(item.start_time, 'HH:mm').format('h:mm A')} - ${moment(item.end_time, 'HH:mm').format('h:mm A')}`
-                    : 'All Day',
+                time:
+                    item.start_time && item.end_time
+                        ? `${moment(item.start_time, "HH:mm").format(
+                              "h:mm A"
+                          )} - ${moment(item.end_time, "HH:mm").format(
+                              "h:mm A"
+                          )}`
+                        : "All Day",
                 status: item.status,
-            }
+            },
         })),
     ];
 });
@@ -168,6 +173,7 @@ const handleEventClick = (event) => {
                             bookings & events
                         </h2>
                         <Calendar
+                            class="w-auto h-auto"
                             :events="[...events, ...personalEvents]"
                             :onEventClick="handleEventClick"
                         />
@@ -262,13 +268,21 @@ const handleEventClick = (event) => {
 
     <!-- Add Modal for Event Details -->
     <div v-if="showEventDetails" class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50" @click="showEventDetails = false"></div>
+        <div
+            class="fixed inset-0 transition-opacity bg-black bg-opacity-50"
+            @click="showEventDetails = false"
+        ></div>
 
         <div class="flex items-center justify-center min-h-full p-4">
-            <div class="relative px-4 pt-5 pb-4 overflow-hidden transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+            <div
+                class="relative px-4 pt-5 pb-4 overflow-hidden transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+            >
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-medium">Event Details</h3>
-                    <button @click="showEventDetails = false" class="text-gray-400 hover:text-gray-500">
+                    <button
+                        @click="showEventDetails = false"
+                        class="text-gray-400 hover:text-gray-500"
+                    >
                         <span class="sr-only">Close</span>
                         <i class="fas fa-times"></i>
                     </button>
@@ -278,7 +292,11 @@ const handleEventClick = (event) => {
                     <div>
                         <h4 class="font-medium">{{ selectedEvent.title }}</h4>
                         <p class="text-sm text-gray-600">
-                            {{ moment(selectedEvent.start).format('MMMM D, YYYY') }}
+                            {{
+                                moment(selectedEvent.start).format(
+                                    "MMMM D, YYYY"
+                                )
+                            }}
                             <span v-if="selectedEvent.extendedProps.time">
                                 at {{ selectedEvent.extendedProps.time }}
                             </span>

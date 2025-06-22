@@ -142,9 +142,9 @@ class ServiceProviderApplicationController extends Controller
     public function reject(Request $request, string $id)
     {
         $request->validate([
-            'remark' => 'required|string'
+            'remark' => 'required|string',
+            'otherRemark' => 'nullable|string',
         ]);
-
 
         $providerProfile = ProviderProfile::find($id);
 
@@ -153,19 +153,29 @@ class ServiceProviderApplicationController extends Controller
             'status' => 'rejected'
         ]);
 
+        // Determine full remark content
+        $remarkContent = $request->remark;
+        if ($request->remark === 'Other' && !empty($request->otherRemark)) {
+            $remarkContent .= ': ' . $request->otherRemark;
+        }
 
         // Create remark
         Remark::create([
             'remarkable_id' => $providerProfile->id,
             'remarkable_type' => ProviderProfile::class,
             'user_id' => auth()->id(),
-            'content' => $request->remark
+            'content' => $remarkContent
+        ]);
+
+        $message = GenerateNotificationAction::handle('application', 'application-rejected', null, [
+            'remark' => $request->remark,
+            'otherRemark' => $request->otherRemark ?? null
         ]);
 
         // Create notification for the provider
         $notification = Notification::create([
             'user_id' => $providerProfile->profile->user->id,
-            'content' => GenerateNotificationAction::handle('application', 'application-rejected', auth()->user()),
+            'content' => $message,
             'type' => 'application',
             'url' => '/customer/service-provider/create'
         ]);

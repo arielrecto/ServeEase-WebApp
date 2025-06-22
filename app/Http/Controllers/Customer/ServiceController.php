@@ -303,8 +303,6 @@ class ServiceController extends Controller
 
     public function bulkAvail(Request $request)
     {
-
-
         $request->validate([
             'services' => ['required', 'array', 'min:1'],
             'start_date' => ['required', 'date'],
@@ -314,21 +312,26 @@ class ServiceController extends Controller
             'remark' => ['required', 'string'],
             'includeTime' => ['boolean'],
         ]);
+
+        $services = Service::whereIn('id', $request->services)->get();
+
+        if (
+            $this->hasOverlappingService(
+                $services->pluck('id')->toArray(),
+                $request->start_date,
+                $request->start_time,
+                $request->end_time
+            )
+        ) {
+            return back()->with(['message_error' => 'There is already a booking scheduled for this time slot']);
+        }
+
         try {
             $services = DB::transaction(function () use ($request) {
                 $services = Service::whereIn('id', $request->services)->get();
                 $total_hours = Carbon::parse($request->start_date)->diffInDays(Carbon::parse($request->end_date)) * 8;
 
-                if (
-                    $this->hasOverlappingService(
-                        $services->pluck('id')->toArray(),
-                        $request->startDate,
-                        $request->startTime,
-                        $request->endTime
-                    )
-                ) {
-                    return back()->with(['message_error' => 'There is already a booking scheduled for this time slot']);
-                }
+                // dd($services, $services->pluck('id')->toArray(), $request->services, $request->start_date, $request->start_time, $request->end_time);
 
                 $serviceChart = ServiceCart::create([
                     'user_id' => Auth::user()->id,
@@ -359,37 +362,37 @@ class ServiceController extends Controller
                     if (count($request->serviceDetails) > 0) {
                         $total_price = $request->serviceDetails[$service->id]['bargain_price'];
                     }
+
+                    // Create avail service record with time if included
+                    $availService = AvailService::create([
+                        'start_date' => $request->start_date,
+                        'end_date' => $request->end_date,
+                        'start_time' => $request->start_time ?? null,
+                        'end_time' => $request->end_time ?? null,
+                        'remarks' => $request->remark,
+                        'total_price' => $total_price,
+                        'service_id' => $service->id,
+                        'total_hours' => $total_hours,
+                        'user_id' => Auth::user()->id,
+                        'service_cart_id' => $serviceChart->id,
+                    ]);
+
+                    Remark::create([
+                        'content' => $request->serviceDetails[$service->id]['remark'],
+                        'user_id' => Auth::user()->id,
+                        'remarkable_id' => $availService->id,
+                        'remarkable_type' => AvailService::class
+                    ]);
+
+                    $notification = Notification::create([
+                        'user_id' => $availService->service->user->id,
+                        'content' => GenerateNotificationAction::handle('booking', 'booking-created', Auth::user()),
+                        'type' => 'booking',
+                        'url' => "/customer/booking/cart/{$availService->service_cart_id}"
+                    ]);
+
+                    broadcast(new NotificationSent($notification))->toOthers();
                 }
-
-                // Create avail service record with time if included
-                $availService = AvailService::create([
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'start_time' => $request->start_time ?? null,
-                    'end_time' => $request->end_time ?? null,
-                    'remarks' => $request->remark,
-                    'total_price' => $total_price,
-                    'service_id' => $service->id,
-                    'total_hours' => $total_hours,
-                    'user_id' => Auth::user()->id,
-                    'service_cart_id' => $serviceChart->id,
-                ]);
-
-                Remark::create([
-                    'content' => $request->serviceDetails[$service->id]['remark'],
-                    'user_id' => Auth::user()->id,
-                    'remarkable_id' => $availService->id,
-                    'remarkable_type' => AvailService::class
-                ]);
-
-                $notification = Notification::create([
-                    'user_id' => $availService->service->user->id,
-                    'content' => GenerateNotificationAction::handle('booking', 'booking-created', Auth::user()),
-                    'type' => 'booking',
-                    'url' => "/customer/booking/cart/{$availService->service_cart_id}"
-                ]);
-
-                broadcast(new NotificationSent($notification))->toOthers();
 
                 return $services;
             });

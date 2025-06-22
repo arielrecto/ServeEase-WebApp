@@ -17,7 +17,13 @@ class GenerateNotificationAction
                 }
 
                 if ($action === 'application-rejected') {
-                    return "Your application as a service provider in ServEase has been rejected.";
+                    $reason = $data['remark'] ?? '';
+                    if (($reason === 'Other' || $reason === 'other') && !empty($data['otherRemark'])) {
+                        $reason .= ': ' . $data['otherRemark'];
+                    }
+                    return "Your application as service provider has been rejected. Reason: {$reason}";
+
+                    // return "Your application as a service provider in ServEase has been rejected.";
                 }
                 break;
             case 'booking':
