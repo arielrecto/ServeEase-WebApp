@@ -382,17 +382,17 @@ class ServiceController extends Controller
                     'remarkable_type' => AvailService::class
                 ]);
 
+                $notification = Notification::create([
+                    'user_id' => $availService->service->user->id,
+                    'content' => GenerateNotificationAction::handle('booking', 'booking-created', Auth::user()),
+                    'type' => 'booking',
+                    'url' => "/customer/booking/cart/{$availService->service_cart_id}"
+                ]);
+
+                broadcast(new NotificationSent($notification))->toOthers();
+
                 return $services;
             });
-
-            $notification = Notification::create([
-                'user_id' => $availService->service->user->id,
-                'content' => GenerateNotificationAction::handle('booking', 'booking-created', Auth::user()),
-                'type' => 'booking',
-                'url' => "/customer/booking/cart/{$availService->service_cart_id}"
-            ]);
-
-            broadcast(new NotificationSent($notification))->toOthers();
 
             return to_route('customer.services.show', ['service' => $services->first()->id])
                 ->with('message_success', 'Bulk service booking successful');

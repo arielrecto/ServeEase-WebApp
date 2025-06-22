@@ -62,7 +62,7 @@ const services = computed(() => page.props.services);
                         }
                     "
                     placeholder="Search for service or provider..."
-                    class="mx-0"
+                    class="md:!mx-0"
                 />
             </div>
         </template>
