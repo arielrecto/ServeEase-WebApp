@@ -3,6 +3,8 @@ import { Link, router, usePage, Head, useForm } from "@inertiajs/vue3";
 import { ref, reactive, computed, onMounted } from "vue";
 import { useLoader } from "@/Composables/loader";
 
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import GoTo from "@/Components/Dashboard/GoTo.vue";
 import ComboBox from "@/Components/Form/ComboBox.vue";
@@ -13,6 +15,11 @@ import SearchForm from "@/Components/Form/SearchForm.vue";
 const page = usePage();
 
 const { setIsLoading } = useLoader();
+
+const props = defineProps({
+    services: Array,
+    brgys: Array,
+});
 
 // Initialize form with URL query parameters
 const form = useForm({
@@ -111,7 +118,11 @@ const search = () => {
     form.get(route("customer.dashboard"));
 };
 
-const services = computed(() => page.props.services);
+const submit = async () => {
+    setIsLoading(true);
+    await fetchServices();
+    setIsLoading(false);
+};
 
 const fetchServices = async () => {
     try {
@@ -204,7 +215,7 @@ onMounted(async () => {
 
                 <Link
                     v-if="isServiceProvider && isVerifiedProvider"
-                    :href="route('customer.service-provider.create')"
+                    :href="route('profile.provider')"
                     class="w-max button-ghost"
                     >Provider Profile</Link
                 >
@@ -213,7 +224,7 @@ onMounted(async () => {
                         (isServiceProvider && !isVerifiedProvider) ||
                         !isServiceProvider
                     "
-                    :href="route('profile.provider')"
+                    :href="route('customer.service-provider.create')"
                     class="w-max button-ghost"
                     >Apply as Service Provider</Link
                 >
@@ -332,8 +343,8 @@ onMounted(async () => {
                             <form @submit.prevent="submit" method="get">
                                 <div class="space-y-4">
                                     <!-- Service and Location Selection -->
-                                    <div class="flex justify-center">
-                                        <!-- <div class="space-y-2">
+                                    <div class="flex justify-center gap-4">
+                                        <div class="space-y-2">
                                             <InputLabel
                                                 for="service"
                                                 value="Select a service"
@@ -352,10 +363,10 @@ onMounted(async () => {
                                                 "
                                                 @reset-value="form.service = ''"
                                                 :isRequired="false"
-                                                :class="`block w-full bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm`"
+                                                :class="`block flex-1 bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm`"
                                             />
-                                        </div> -->
-                                        <div class="w-full space-y-2">
+                                        </div>
+                                        <div class="space-y-2">
                                             <InputLabel
                                                 for="brgy"
                                                 value="Select a barangay"
@@ -372,7 +383,7 @@ onMounted(async () => {
                                                 "
                                                 @reset-value="form.brgy = ''"
                                                 :isRequired="false"
-                                                :class="`block w-full bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm`"
+                                                :class="`block flex-1 bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm`"
                                             />
                                         </div>
                                     </div>
