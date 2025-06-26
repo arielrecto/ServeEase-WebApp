@@ -28,7 +28,7 @@ class ServiceProviderController extends Controller
         $endOfMonth = $now->copy()->endOfMonth();
 
         $rejectedCount = Remark::where('remarkable_type', ProviderProfile::class)
-            ->where('remarkable_id', auth()->user()->profile->providerProfile->id)
+            ->where('remarkable_id', auth()->user()->profile?->providerProfile?->id)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->count();
 

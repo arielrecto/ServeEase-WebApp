@@ -20,26 +20,24 @@ const selectedAccountType = ref(null);
 
 // Group payment methods by type for better organization
 const groupedPaymentMethods = computed(() => {
-    return Object.entries(props.paymentAccounts).map(([type, accounts]) => ({
-        type: type,
-        name:
-            type === "gcash"
-                ? "GCash"
-                : type === "paymaya"
-                ? "PayMaya"
-                : type === "cash"
-                ? "Cash"
-                : "Bank Account",
-        icon:
-            type === "gcash"
-                ? "fa-wallet text-blue-500"
-                : type === "paymaya"
-                ? "fa-mobile-screen-button text-purple-500"
-                : type === "cash"
-                ? "fa-money-bill text-green-500"
-                : "fa-building-columns text-gray-700",
-        accounts: accounts,
-    }));
+    return Object.entries(props.paymentAccounts)
+        .filter(([type]) => type !== "cash") // Exclude cash payment option
+        .map(([type, accounts]) => ({
+            type: type,
+            name:
+                type === "gcash"
+                    ? "GCash"
+                    : type === "paymaya"
+                    ? "PayMaya"
+                    : "Bank Account",
+            icon:
+                type === "gcash"
+                    ? "fa-wallet text-blue-500"
+                    : type === "paymaya"
+                    ? "fa-mobile-screen-button text-purple-500"
+                    : "fa-building-columns text-gray-700",
+            accounts: accounts,
+        }));
 });
 
 // Add computed for minimum payment amount
@@ -301,7 +299,10 @@ watch(
                                             form.transaction_type === type.value
                                                 ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
                                                 : 'hover:border-gray-300',
-                                            (availService.status !== 'confirmed' && type.value === 'reservation') && 'sr-only'
+                                            availService.status !==
+                                                'confirmed' &&
+                                                type.value === 'reservation' &&
+                                                'sr-only',
                                         ]"
                                     >
                                         <div class="flex items-start gap-x-3">

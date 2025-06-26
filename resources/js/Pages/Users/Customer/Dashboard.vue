@@ -509,7 +509,7 @@ onMounted(async () => {
                             </form>
                         </div>
                     </div>
-                    <div
+                    <!-- <div
                         v-if="userServices.length > 0"
                         class="flex flex-col flex-wrap items-center justify-center gap-4 lg:flex-row"
                     >
@@ -576,7 +576,7 @@ onMounted(async () => {
                                 </option>
                             </SelectInput>
                         </div>
-                    </div>
+                    </div> -->
                 </section>
 
                 <section class="px-20">

@@ -262,6 +262,18 @@ class ServiceController extends Controller
             ->exists();
     }
 
+    public function checkIfHasOverlappingService(Request $request)
+    {
+        $serviceIds = $request->input('serviceIds');
+        $startDate = $request->input('startDate');
+        $startTime = $request->input('startTime');
+        $endTime = $request->input('endTime');
+
+        $isInValid = $this->hasOverlappingService($serviceIds, $startDate, $startTime, $endTime);
+
+        return response()->json(['isInValid' => $isInValid], 200);
+    }
+
     public function getFeedbackByService(Request $request, Service $service)
     {
         $rate = $request->rating;

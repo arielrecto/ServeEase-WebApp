@@ -123,7 +123,7 @@ onUnmounted(() => {
                     <div class="space-y-1">
                         <div v-html="notification.content"></div>
                         <div class="text-xs">
-                            {{ moment(notification.created_at).fromNow() }}
+                            {{ moment(notification.created_at).format("LLL") }}
                         </div>
                     </div>
                 </DropdownLink>
