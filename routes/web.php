@@ -137,6 +137,7 @@ Route::middleware(['auth'])->group(function () {
             Route::prefix('services')->as('services.')->group(function () {
                 Route::get('{service}/avail', [CustomerServiceController::class, 'availCreate'])->name('avail.create');
                 Route::post('avail', [CustomerServiceController::class, 'availStore'])->name('avail.store');
+                Route::get('check-overlap', [CustomerServiceController::class, 'checkOverlappingBooking'])->name('check-overlap');
                 Route::get('bulk-forms/{provider_id}', [CustomerServiceController::class, 'bulkForm'])->name('bulk-form');
                 Route::post('bulk-forms/store', [CustomerServiceController::class, 'bulkAvail'])->name('bulk-avail');
             });

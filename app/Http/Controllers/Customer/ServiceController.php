@@ -262,6 +262,32 @@ class ServiceController extends Controller
             ->exists();
     }
 
+    public function checkOverlappingBooking(Request $request)
+    {
+        // dd($request->serviceIds);
+        $invalid = AvailService::query()
+            ->whereIn('service_id', $request->serviceIds)
+            ->whereDate('start_date', Carbon::parse($request->startDate)->toDateString())
+            ->whereIn('status', ['in_progress', 'confirmed'])
+            ->where(function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    // Check if new booking starts during an existing booking
+                    $q->where('start_time', '<=', $request->startTime)
+                        ->where('end_time', '>', $request->startTime);
+                })->orWhere(function ($q) use ($request) {
+                    // Check if new booking ends during an existing booking
+                    $q->where('start_time', '<', $request->endTime)
+                        ->where('end_time', '>=', $request->endTime);
+                })->orWhere(function ($q) use ($request) {
+                    // Check if new booking completely contains an existing booking
+                    $q->where('start_time', '>=', $request->startTime)
+                        ->where('end_time', '<=', $request->endTime);
+                });
+            })->exists();
+
+        return response()->json(['isInvalid' => $invalid], 200);
+    }
+
     public function checkIfHasOverlappingService(Request $request)
     {
         $serviceIds = $request->input('serviceIds');

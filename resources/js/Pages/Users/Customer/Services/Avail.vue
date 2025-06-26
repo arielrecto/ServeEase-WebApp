@@ -6,6 +6,8 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import moment from "moment";
+import InputError from "@/Components/InputError.vue";
+// import InputError from "vendor/laravel/breeze/stubs/inertia-react/resources/js/Components/InputError";
 
 const props = defineProps({
     service: Object,
@@ -25,6 +27,7 @@ const form = useForm({
     includeTime: false, // Add this toggle state
 });
 
+const isInvalidSchedule = ref(false);
 const quantity = ref(1);
 
 const incrementQuantity = () => {
@@ -117,6 +120,27 @@ watch(
             form.endTime = moment(value, "HH:mm")
                 .add(1, "hour")
                 .format("HH:mm");
+        }
+    }
+);
+
+watch(
+    () => [form.startTime, form.endTime, form.startDate],
+    async () => {
+        if (form.startDate && form.startTime && form.endTime) {
+            const res = await window.axios.get(
+                "/customer/services/check-overlap",
+                {
+                    params: {
+                        serviceIds: [props.service.id],
+                        startDate: form.startDate,
+                        startTime: form.startTime,
+                        endTime: form.endTime,
+                    },
+                }
+            );
+
+            isInvalidSchedule.value = res.data.isInvalid;
         }
     }
 );
@@ -303,6 +327,13 @@ const back = () => {
                                                     for="startTime"
                                                     value="Start Time"
                                                 />
+                                                <!-- <VueDatePicker
+                                                    v-model="date"
+                                                    :start-time="form.startTime"
+                                                    placeholder="Select Start Time"
+                                                    :is-24="false"
+                                                    time-picker
+                                                /> -->
                                                 <input
                                                     id="startTime"
                                                     type="time"
@@ -313,9 +344,14 @@ const back = () => {
                                                     required
                                                 />
                                                 <InputError
+                                                    v-if="form.errors.startTime"
                                                     :message="
                                                         form.errors.startTime
                                                     "
+                                                />
+                                                <InputError
+                                                    v-if="isInvalidSchedule"
+                                                    message="Selected time slot is occupied. Try another time slot."
                                                 />
                                             </div>
                                             <div>
@@ -571,9 +607,11 @@ const back = () => {
                                 <div class="flex justify-end">
                                     <button
                                         type="submit"
-                                        class="flex items-center px-6 py-3 text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 gap-x-2"
+                                        class="flex items-center px-6 py-3 text-white transition-colors rounded-lg bg-primary hover:bg-primary/90 gap-x-2 disabled:cursor-not-allowed disabled:opacity-60"
                                         :disabled="
-                                            form.processing || !isTimeValid
+                                            form.processing ||
+                                            !isTimeValid ||
+                                            isInvalidSchedule
                                         "
                                     >
                                         <i class="fas fa-check"></i>

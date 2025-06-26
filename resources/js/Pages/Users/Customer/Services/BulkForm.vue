@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import HeaderBackButton from "@/Components/HeaderBackButton.vue";
+import InputError from "@/Components/InputError.vue";
 
 const props = defineProps({
     provider: Object,
@@ -11,6 +12,7 @@ const props = defineProps({
 });
 
 const selectedServices = ref([]);
+const isInvalidSchedule = ref(false);
 
 const form = ref({
     services: [],
@@ -96,6 +98,32 @@ const isTimeValid = computed(() => {
     if (!form.value.start_time || !form.value.end_time) return false;
     return form.value.end_time > form.value.start_time;
 });
+
+watch(
+    () => [
+        form.startTime,
+        form.endTime,
+        form.startDate,
+        form.services.length > 0,
+    ],
+    async () => {
+        if (form.startDate && form.startTime && form.endTime) {
+            const res = await window.axios.get(
+                "/customer/services/check-overlap",
+                {
+                    params: {
+                        serviceIds: [...form.value.services],
+                        startDate: form.value.start_date,
+                        startTime: form.value.start_time,
+                        endTime: form.value.end_time,
+                    },
+                }
+            );
+
+            isInvalidSchedule.value = res.data.isInvalid;
+        }
+    }
+);
 </script>
 
 <template>
@@ -244,6 +272,10 @@ const isTimeValid = computed(() => {
                                         class="w-full border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                                         required
                                     />
+                                    <InputError
+                                        v-if="isInvalidSchedule"
+                                        message="Selected time slot is occupied. Try another time slot."
+                                    />
                                 </div>
                                 <div>
                                     <label
@@ -367,7 +399,8 @@ const isTimeValid = computed(() => {
                                 class="px-8 py-3 font-medium text-white transition-colors duration-200 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                                 :disabled="
                                     selectedServices.length === 0 ||
-                                    !isTimeValid
+                                    !isTimeValid ||
+                                    isInvalidSchedule
                                 "
                             >
                                 Proceed to Booking
