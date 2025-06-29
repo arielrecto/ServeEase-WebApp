@@ -104,7 +104,6 @@ class MessageController extends Controller
         ]);
 
         broadcast(new MessageSent($message))->toOthers();
-        broadcast(new NotificationSent($notification))->toOthers();
 
         return redirect()->back();
     }
