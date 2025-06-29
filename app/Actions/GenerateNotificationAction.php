@@ -16,6 +16,10 @@ class GenerateNotificationAction
                     return "Your application as a service provider in ServEase has been approved.";
                 }
 
+                if ($action === 'application-updated') {
+                    return "{$user->profile->full_name} has re-submitted their application. Click to see the details.";
+                }
+
                 if ($action === 'application-rejected') {
                     $reason = $data['remark'] ?? '';
                     if (($reason === 'Other' || $reason === 'other') && !empty($data['otherRemark'])) {
@@ -68,7 +72,7 @@ class GenerateNotificationAction
                     return "{$user->name} has created a reservation payment for your service. Click to see the details.";
                 }
                 if ($action === 'payment-approved') {
-                    return "{$user->name} has approved your payment. Click to see the details.";
+                    return "{$user->name} has approved your payment. If you've got a moment, feel free to write a review. Your insights go a long way.";
                 }
                 if ($action === 'payment-rejected') {
                     return "{$user->name} has rejected your payment. Click to see the details.";

@@ -64,6 +64,8 @@ class CustomerFeedbackController extends Controller
             'avail_service_id' => $safe['availServiceId']
         ]);
 
+        $serviceProvider = $feedback?->availService?->service?->user_id;
+
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('feedback-attachments', 'public');
@@ -83,7 +85,7 @@ class CustomerFeedbackController extends Controller
         ]);
 
         $notification = Notification::create([
-            'user_id' => Auth::user(),
+            'user_id' => $serviceProvider,
             'content' => $message,
             'type' => 'booking',
             'url' => "/profile/provider",

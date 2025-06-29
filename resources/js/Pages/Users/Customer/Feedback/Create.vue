@@ -14,7 +14,7 @@ const props = defineProps(["availService"]);
 
 const form = useForm({
     availServiceId: props?.availService?.id,
-    rate: 0,
+    rate: 1,
     content: null,
     attachments: [],
 });
@@ -81,6 +81,7 @@ const submit = () => {
                     <input
                         v-for="rating in ratingOptions"
                         v-model="form.rate"
+                        name="rating"
                         :value="rating"
                         type="radio"
                         class="bg-primary mask mask-star-2"

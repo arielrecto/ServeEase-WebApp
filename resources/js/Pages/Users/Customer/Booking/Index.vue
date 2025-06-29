@@ -47,14 +47,18 @@ const headers = ["Service", "Provider", "Agreed Price", "Status", "Actions"];
 
 const cancelBooking = (bookingId) => {
     if (confirm("Are you sure you want to cancel this booking?")) {
-        router.put(route("customer.booking.cancel", bookingId), {}, {
-            // onSuccess: () => {
-            //     alert("Booking has been canceled successfully.");
-            // },
-            // onError: (errors) => {
-            //     alert("Failed to cancel the booking. Please try again.");
-            // },
-        });
+        router.put(
+            route("customer.booking.cancel", bookingId),
+            {},
+            {
+                // onSuccess: () => {
+                //     alert("Booking has been canceled successfully.");
+                // },
+                // onError: (errors) => {
+                //     alert("Failed to cancel the booking. Please try again.");
+                // },
+            }
+        );
     }
 };
 
@@ -191,7 +195,7 @@ console.log(props.availServices);
                                                         route(
                                                             'customer.feedbacks.create'
                                                         ) +
-                                                        `?id=${availService.service_id}`
+                                                        `?id=${availService.id}`
                                                     "
                                                     class="cursor-pointer text-primary"
                                                 >
@@ -245,7 +249,8 @@ console.log(props.availServices);
                                                         )
                                                     "
                                                     class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                                                >Cancel</ModalLinkDialog>
+                                                    >Cancel</ModalLinkDialog
+                                                >
 
                                                 <!-- Cancel Button -->
                                                 <!-- <button

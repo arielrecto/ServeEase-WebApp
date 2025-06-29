@@ -104,7 +104,7 @@ watch(
         form.startTime,
         form.endTime,
         form.startDate,
-        form.services.length > 0,
+        form.services?.length > 0,
     ],
     async () => {
         if (form.startDate && form.startTime && form.endTime) {
