@@ -10,6 +10,7 @@ use App\Models\Conversation;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Events\NotificationSent;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
@@ -83,27 +84,32 @@ class MessageController extends Controller
             'content' => 'required|string'
         ]);
 
-        // Determine receiver ID
-        $receiverId = $conversation->owner_id == Auth::id()
-            ? $conversation->participant_id
-            : $conversation->owner_id;
+        [$message, $notification] = DB::transaction(function () use ($request, $conversation) {
+            // Determine receiver ID
+            $receiverId = $conversation->owner_id == Auth::id()
+                ? $conversation->participant_id
+                : $conversation->owner_id;
 
-        $message = Message::create([
-            'conversation_id' => $conversation->id,
-            'content' => $request->content,
-            'sender_id' => Auth::id(),
-            'receiver_id' => $receiverId,
-            'is_seen' => false,
-        ]);
+            $message = Message::create([
+                'conversation_id' => $conversation->id,
+                'content' => $request->content,
+                'sender_id' => Auth::id(),
+                'receiver_id' => $receiverId,
+                'is_seen' => false,
+            ]);
 
-        $notification = Notification::create([
-            'user_id' => $receiverId,
-            'content' => Auth::user()->profile->full_name . ' sent you a message: ' . mb_strimwidth($message->content, 0, 28, "..."),
-            'type' => 'message',
-            'url' => '/messages/' . $conversation->id
-        ]);
+            $notification = Notification::create([
+                'user_id' => $receiverId,
+                'content' => Auth::user()->profile->full_name . ' sent you a message: ' . mb_strimwidth($message->content, 0, 28, "..."),
+                'type' => 'message',
+                'url' => '/messages/' . $conversation->id
+            ]);
+
+            return [$message, $notification];
+        });
 
         broadcast(new MessageSent($message))->toOthers();
+        broadcast(new NotificationSent($notification))->toOthers();
 
         return redirect()->back();
     }
