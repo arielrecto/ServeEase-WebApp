@@ -601,7 +601,9 @@ watch(selectedStatus, (newStatus) => {
                                             <div>
                                                 <ModalLinkDialog
                                                     v-if="
-                                                        !availService.is_fully_paid
+                                                        !availService.is_fully_paid &&
+                                                        availService.status ===
+                                                            'completed'
                                                     "
                                                     :href="
                                                         route(
