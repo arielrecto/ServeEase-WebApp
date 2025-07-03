@@ -188,6 +188,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/{availService}/detail', [ServiceProviderBookingController::class, 'detail'])->name('detail');
                 Route::get('/{availService}/confirm', [ServiceProviderBookingController::class, 'confirm'])->name('confirm');
                 Route::put('/{availService}/update/status', [ServiceProviderBookingController::class, 'updateStatus'])->name('update.status');
+                Route::put('/{availService}/mark-as-fully-paid', [ServiceProviderBookingController::class, 'markAsFullyPaid'])->name('update.fully_paid');
                 Route::post('/reply', [ServiceProviderBookingController::class, 'reply'])->name('reply');
             });
             Route::resource('payment-accounts', PaymentAccountController::class);

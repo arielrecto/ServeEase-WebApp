@@ -25,11 +25,22 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route("service-provider.booking.update.status", props.id), {
-        onFinish: () => {
-            modalRef.value.close();
-        },
-    });
+    if (props.status !== "fully_paid") {
+        form.put(route("service-provider.booking.update.status", props.id), {
+            onFinish: () => {
+                modalRef.value.close();
+            },
+        });
+    } else {
+        form.put(
+            route("service-provider.booking.update.fully_paid", props.id),
+            {
+                onFinish: () => {
+                    modalRef.value.close();
+                },
+            }
+        );
+    }
 };
 
 const headingText = computed(() => {
@@ -39,6 +50,7 @@ const headingText = computed(() => {
         rejected: "Reject booking?",
         in_progress: "Start the service?",
         completed: "Service done?",
+        fully_paid: "Mark booking as Fully Paid?",
     }[props.status];
 });
 
@@ -49,6 +61,8 @@ const dialogText = computed(() => {
         rejected: "You are about to decline this request.",
         in_progress: "You are about to start the service.",
         completed: "This will set the booking as completed.",
+        fully_paid:
+            "This means that the booking payment has been fully settled.",
     }[props.status];
 });
 

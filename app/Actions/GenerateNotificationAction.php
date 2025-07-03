@@ -58,6 +58,10 @@ class GenerateNotificationAction
                 if ($action === 'booking-completed') {
                     return "The service that you booked with {$user->name} has been completed. Click to see the details.";
                 }
+
+                if ($action === 'fully-paid') {
+                    return "The service that you booked with {$user->name} has been completed. Click to see the details. If you've got a moment, feel free to write a review. Your insights go a long way.";
+                }
                 break;
             case 'feedback':
                 if ($action === 'feedback-created') {

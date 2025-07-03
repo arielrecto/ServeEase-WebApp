@@ -7,6 +7,7 @@ use App\Models\Remark;
 use App\Models\Service;
 use App\Models\FeedBack;
 use App\Models\ServiceCart;
+use App\Models\Transaction;
 use App\Models\AvailService;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -209,6 +210,48 @@ class BookingController extends Controller
             Log::error($e->getMessage());
             return back()->with('message_error', 'Oops! Something went wrong. Please try again.');
         }
+    }
+
+    public function markAsFullyPaid(AvailService $availService)
+    {
+        DB::transaction(function () use ($availService) {
+            $amountPaid = Transaction::where('transactionable_type', AvailService::class)
+                ->where('transactionable_id', $availService->id)
+                ->where('status', 'approved')
+                ->sum('amount');
+
+            if ($amountPaid >= $availService->total_price) {
+                return back()->with('message_error', 'This booking is already fully paid.');
+            }
+
+            $remainingAmount = $availService->total_price - $amountPaid;
+
+            // dd($remainingAmount);
+
+            $transaction = Transaction::create([
+                'transactionable_id' => $availService->id,
+                'transactionable_type' => AvailService::class,
+                'paid_to' => Auth::user()->id,
+                'paid_by' => $availService->user_id,
+                'amount' => $remainingAmount,
+                'status' => 'approved',
+                'transaction_type' => 'cash',
+                'reference_number' => 00000000,
+                'currency' => 'PHP'
+            ]);
+        });
+
+        $message = GenerateNotificationAction::handle('booking', 'fully-paid', Auth::user());
+        $notification = Notification::create([
+            'user_id' => $availService->user_id,
+            'content' => $message,
+            'type' => 'booking',
+            'url' => "/customer/booking/{$availService->id}/detail"
+        ]);
+
+        broadcast(new NotificationSent($notification))->toOthers();
+
+        return back()->with('message_success', 'Successfully marked as fully paid.');
     }
 
     public function showCart(string $serviceCartId)

@@ -553,13 +553,19 @@ watch(selectedStatus, (newStatus) => {
                                                 <div class="text-gray-600">
                                                     Remarks
                                                 </div>
-                                                <div>
+                                                <div
+                                                    v-if="
+                                                        availService.remarks
+                                                            .length > 0
+                                                    "
+                                                >
                                                     {{
                                                         availService
                                                             .remarks?.[0]
                                                             ?.content
                                                     }}
                                                 </div>
+                                                <p v-else>No remarks.</p>
                                             </div>
                                             <div
                                                 class="space-y-1"
@@ -591,6 +597,49 @@ watch(selectedStatus, (newStatus) => {
                                                         />
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div>
+                                                <ModalLinkDialog
+                                                    v-if="
+                                                        !availService.is_fully_paid
+                                                    "
+                                                    :href="
+                                                        route(
+                                                            'service-provider.booking.confirm',
+                                                            {
+                                                                availService:
+                                                                    availService.id,
+                                                                _query: {
+                                                                    status: 'fully_paid',
+                                                                },
+                                                            }
+                                                        )
+                                                    "
+                                                    class="flex items-center justify-center w-full gap-3 px-4 py-2 mt-4 text-sm font-medium text-white uppercase rounded-lg bg-primary hover:bg-primary/90"
+                                                >
+                                                    <i
+                                                        class="ri-check-double-line"
+                                                    ></i>
+                                                    <span
+                                                        >Mark as Fully
+                                                        Paid</span
+                                                    >
+                                                </ModalLinkDialog>
+                                                <!-- <Link
+                                                //     v-if="!availService.is_fully_paid"
+                                                //     :href="
+                                                //         route(
+                                                //             'customer.booking.payment',
+                                                //             availService.id
+                                                //         )
+                                                //     "
+                                                //     class="flex items-center justify-center w-full gap-2 py-2 text-sm text-white uppercase rounded-lg bg-primary hover:bg-primary/90"
+                                                // >
+                                                //     <i
+                                                //         class="ri-check-double-line"
+                                                //     ></i>
+                                                //     Mark as Fully Paid
+                                                // </Link> -->
                                             </div>
                                         </div>
                                     </div>
