@@ -214,7 +214,7 @@ class BookingController extends Controller
 
     public function markAsFullyPaid(AvailService $availService)
     {
-        DB::transaction(function () use ($availService) {
+        $notification = DB::transaction(function () use ($availService) {
             $amountPaid = Transaction::where('transactionable_type', AvailService::class)
                 ->where('transactionable_id', $availService->id)
                 ->where('status', 'approved')
@@ -239,15 +239,17 @@ class BookingController extends Controller
                 'reference_number' => 00000000,
                 'currency' => 'PHP'
             ]);
-        });
+            $message = GenerateNotificationAction::handle('booking', 'fully-paid', Auth::user());
 
-        $message = GenerateNotificationAction::handle('booking', 'fully-paid', Auth::user());
-        $notification = Notification::create([
-            'user_id' => $availService->user_id,
-            'content' => $message,
-            'type' => 'booking',
-            'url' => "/customer/booking/{$availService->id}/detail"
-        ]);
+            $notification = Notification::create([
+                'user_id' => $availService->user_id,
+                'content' => $message,
+                'type' => 'booking',
+                'url' => "/customer/booking/{$availService->id}/detail"
+            ]);
+
+            return $notification;
+        });
 
         broadcast(new NotificationSent($notification))->toOthers();
 

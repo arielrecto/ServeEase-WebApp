@@ -59,7 +59,13 @@ const initializeEcho = () => {
 
     channel.listen("NotificationSent", (e) => {
         if (e.notification.user_id === props.user.id) {
-            notifications.value.unshift(e.notification);
+            const alreadyExists = notifications.value.some(
+                (n) => n.id === e.notification.id
+            );
+
+            if (!alreadyExists) {
+                notifications.value.unshift(e.notification);
+            }
         }
     });
 };
